@@ -40,3 +40,6 @@ jobs:
           npm install --no-audit --no-fund --ignore-scripts
           npm run vendor
           test -s apps/sketch_editor/static/vendor/fabric.js
+
+      - name: Verify template static paths
+        run: python -m unittest tests.verify_static_paths -v

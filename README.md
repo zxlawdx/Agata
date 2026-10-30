@@ -98,3 +98,19 @@ não fazem parte desta etapa.
 Validação: `python -m unittest discover -s tests -v`,
 `node --test tests/sketch_core.test.cjs`, `npm run check:js` e testes
 manuais na WebView Qt6 e com a caneta física.
+
+
+### Corrigindo erro 404 de `sketch_core.js`
+
+Os arquivos JavaScript do editor ficam em `apps/sketch_editor/static/js/` e
+são servidos pelo Vela em `/__vela__/static/sketch_editor/js/`.
+Após atualizar o código, se necessário execute:
+
+```bash
+npm run vendor
+python manage.py collectstatic --no-tailwind --no-install
+python manage.py runapp
+```
+
+A CI verifica cada referência `static(...)` dos templates, inclusive o arquivo
+Fabric criado pelo NPM. Isso evita regressões de caminho para recursos estáticos.
