@@ -39,8 +39,13 @@ class ProjectServiceTests(unittest.TestCase):
             self.repo.get("../../segredo")
 
     def test_lista_vazia_sem_criar_diretorio(self):
-        self.assertEqual(self.service.list_projects(), [])
-        self.assertFalse(self.repo.root.exists())
+        # TemporaryDirectory() cria sua própria raiz. O repositório de projetos
+        # fica numa subpasta ainda inexistente, que a listagem não deve criar.
+        repo = JsonProjectRepository(Path(self.temp.name) / "Projetos")
+        service = ProjectService(repo)
+        self.assertFalse(repo.root.exists())
+        self.assertEqual(service.list_projects(), [])
+        self.assertFalse(repo.root.exists())
 
 
 if __name__ == "__main__":
