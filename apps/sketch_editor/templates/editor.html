@@ -1,5 +1,5 @@
 <!-- Tela visual do editor: fragmento do Vela; scripts carregados em ordem. -->
-<style>@import url("{{ static('sketch_editor/editor.css') }}");</style>
+<style>@import url("{{ static('sketch_editor/editor.css') }}?v={{ assets_version }}");</style>
 <div id="yara-sketch" class="ys-editor" data-project-id="{{ project_id }}">
   <header class="ys-header">
     <div class="ys-brand"><span class="ys-mark">✦</span><strong>Yara</strong><span class="ys-separator">/</span><span id="ys-title">Carregando projeto...</span></div>
@@ -104,7 +104,7 @@
       </section>
     </aside>
   </div>
-  <footer class="ys-footer"><span id="ys-footer-layer">Camada: —</span><span id="ys-pointer">Caneta/mouse · coordenadas em px</span><span>Projeto local · JSON</span></footer>
+  <footer class="ys-footer"><span id="ys-footer-layer">Camada: —</span><span id="ys-pointer">Caneta/mouse · coordenadas em px</span><span>Editor rev {{ assets_version }} · Projeto local · JSON</span></footer>
   <div id="ys-fatal" class="ys-fatal" hidden><h2>Não foi possível abrir o editor</h2><p id="ys-fatal-detail"></p><button type="button" id="ys-fatal-home">Voltar ao início</button></div>
 </div>
 <script>
@@ -113,12 +113,12 @@
   if (!root || root.dataset.loaderStarted) return;
   root.dataset.loaderStarted = "1";
   const urls = [
-    "{{ static('sketch_editor/vendor/fabric.js') }}",
-    "{{ static('sketch_editor/js/sketch_core.js') }}",
-    "{{ static('sketch_editor/js/components.js') }}",
-    "{{ static('sketch_editor/js/component_edit.js') }}",
-    "{{ static('sketch_editor/js/element_tree.js') }}",
-    "{{ static('sketch_editor/js/editor.js') }}"
+    "{{ static('sketch_editor/vendor/fabric.js') }}?v={{ assets_version }}",
+    "{{ static('sketch_editor/js/sketch_core.js') }}?v={{ assets_version }}",
+    "{{ static('sketch_editor/js/components.js') }}?v={{ assets_version }}",
+    "{{ static('sketch_editor/js/component_edit.js') }}?v={{ assets_version }}",
+    "{{ static('sketch_editor/js/element_tree.js') }}?v={{ assets_version }}",
+    "{{ static('sketch_editor/js/editor.js') }}?v={{ assets_version }}"
   ];
   const load = src => new Promise((resolve, reject) => {
     const node = document.createElement("script");
