@@ -72,9 +72,9 @@
   root.dataset.loaderStarted = "1";
   const urls = [
     "{{ static('sketch_editor/vendor/fabric.js') }}",
-    "{{ static('sketch_editor/sketch_core.js') }}",
-    "{{ static('sketch_editor/components.js') }}",
-    "{{ static('sketch_editor/editor.js') }}"
+    "{{ static('sketch_editor/js/sketch_core.js') }}",
+    "{{ static('sketch_editor/js/components.js') }}",
+    "{{ static('sketch_editor/js/editor.js') }}"
   ];
   const load = src => new Promise((resolve, reject) => {
     const node = document.createElement("script");
@@ -91,7 +91,7 @@
       if (!root.isConnected) return;
       root.querySelector("#ys-fatal").hidden = false;
       root.querySelector("#ys-fatal-detail").textContent = err.message +
-        ". Execute npm install, npm run vendor e reinicie o Yara.";
+        ". Verifique os arquivos em staticfiles/sketch_editor/. Execute npm run vendor e python manage.py collectstatic --no-tailwind --no-install antes de reiniciar.";
       root.querySelector("#ys-fatal-home").onclick = () => window.Vela?.navigate("/home");
       console.error("[Yara/sketch]", err);
     }
