@@ -1,0 +1,100 @@
+<!-- Tela visual do editor: fragmento do Vela; scripts carregados em ordem. -->
+<style>@import url("{{ static('sketch_editor/editor.css') }}");</style>
+<div id="yara-sketch" class="ys-editor" data-project-id="{{ project_id }}">
+  <header class="ys-header">
+    <div class="ys-brand"><span class="ys-mark">✦</span><strong>Yara</strong><span class="ys-separator">/</span><span id="ys-title">Carregando projeto...</span></div>
+    <div class="ys-head-actions"><span id="ys-dirty-status" class="ys-status">Carregando...</span><button type="button" id="ys-save" class="ys-btn-primary" disabled>Salvar <kbd>Ctrl+S</kbd></button><button type="button" id="ys-home" class="ys-btn-quiet">← Início</button></div>
+  </header>
+  <div class="ys-toolbar" role="toolbar" aria-label="Ferramentas do esboço">
+    <div class="ys-tools-main">
+      <button data-tool="select" class="active" type="button" title="Selecionar e mover (V)">↖ <span>Selecionar</span></button>
+      <button data-tool="pen" type="button" title="Desenhar à mão (P)">✎ <span>Caneta</span></button>
+      <button data-tool="erase" type="button" title="Apagar objetos da camada ativa (E)">⌫ <span>Borracha</span></button>
+      <button data-tool="text" type="button" title="Texto (T)">T <span>Texto</span></button>
+      <span class="ys-divider"></span>
+      <button data-tool="rect" type="button" title="Retângulo (R)">▭</button>
+      <button data-tool="ellipse" type="button" title="Elipse (O)">◯</button>
+      <button data-tool="line" type="button" title="Linha (L)">╱</button>
+    </div>
+    <div class="ys-quick"><button id="ys-undo" type="button" title="Desfazer (Ctrl+Z)">↶ Desfazer</button><button id="ys-redo" type="button" title="Refazer (Ctrl+Shift+Z)">↷ Refazer</button><span class="ys-divider"></span><button id="ys-zoom-out" type="button">−</button><output id="ys-zoom-label">100%</output><button id="ys-zoom-in" type="button">＋</button><button id="ys-fit" type="button" title="Ajustar à área">Ajustar</button></div>
+  </div>
+  <div class="ys-layout">
+    <aside class="ys-left ys-panel">
+      <div class="ys-panel-title">COMPONENTES</div>
+      <p class="ys-hint">Clique para inserir na camada ativa.</p>
+      <div class="ys-component-grid">
+        <button data-component="topbar" type="button">▤ <span>Top Bar</span></button>
+        <button data-component="sidebar" type="button">▥ <span>Sidebar</span></button>
+        <button data-component="bottom" type="button">▭ <span>Bottom Bar</span></button>
+        <button data-component="button" type="button">▣ <span>Botão</span></button>
+        <button data-component="card" type="button">▢ <span>Cartão</span></button>
+        <button data-component="input" type="button">▱ <span>Campo</span></button>
+      </div>
+      <div class="ys-panel-title ys-panel-spaced">FERRAMENTA ATIVA</div>
+      <div class="ys-tool-description" id="ys-tool-help">Selecione a camada e clique em um elemento para editá-lo.</div>
+      <div class="ys-panel-title ys-panel-spaced">PRANCHETA</div>
+      <p class="ys-note" id="ys-screen-size">—</p>
+      <p class="ys-hint">Tudo fica dentro da tela do dispositivo, inclusive os traços feitos com a mesa digitalizadora.</p>
+    </aside>
+    <main class="ys-workspace" aria-label="Área de desenho">
+      <div class="ys-workspace-title"><span id="ys-platform">Dispositivo</span><span id="ys-screen-name">Tela 1</span><span class="ys-device-indicator">● Esboço</span></div>
+      <div class="ys-scroll" id="ys-scroll"><div class="ys-stage" id="ys-stage"><div class="ys-canvas-wrap" id="ys-canvas-wrap"><canvas id="ys-canvas" aria-label="Prancheta de desenho"></canvas></div></div></div>
+      <div id="ys-message" class="ys-message" role="status" hidden></div>
+    </main>
+    <aside class="ys-right ys-panel">
+      <section class="ys-properties">
+        <div class="ys-panel-title">PROPRIEDADES</div>
+        <label class="ys-field">Cor<input type="color" id="ys-color" value="#0097a7"></label>
+        <label class="ys-field">Espessura do traço <span id="ys-brush-label">3 px</span><input id="ys-brush-size" type="range" min="1" max="32" value="3"></label>
+        <div class="ys-property-grid">
+          <label class="ys-field">X <input type="number" id="ys-prop-x" step="1" disabled></label>
+          <label class="ys-field">Y <input type="number" id="ys-prop-y" step="1" disabled></label>
+          <label class="ys-field">Largura <input type="number" id="ys-prop-w" min="1" step="1" disabled></label>
+          <label class="ys-field">Altura <input type="number" id="ys-prop-h" min="1" step="1" disabled></label>
+        </div>
+        <div class="ys-prop-actions"><button id="ys-duplicate" type="button" disabled>Duplicar</button><button id="ys-delete" type="button" disabled>Excluir</button></div>
+      </section>
+      <section class="ys-layers">
+        <div class="ys-layers-heading"><div class="ys-panel-title">CAMADAS</div><button type="button" id="ys-add-layer" title="Adicionar camada">＋ Nova</button></div>
+        <p class="ys-hint">Só a camada ativa pode ser editada. Use o olho para ocultar, o cadeado para bloquear e o alvo para isolar.</p>
+        <div id="ys-layer-list" class="ys-layer-list" role="list" aria-label="Lista de camadas"></div>
+        <div class="ys-layer-actions"><button id="ys-layer-up" type="button" title="Subir a camada na pilha">↑ Subir</button><button id="ys-layer-down" type="button" title="Descer a camada na pilha">↓ Descer</button><button id="ys-layer-rename" type="button">Renomear</button><button id="ys-layer-duplicate" type="button">Duplicar</button><button id="ys-layer-delete" type="button">Excluir</button></div>
+      </section>
+    </aside>
+  </div>
+  <footer class="ys-footer"><span id="ys-footer-layer">Camada: —</span><span id="ys-pointer">Caneta/mouse · coordenadas em px</span><span>Projeto local · JSON</span></footer>
+  <div id="ys-fatal" class="ys-fatal" hidden><h2>Não foi possível abrir o editor</h2><p id="ys-fatal-detail"></p><button type="button" id="ys-fatal-home">Voltar ao início</button></div>
+</div>
+<script>
+(() => {
+  const root = document.getElementById("yara-sketch");
+  if (!root || root.dataset.loaderStarted) return;
+  root.dataset.loaderStarted = "1";
+  const urls = [
+    "{{ static('sketch_editor/vendor/fabric.js') }}",
+    "{{ static('sketch_editor/sketch_core.js') }}",
+    "{{ static('sketch_editor/components.js') }}",
+    "{{ static('sketch_editor/editor.js') }}"
+  ];
+  const load = src => new Promise((resolve, reject) => {
+    const node = document.createElement("script");
+    node.src = src;
+    node.onload = resolve;
+    node.onerror = () => reject(new Error("Falha ao carregar " + src));
+    document.head.appendChild(node);
+  });
+  (async () => {
+    try {
+      for (const url of urls) await load(url);
+      if (root.isConnected) await window.YaraSketchEditor.mount(root);
+    } catch (err) {
+      if (!root.isConnected) return;
+      root.querySelector("#ys-fatal").hidden = false;
+      root.querySelector("#ys-fatal-detail").textContent = err.message +
+        ". Execute npm install, npm run vendor e reinicie o Yara.";
+      root.querySelector("#ys-fatal-home").onclick = () => window.Vela?.navigate("/home");
+      console.error("[Yara/sketch]", err);
+    }
+  })();
+})();
+</script>

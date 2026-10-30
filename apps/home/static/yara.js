@@ -84,15 +84,17 @@
     const button=get("yara-confirm-create"),message=get("yara-form-error");
     button.disabled=true;message.hidden=true;
     try {
-      await bridge("create_project",{
+      const created = await bridge("create_project",{
         name:get("yara-name").value.trim(),
         platform:get("yara-platform").value,
         width:Number(get("yara-width").value),
         height:Number(get("yara-height").value)
       });
       if(disposed)return;
-      get("yara-create-dialog").close();navigate("projects");
+      get("yara-create-dialog").close();
       await refresh();
+      if (!created?.id) throw new Error("O projeto criado não retornou um identificador.");
+      await window.Vela.navigate("/sketch", {project_id: created.id});
     }catch(e){if(!disposed){message.textContent=e.message;message.hidden=false;}}
     finally{if(!disposed)button.disabled=false;}
   }
@@ -129,7 +131,7 @@
   on(get("yara-done-details"),"click",()=>get("yara-details-dialog").close());
   on(get("yara-project-list"),"click",event=>{
     const target=event.target.closest("[data-project-id]");
-    if(target)openDetails(target.dataset.projectId);
+    if(target)window.Vela.navigate("/sketch",{project_id:target.dataset.projectId});
   });
   root.querySelectorAll("[data-section]").forEach(node=>on(node,"click",()=>navigate(node.dataset.section)));
 

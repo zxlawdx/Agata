@@ -2,7 +2,7 @@ name: Yara checks
 
 on:
   push:
-    branches: [main, feat/home-workspace]
+    branches: [main, "feat/**"]
   pull_request:
     branches: [main]
 
@@ -26,8 +26,17 @@ jobs:
       - name: Check Python syntax
         run: python -m compileall -q apps config manage.py tests
 
-      - name: Run local-project tests
+      - name: Run project and sketch service tests
         run: python -m unittest discover -s tests -v
 
-      - name: Check home JavaScript syntax
-        run: node --check apps/home/static/yara.js
+      - name: Check JavaScript syntax
+        run: npm run check:js
+
+      - name: Run sketch layer model tests
+        run: node --test tests/sketch_core.test.cjs
+
+      - name: Verify Fabric offline asset can be produced
+        run: |
+          npm install --no-audit --no-fund --ignore-scripts
+          npm run vendor
+          test -s apps/sketch_editor/static/vendor/fabric.js
