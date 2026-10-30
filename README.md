@@ -114,3 +114,21 @@ python manage.py runapp
 
 A CI verifica cada referência `static(...)` dos templates, inclusive o arquivo
 Fabric criado pelo NPM. Isso evita regressões de caminho para recursos estáticos.
+
+
+## Componentes internos editáveis
+
+A partir da entrega "component parts", os componentes são grupos vetoriais de partes
+reais: cada ícone é um Path Fabric, cada texto é IText e cada fundo é Rect.
+Clique em um componente e em **Editar partes** (ou dê dois cliques).
+Durante a edição, ajuste o texto no painel ou diretamente sobre o Canvas, mova
+o ícone independentemente, ou adicione outro ícone com **+ Ícone**.
+
+**Vincular** incorpora um objeto independente da mesma camada ao componente em edição.
+**Desvincular** devolve o objeto selecionado à prancheta, independente do conjunto.
+**Concluir edição** recompõe o grupo; depois disso, arrastar o botão ou top bar
+também arrasta ícones e textos vinculados. O grupo é serializado como parte do projeto.
+
+A edição interna é tratada como uma única transação no histórico. Use Concluir
+para fechar a edição e depois Ctrl+Z para desfazer o conjunto de alterações.
+O salvar fecha automaticamente a edição interna antes de persistir o JSON.

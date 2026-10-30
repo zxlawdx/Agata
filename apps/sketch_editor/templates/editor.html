@@ -44,6 +44,7 @@
     <aside class="ys-right ys-panel">
       <section class="ys-properties">
         <div class="ys-panel-title">PROPRIEDADES</div>
+        <label class="ys-field" id="ys-text-field" hidden>Texto selecionado<input type="text" id="ys-prop-text" maxlength="400" disabled placeholder="Digite o texto"></label>
         <label class="ys-field">Cor<input type="color" id="ys-color" value="#0097a7"></label>
         <label class="ys-field">Espessura do traço <span id="ys-brush-label">3 px</span><input id="ys-brush-size" type="range" min="1" max="32" value="3"></label>
         <div class="ys-property-grid">
@@ -53,6 +54,13 @@
           <label class="ys-field">Altura <input type="number" id="ys-prop-h" min="1" step="1" disabled></label>
         </div>
         <div class="ys-prop-actions"><button id="ys-duplicate" type="button" disabled>Duplicar</button><button id="ys-delete" type="button" disabled>Excluir</button></div>
+        <div class="ys-component-edit-panel">
+          <div class="ys-panel-title">EDIÇÃO DO COMPONENTE</div>
+          <p class="ys-hint" id="ys-component-mode">Selecione um componente para editar as partes.</p>
+          <div class="ys-edit-primary"><button id="ys-edit-component" type="button" disabled>✎ Editar partes</button><button id="ys-finish-component" type="button" hidden>✓ Concluir edição</button></div>
+          <div class="ys-edit-actions"><button type="button" id="ys-add-icon" disabled>＋ Ícone</button><button type="button" id="ys-link-component" disabled>Vincular</button><button type="button" id="ys-unlink-component" disabled>Desvincular</button></div>
+          <p class="ys-hint">Dentro da edição, você move cada texto, forma e ícone. Ao concluir, tudo acompanha o componente.</p>
+        </div>
       </section>
       <section class="ys-layers">
         <div class="ys-layers-heading"><div class="ys-panel-title">CAMADAS</div><button type="button" id="ys-add-layer" title="Adicionar camada">＋ Nova</button></div>
@@ -74,6 +82,7 @@
     "{{ static('sketch_editor/vendor/fabric.js') }}",
     "{{ static('sketch_editor/js/sketch_core.js') }}",
     "{{ static('sketch_editor/js/components.js') }}",
+    "{{ static('sketch_editor/js/component_edit.js') }}",
     "{{ static('sketch_editor/js/editor.js') }}"
   ];
   const load = src => new Promise((resolve, reject) => {

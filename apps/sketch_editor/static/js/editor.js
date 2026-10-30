@@ -38,6 +38,7 @@
       selection: true, enableRetinaScaling: true, renderOnAddRemove: false
     });
     let zoom = 1, tool = "select", drawing = null, isolated = null;
+    let componentSession = null;
     let restoring = false, disposed = false, saving = false;
     const past = [], future = [];
     let savedSnapshot = "";
@@ -58,7 +59,7 @@
       const lookup = new Map(layers.map(layer => [layer.id, layer]));
       for (const object of canvas.getObjects()) {
         const target = lookup.get(object.layerId);
-        if (target) target.objects.push(object.toObject(["layerId", "componentKind"]));
+        if (target) target.objects.push(object.toObject(["layerId", "componentKind", "componentId", "componentRole", "iconKind"]));
       }
       return {active_layer_id: state.activeLayerId, layers};
     }
@@ -73,7 +74,11 @@
       get("ys-redo").disabled = !future.length;
     }
     function commit() {
-      if (restoring || disposed) return;
+      // Enquanto o usuário edita partes, o histórico guarda o conjunto ao concluir.
+      if (restoring || disposed || componentSession) {
+        if (componentSession && !restoring) { renderProps(); updateDirty(); }
+        return;
+      }
       const current = snapshot();
       if (past.at(-1) !== current) {
         past.push(current);
@@ -110,6 +115,7 @@
       canvas.requestRenderAll();
       renderProps();
       get("ys-footer-layer").textContent = "Camada: " + (C().find(state)?.name || "—");
+      renderComponentControls();
     }
     function renderLayers() {
       const host = get("ys-layer-list");
@@ -124,6 +130,7 @@
         select.textContent = layer.name;
         select.title = "Selecionar " + layer.name;
         on(select, "click", () => {
+          finishComponent();
           state.activeLayerId = layer.id; setTool("select"); renderLayers(); applyLayerRules();
           commit();
         });
@@ -154,6 +161,7 @@
       get("ys-layer-delete").disabled = state.layers.length <= 1;
     }
     function addObject(object) {
+      if (componentSession) object.componentParentId = componentSession.id;
       if (!editable()) { message("Desbloqueie e mostre a camada ativa para desenhar.", true); return false; }
       object.layerId = state.activeLayerId;
       object.set({objectCaching: false});
@@ -191,8 +199,64 @@
       });
       get("ys-delete").disabled = !valid;
       get("ys-duplicate").disabled = !valid;
+      const input=get("ys-prop-text"), field=get("ys-text-field");
+      const isText=Boolean(valid && (object.type==="i-text" || object.type==="textbox" || object.type==="text"));
+      field.hidden=!isText;input.disabled=!isText;
+      if(isText && document.activeElement!==input)input.value=object.text||"";
+      renderComponentControls();
       if (valid && typeof object.fill === "string" && /^#[a-f\d]{6}$/i.test(object.fill)) {
         get("ys-color").value = object.fill;
+      }
+    }
+
+    function renderComponentControls() {
+      const selected=canvas.getActiveObject(), session=componentSession;
+      get("ys-edit-component").disabled=Boolean(session) || !Boolean(
+        selected?.type==="group" && selected.componentKind && editable());
+      get("ys-finish-component").hidden=!session;
+      get("ys-add-icon").disabled=!session || !editable();
+      get("ys-link-component").disabled=!session || !selected || selected.layerId!==session.layerId
+        || selected.componentParentId===session.id || selected.type==="activeSelection" || selected.type==="group";
+      get("ys-unlink-component").disabled=!session || !selected
+        || selected.componentParentId!==session.id;
+      get("ys-component-mode").textContent=session
+        ? "Editando as partes de "+session.kind+". Arraste cada elemento e conclua para agrupá-los."
+        : "Selecione um componente e clique em Editar partes (ou dê dois cliques).";
+    }
+    function enterComponent(object) {
+      if(componentSession || !editable() || object?.layerId!==state.activeLayerId ||
+         object?.type!=="group" || !object.componentKind)return;
+      try {
+        canvas.discardActiveObject();
+        componentSession=window.YaraComponentEditing.enter(canvas,object,F());
+        setTool("select");
+        message("Edite texto, ícones e fundo separadamente. Depois conclua a edição.");
+        renderComponentControls();
+        canvas.requestRenderAll();
+      } catch(error){alertError(error);}
+    }
+    function finishComponent(){
+      if(!componentSession)return;
+      const session=componentSession;
+      try {
+        canvas.discardActiveObject();
+        const grouped=window.YaraComponentEditing.finish(canvas,session,F());
+        componentSession=null;
+        if(grouped){canvas.setActiveObject(grouped);ensureInside(grouped);}
+        applyLayerRules();commit();
+        message("Componente reunido. Agora suas partes se movem juntas.");
+      } catch(error){componentSession=null;alertError(error);}
+    }
+    function addComponentIcon(){
+      if(!componentSession || !editable())return;
+      const first=canvas.getObjects().find(o=>o.componentParentId===componentSession.id);
+      const x=first ? clamp(first.left+15,0,width-18) : 35;
+      const y=first ? clamp(first.top+15,0,height-18) : 35;
+      const icon=COMPONENTS().icon("plus",{left:x,top:y,stroke:get("ys-color").value});
+      if(addObject(icon)){
+        setTool("select");canvas.setActiveObject(icon);canvas.requestRenderAll();
+        message("Ícone adicionado. Ajuste sua posição e clique em Concluir.");
+        renderProps();
       }
     }
     function fitZoom() {
@@ -262,12 +326,14 @@
       updateDirty();
     }
     async function undo() {
+      finishComponent();
       if (past.length <= 1 || restoring) return;
       future.push(past.pop());
       await restore(JSON.parse(past.at(-1)));
       updateHistoryButtons();
     }
     async function redo() {
+      finishComponent();
       if (!future.length || restoring) return;
       const next = future.pop();
       past.push(next);
@@ -275,18 +341,21 @@
       updateHistoryButtons();
     }
     async function reorderLayer(direction) {
+      finishComponent();
       syncLayers();
       if (!C().move(state, direction)) return;
       await restore({layers:state.layers, active_layer_id:state.activeLayerId});
       commit();
     }
     async function duplicateLayer() {
+      finishComponent();
       syncLayers();
       C().duplicate(state);
       await restore({layers:state.layers, active_layer_id:state.activeLayerId});
       commit();
     }
     async function deleteLayer() {
+      finishComponent();
       if (state.layers.length <= 1) return;
       if (!window.confirm("Excluir a camada e todos os objetos dela?")) return;
       syncLayers();
@@ -376,11 +445,13 @@
         if (disposed) return;
         copy.set({left:object.left+16, top:object.top+16});
         copy.componentKind=object.componentKind;
+        if(object.componentKind)copy.componentId=window.YaraComponentEditing.newId();
         if (addObject(copy)) {canvas.setActiveObject(copy);canvas.requestRenderAll();commit();}
       }, ["layerId", "componentKind"]);
     }
     async function save() {
       if (saving || restoring) return;
+      finishComponent();
       const data=serialize(), saved=JSON.stringify(data);
       saving=true;get("ys-save").disabled=true;
       get("ys-dirty-status").textContent="Salvando...";
@@ -393,6 +464,7 @@
       finally{saving=false;if(!disposed)get("ys-save").disabled=false;}
     }
     function back() {
+      finishComponent();
       if (snapshot() !== savedSnapshot &&
           !window.confirm("Existem alterações não salvas. Sair sem salvar?")) return;
       window.Vela.navigate("/home");
@@ -406,6 +478,9 @@
     canvas.on("mouse:down", onDown);
     canvas.on("mouse:move", onMove);
     canvas.on("mouse:up", onUp);
+    canvas.on("mouse:dblclick",({target})=>{
+      if(target?.componentKind && !componentSession)enterComponent(target);
+    });
     canvas.on("path:created", ({path}) => {
       path.layerId=state.activeLayerId;path.set({objectCaching:false});
       ensureInside(path);applyLayerRules();commit();
@@ -418,6 +493,31 @@
       canvas.on(event,renderProps);
     }
     on(get("ys-save"),"click",save);
+    on(get("ys-edit-component"),"click",()=>enterComponent(canvas.getActiveObject()));
+    on(get("ys-finish-component"),"click",finishComponent);
+    on(get("ys-add-icon"),"click",addComponentIcon);
+    on(get("ys-link-component"),"click",()=>{
+      if(!componentSession)return;
+      const object=canvas.getActiveObject();
+      if(window.YaraComponentEditing.link(object,componentSession)){
+        message("Elemento vinculado: acompanhará o componente.");
+        renderComponentControls();
+      } else message("Selecione um elemento solto da camada para vincular.",true);
+    });
+    on(get("ys-unlink-component"),"click",()=>{
+      if(!componentSession)return;
+      const object=canvas.getActiveObject();
+      if(window.YaraComponentEditing.unlink(object,componentSession)){
+        message("Elemento desvinculado e independente.");
+        renderComponentControls();
+      }
+    });
+    on(get("ys-prop-text"),"change",()=>{
+      const object=canvas.getActiveObject();
+      if(!object || !editable() || !("text" in object))return;
+      object.set("text",get("ys-prop-text").value);object.setCoords();
+      canvas.requestRenderAll();commit();
+    });
     on(get("ys-home"),"click",back);
     on(get("ys-fatal-home"),"click",back);
     on(get("ys-undo"),"click",() => undo().catch(alertError));
@@ -464,6 +564,7 @@
     on(get("ys-duplicate"),"click",duplicateSelected);
     on(get("ys-layer-duplicate"),"click",() => duplicateLayer().catch(alertError));
     on(get("ys-add-layer"),"click",() => {
+      finishComponent();
       try {C().add(state);setTool("select");renderLayers();commit();}
       catch(error){alertError(error);}
     });
@@ -471,6 +572,7 @@
     on(get("ys-layer-down"),"click",() => reorderLayer(-1).catch(alertError));
     on(get("ys-layer-delete"),"click",() => deleteLayer().catch(alertError));
     on(get("ys-layer-rename"),"click",() => {
+      finishComponent();
       const layer=C().find(state);if(!layer)return;
       const name=window.prompt("Nome da camada:",layer.name);
       if(name===null)return;
