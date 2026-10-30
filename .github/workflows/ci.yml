@@ -1,0 +1,33 @@
+name: Yara checks
+
+on:
+  push:
+    branches: [main, feat/home-workspace]
+  pull_request:
+    branches: [main]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Configure Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Check Python syntax
+        run: python -m compileall -q apps config manage.py tests
+
+      - name: Run local-project tests
+        run: python -m unittest discover -s tests -v
+
+      - name: Check home JavaScript syntax
+        run: node --check apps/home/static/yara.js
