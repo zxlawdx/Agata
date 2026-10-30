@@ -97,3 +97,44 @@
 #yara-sketch .ys-edit-actions button{min-height:33px;padding:3px 4px;font-size:10px;white-space:normal}
 #yara-sketch #ys-prop-text{height:34px;border:1px solid #42585b;border-radius:6px;
   color:#f8fefe;background:#253437;padding:5px 9px}
+
+/* Editor técnico: árvore hierárquica, inspeção e controles de alinhamento. */
+#yara-sketch .ys-layout{grid-template-columns:245px minmax(0,1fr) 282px}
+#yara-sketch .ys-left{padding:18px 15px}
+#yara-sketch .ys-right{padding:18px 16px}
+#yara-sketch .ys-component-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:12px}
+#yara-sketch .ys-component-grid button{padding:9px 2px;min-height:68px}
+#yara-sketch .ys-component-grid button span{font-size:10px}
+#yara-sketch .ys-structure-panel{margin-top:22px;padding-top:18px;border-top:1px solid #3e5154}
+#yara-sketch .ys-object-tree{margin-top:10px;display:flex;flex-direction:column;gap:2px;min-height:50px;max-height:40vh;overflow:auto}
+#yara-sketch .ys-tree-row{display:flex;align-items:center;gap:3px;width:100%;min-height:28px;padding:2px 4px;
+ background:transparent;border:1px solid transparent;border-radius:5px;text-align:left;color:#c4d8db}
+#yara-sketch .ys-tree-row:hover{background:#304346}
+#yara-sketch .ys-tree-row.selected{background:#114954;border-color:#0097a7;color:#bdf4fb}
+#yara-sketch .ys-tree-row .ys-tree-icon{flex:0 0 16px;text-align:center;color:#7fbac2}
+#yara-sketch .ys-tree-row .ys-tree-text{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+#yara-sketch .ys-tree-toggle{flex:0 0 17px;min-height:20px;padding:0;margin:0;background:transparent;border:0;color:#a1c4c9}
+#yara-sketch .ys-tree-toggle.blank{pointer-events:none;color:transparent}
+#yara-sketch .ys-tree-title{font-size:10px;color:#9aafb0;margin:9px 0 3px;letter-spacing:1px}
+#yara-sketch .ys-inspector-styles,#yara-sketch .ys-align-panel{margin-top:19px;border-top:1px solid #3c5153;padding-top:15px}
+#yara-sketch .ys-inspector-styles{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}
+#yara-sketch .ys-inspector-styles>.ys-panel-title{grid-column:1/-1}
+#yara-sketch .ys-inspector-styles input{height:30px;border-radius:6px;padding:4px 8px;background:#293739;color:#fff;border:1px solid #435457}
+#yara-sketch .ys-align-actions{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin:10px 0}
+#yara-sketch .ys-align-actions button{font-size:16px}
+#yara-sketch .ys-order-actions{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+#yara-sketch .ys-order-actions button{font-size:11px;padding:4px}
+@media(max-width:1100px){#yara-sketch .ys-layout{grid-template-columns:206px minmax(0,1fr) 235px}
+ #yara-sketch .ys-component-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:740px){#yara-sketch .ys-layout{grid-template-columns:132px minmax(0,1fr) 198px}
+ #yara-sketch .ys-component-grid{grid-template-columns:1fr}
+ #yara-sketch .ys-left,#yara-sketch .ys-right{padding:12px 8px}
+ #yara-sketch .ys-object-tree{max-height:45vh}
+ #yara-sketch .ys-align-actions{grid-template-columns:repeat(3,1fr)}}
+
+#yara-sketch .ys-object-tree .ys-tree-header{width:100%;min-height:29px;padding:6px 5px;
+  margin:7px 0 2px;text-align:left;border:0;background:#243034;border-radius:5px}
+#yara-sketch .ys-tree-row{width:100%;flex:0 0 auto}
+#yara-sketch .ys-edit-primary button[hidden]{display:none}
+#yara-sketch .ys-icon-choice select{width:100%;min-height:32px;border:1px solid #435457;
+  border-radius:6px;color:#e8f8f9;background:#26383a;padding:5px 7px}

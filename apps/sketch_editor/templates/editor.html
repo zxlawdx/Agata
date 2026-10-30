@@ -30,6 +30,11 @@
         <button data-component="card" type="button">▢ <span>Cartão</span></button>
         <button data-component="input" type="button">▱ <span>Campo</span></button>
       </div>
+      <section class="ys-structure-panel" aria-labelledby="ys-structure-title">
+        <div class="ys-panel-title" id="ys-structure-title">ESTRUTURA DO PROJETO</div>
+        <p class="ys-hint">Selecione textos, ícones e partes internas dos componentes.</p>
+        <div id="ys-object-tree" class="ys-object-tree" role="tree" aria-label="Árvore de elementos"></div>
+      </section>
       <div class="ys-panel-title ys-panel-spaced">FERRAMENTA ATIVA</div>
       <div class="ys-tool-description" id="ys-tool-help">Selecione a camada e clique em um elemento para editá-lo.</div>
       <div class="ys-panel-title ys-panel-spaced">PRANCHETA</div>
@@ -53,11 +58,40 @@
           <label class="ys-field">Largura <input type="number" id="ys-prop-w" min="1" step="1" disabled></label>
           <label class="ys-field">Altura <input type="number" id="ys-prop-h" min="1" step="1" disabled></label>
         </div>
+        <div class="ys-inspector-styles">
+          <div class="ys-panel-title">TIPOGRAFIA E FORMAS</div>
+          <label class="ys-field">Fonte (px)<input type="number" id="ys-font-size" min="6" max="160" step="1" disabled></label>
+          <label class="ys-field">Arredondamento (px)<input type="number" id="ys-corner-radius" min="0" max="200" step="1" disabled></label>
+        </div>
+        <div class="ys-align-panel">
+          <div class="ys-panel-title">ALINHAR À PRANCHETA</div>
+          <div class="ys-align-actions">
+            <button type="button" data-align="left" title="Alinhar à esquerda" disabled>⇤</button>
+            <button type="button" data-align="hcenter" title="Centralizar horizontalmente" disabled>↔</button>
+            <button type="button" data-align="right" title="Alinhar à direita" disabled>⇥</button>
+            <button type="button" data-align="top" title="Alinhar ao topo" disabled>⇡</button>
+            <button type="button" data-align="vcenter" title="Centralizar verticalmente" disabled>↕</button>
+            <button type="button" data-align="bottom" title="Alinhar à base" disabled>⇣</button>
+          </div>
+          <div class="ys-order-actions">
+            <button type="button" id="ys-bring-front" disabled>↑ Avançar objeto</button>
+            <button type="button" id="ys-send-back" disabled>↓ Recuar objeto</button>
+          </div>
+        </div>
         <div class="ys-prop-actions"><button id="ys-duplicate" type="button" disabled>Duplicar</button><button id="ys-delete" type="button" disabled>Excluir</button></div>
         <div class="ys-component-edit-panel">
           <div class="ys-panel-title">EDIÇÃO DO COMPONENTE</div>
           <p class="ys-hint" id="ys-component-mode">Selecione um componente para editar as partes.</p>
           <div class="ys-edit-primary"><button id="ys-edit-component" type="button" disabled>✎ Editar partes</button><button id="ys-finish-component" type="button" hidden>✓ Concluir edição</button></div>
+          <label class="ys-field ys-icon-choice">Novo ícone vetorial
+            <select id="ys-icon-kind">
+              <option value="plus">Adicionar (+)</option>
+              <option value="menu">Menu</option>
+              <option value="home">Início</option>
+              <option value="grid">Grade</option>
+              <option value="settings">Configurações</option>
+            </select>
+          </label>
           <div class="ys-edit-actions"><button type="button" id="ys-add-icon" disabled>＋ Ícone</button><button type="button" id="ys-link-component" disabled>Vincular</button><button type="button" id="ys-unlink-component" disabled>Desvincular</button></div>
           <p class="ys-hint">Dentro da edição, você move cada texto, forma e ícone. Ao concluir, tudo acompanha o componente.</p>
         </div>
@@ -83,6 +117,7 @@
     "{{ static('sketch_editor/js/sketch_core.js') }}",
     "{{ static('sketch_editor/js/components.js') }}",
     "{{ static('sketch_editor/js/component_edit.js') }}",
+    "{{ static('sketch_editor/js/element_tree.js') }}",
     "{{ static('sketch_editor/js/editor.js') }}"
   ];
   const load = src => new Promise((resolve, reject) => {

@@ -132,3 +132,29 @@ também arrasta ícones e textos vinculados. O grupo é serializado como parte d
 A edição interna é tratada como uma única transação no histórico. Use Concluir
 para fechar a edição e depois Ctrl+Z para desfazer o conjunto de alterações.
 O salvar fecha automaticamente a edição interna antes de persistir o JSON.
+
+ 
+### Inspetor hierárquico (base conceitual Craft.js e GrapesJS)
+
+O editor apresenta uma árvore de objetos por camada no lado esquerdo.
+Clique numa parte de um componente fechado: o Yara abre a edição interna e
+seleciona o texto, o ícone ou o fundo escolhido. Os botões de alinhamento e a
+ordem de objetos operam apenas sobre o objeto da camada ativa. Um clique
+duplo em um texto interno (ou F2) inicia a edição; o campo **Texto selecionado**
+também permite alterar o conteúdo. A cor, fonte e o arredondamento são
+editáveis quando se aplicam ao elemento selecionado.
+
+Na edição interna, ícones vetoriais são escolhidos pelo seletor
+(Menu, Início, Grade, Configurações ou Adicionar) e inseridos como
+objetos independentes. O botão **Concluir edição** transforma as partes
+novamente em um grupo. Ctrl+D duplica, Esc sai da seleção ou da edição
+interna. Os controles estão ligados ao JavaScript e recebem testes de
+contrato com `node --test tests/editor_controls.test.cjs`.
+
+Esta entrega **não usa React, Craft.js ou GrapesJS diretamente**. Ela
+implementa seus conceitos de árvore de elementos e inspetor sobre o
+modelo existente do Fabric.js e a Bridge do Vela, sem copiar código
+de outros editores. Exportação Web/Android fica para outra etapa.
+
+A WebView desktop e a mesa digitalizadora ainda requerem validação
+manual no Linux antes do merge.

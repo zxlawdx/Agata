@@ -42,7 +42,7 @@ jobs:
           test -s apps/sketch_editor/static/vendor/fabric.js
 
       - name: Validate editable component structure
-        run: node --test tests/component_edit.test.cjs
+        run: node --test tests/component_edit.test.cjs tests/element_tree.test.cjs tests/editor_controls.test.cjs
 
       - name: Verify template static paths
         run: python -m unittest tests.verify_static_paths -v

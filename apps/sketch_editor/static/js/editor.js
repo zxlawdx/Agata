@@ -43,6 +43,8 @@
     const past = [], future = [];
     let savedSnapshot = "";
     const abort = new AbortController();
+    const collapsedLayers = new Set();
+    const E = () => window.YaraElementTree;
     const on = (element, event, callback) => element?.addEventListener(event, callback, {signal: abort.signal});
     const message = (text, error = false) => {
       const host = get("ys-message");
@@ -89,6 +91,7 @@
       updateDirty();
       renderLayers();
       renderProps();
+      renderElementTree();
     }
     function syncLayers() {
       const data = serialize();
@@ -116,6 +119,7 @@
       renderProps();
       get("ys-footer-layer").textContent = "Camada: " + (C().find(state)?.name || "—");
       renderComponentControls();
+      renderElementTree();
     }
     function renderLayers() {
       const host = get("ys-layer-list");
@@ -203,9 +207,102 @@
       const isText=Boolean(valid && (object.type==="i-text" || object.type==="textbox" || object.type==="text"));
       field.hidden=!isText;input.disabled=!isText;
       if(isText && document.activeElement!==input)input.value=object.text||"";
+      const font=get("ys-font-size"), radius=get("ys-corner-radius");
+      font.disabled=!isText;
+      radius.disabled=!(valid && object.type==="rect");
+      font.value=isText ? String(Math.round(object.fontSize||14)) : "";
+      radius.value=valid && object.type==="rect" ? String(Math.round(object.rx||0)) : "";
+      root.querySelectorAll("[data-align]").forEach(btn=>btn.disabled=!valid);
+      const peers=valid ? canvas.getObjects().filter(candidate=>
+        candidate.layerId===object.layerId && candidate.componentParentId===object.componentParentId) : [];
+      const index=peers.indexOf(object);
+      get("ys-bring-front").disabled=!valid || index===peers.length-1;
+      get("ys-send-back").disabled=!valid || index<=0;
       renderComponentControls();
+      renderElementTree();
       if (valid && typeof object.fill === "string" && /^#[a-f\d]{6}$/i.test(object.fill)) {
         get("ys-color").value = object.fill;
+      }
+    }
+
+
+    function renderElementTree() {
+      const host=get("ys-object-tree");
+      if(!host || !E())return;
+      host.replaceChildren();
+      const selected=canvas.getActiveObject();
+      const layers=E().describe(canvas.getObjects(),state.layers);
+      const addButton=(label,level,active,action,title)=>{
+        const button=document.createElement("button");
+        button.type="button";
+        button.className="ys-tree-row"+(active?" selected":"");
+        button.style.paddingLeft=(6+level*15)+"px";
+        button.title=title||label;
+        button.setAttribute("role","treeitem");
+        button.setAttribute("aria-level",String(level+1));
+        button.setAttribute("aria-selected",String(Boolean(active)));
+        const bullet=document.createElement("span");
+        bullet.className="ys-tree-icon";
+        bullet.textContent=level===0?"◧":level===1?"◇":"•";
+        const text=document.createElement("span");
+        text.className="ys-tree-text";
+        text.textContent=label;
+        button.append(bullet,text);
+        // Nós recriados são descartados com suas próprias listeners.
+        button.addEventListener("click",action);
+        host.appendChild(button);
+        return button;
+      };
+      for(const layer of layers){
+        const collapsed=collapsedLayers.has(layer.id);
+        const title=document.createElement("button");
+        title.type="button";title.className="ys-tree-title ys-tree-header";
+        title.textContent=(collapsed?"▸ ":"▾ ")+layer.name+
+          (layer.locked?"  🔒":"")+(layer.visible?"":"  ◌");
+        title.title="Recolher ou expandir objetos da camada";
+        title.addEventListener("click",()=>{
+          if(collapsed)collapsedLayers.delete(layer.id);
+          else collapsedLayers.add(layer.id);
+          renderElementTree();
+        });
+        host.appendChild(title);
+        if(collapsed)continue;
+        for(const node of layer.children){
+          const obj=node.object;
+          const inEdit=Boolean(componentSession && obj.componentParentId===componentSession.id);
+          const button=addButton((inEdit?"↳ ":"")+node.name,inEdit?2:1,
+            selected===obj,()=>{
+              if(state.activeLayerId!==layer.id){
+                finishComponent();
+                state.activeLayerId=layer.id;
+                setTool("select");renderLayers();
+              }
+              setTool("select");canvas.setActiveObject(obj);canvas.requestRenderAll();
+              renderProps();
+            });
+          if(obj?.type==="i-text")button.addEventListener("dblclick",()=>{
+            if(editable()){obj.enterEditing();obj.selectAll();}
+          });
+          if(!node.children.length)continue;
+          for(const [i,child] of node.children.entries()){
+            addButton(child.name,2,false,()=>{
+              if(state.activeLayerId!==layer.id){
+                finishComponent();
+                state.activeLayerId=layer.id;
+                setTool("select");renderLayers();
+              }
+              if(componentSession && componentSession.id!==obj.componentId)finishComponent();
+              if(!componentSession)enterComponent(obj);
+              if(!componentSession)return;
+              const children=canvas.getObjects().filter(part=>
+                part.componentParentId===componentSession.id);
+              const item=children[i];
+              if(item){
+                setTool("select");canvas.setActiveObject(item);canvas.requestRenderAll();renderProps();
+              }
+            },"Editar parte interna do componente");
+          }
+        }
       }
     }
 
@@ -252,7 +349,7 @@
       const first=canvas.getObjects().find(o=>o.componentParentId===componentSession.id);
       const x=first ? clamp(first.left+15,0,width-18) : 35;
       const y=first ? clamp(first.top+15,0,height-18) : 35;
-      const icon=COMPONENTS().icon("plus",{left:x,top:y,stroke:get("ys-color").value});
+      const icon=COMPONENTS().icon(get("ys-icon-kind").value,{left:x,top:y,stroke:get("ys-color").value});
       if(addObject(icon)){
         setTool("select");canvas.setActiveObject(icon);canvas.requestRenderAll();
         message("Ícone adicionado. Ajuste sua posição e clique em Concluir.");
@@ -562,6 +659,39 @@
     }
     on(get("ys-delete"),"click",removeSelected);
     on(get("ys-duplicate"),"click",duplicateSelected);
+    on(get("ys-font-size"),"change",()=>{
+      const obj=canvas.getActiveObject();
+      if(!obj || !["text","i-text","textbox"].includes(obj.type) || !editable())return;
+      const value=Number(get("ys-font-size").value);
+      if(!Number.isFinite(value))return;
+      obj.set("fontSize",clamp(value,6,160));
+      obj.setCoords();ensureInside(obj);canvas.requestRenderAll();commit();
+    });
+    on(get("ys-corner-radius"),"change",()=>{
+      const obj=canvas.getActiveObject();
+      if(!obj || obj.type!=="rect" || !editable())return;
+      const value=Number(get("ys-corner-radius").value);
+      if(!Number.isFinite(value))return;
+      obj.set({rx:clamp(value,0,200),ry:clamp(value,0,200)});
+      canvas.requestRenderAll();commit();
+    });
+    for(const button of root.querySelectorAll("[data-align]")){
+      on(button,"click",()=>{
+        const obj=canvas.getActiveObject();
+        if(!obj || !editable())return;
+        if(E().align(obj,width,height,button.dataset.align)){
+          ensureInside(obj);canvas.requestRenderAll();commit();
+        }
+      });
+    }
+    for(const [id,step] of [["ys-bring-front",1],["ys-send-back",-1]]){
+      on(get(id),"click",()=>{
+        const obj=canvas.getActiveObject();
+        if(obj && editable() && E().move(canvas,obj,step)){
+          canvas.setActiveObject(obj);canvas.requestRenderAll();commit();
+        }
+      });
+    }
     on(get("ys-layer-duplicate"),"click",() => duplicateLayer().catch(alertError));
     on(get("ys-add-layer"),"click",() => {
       finishComponent();
@@ -593,6 +723,22 @@
       if ((event.ctrlKey || event.metaKey) && key==="y") {
         event.preventDefault();redo().catch(alertError);return;
       }
+      if ((event.ctrlKey || event.metaKey) && key==="d"){
+        event.preventDefault();duplicateSelected();return;
+      }
+      if(key==="escape"){
+        event.preventDefault();
+        if(componentSession)finishComponent();
+        else{canvas.discardActiveObject();canvas.requestRenderAll();renderProps();}
+        return;
+      }
+      if(key==="f2"){
+        const obj=canvas.getActiveObject();
+        if(obj?.type==="i-text" && editable()){
+          event.preventDefault();obj.enterEditing();obj.selectAll();
+        }
+        return;
+      }
       if (key==="delete" || key==="backspace") {event.preventDefault();removeSelected();return;}
       if (event.ctrlKey || event.altKey || event.metaKey) return;
       const shortcuts={v:"select",p:"pen",e:"erase",t:"text",r:"rect",o:"ellipse",l:"line"};
@@ -610,7 +756,7 @@
     savedSnapshot=snapshot();
     past.push(savedSnapshot);
     updateHistoryButtons();updateDirty();setTool("select");setZoom(fitZoom());
-    get("ys-save").disabled=false;get("ys-message").hidden=true;
+    get("ys-save").disabled=false;get("ys-message").hidden=true;renderElementTree();
   }
   window.YaraSketchEditor={mount};
 })();
