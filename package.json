@@ -1,0 +1,13 @@
+{
+  "name": "yara-desktop",
+  "private": true,
+  "version": "0.2.0",
+  "description": "Assets de desenho offline para o Yara",
+  "scripts": {
+    "vendor": "node scripts/vendor-fabric.cjs",
+    "check:js": "node --check apps/sketch_editor/static/js/editor.js && node --check apps/sketch_editor/static/js/sketch_core.js && node --check apps/sketch_editor/static/js/components.js && node --check apps/home/static/yara.js"
+  },
+  "dependencies": {
+    "fabric": "5.3.0"
+  }
+}

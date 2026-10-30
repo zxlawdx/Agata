@@ -1,0 +1,89 @@
+/* Paleta Yara baseada no esboço do Lunacy. */
+#yara-sketch{--dark:#1a1c1c;--teal:#0097a7;--ice:#b2ebf2;--border:#304346;--muted:#9fb5b7;
+  width:100%;height:100vh;display:flex;flex-direction:column;min-height:0;overflow:hidden;
+  background:#202829;color:#f1fcfd;font:12px Inter,"Segoe UI",Arial,sans-serif;}
+#yara-sketch *,#yara-sketch *:before,#yara-sketch *:after{box-sizing:border-box}
+#yara-sketch [hidden]{display:none!important}
+#yara-sketch button,#yara-sketch input{font:inherit}
+#yara-sketch button{cursor:pointer;border:1px solid #3f5053;background:#293739;color:#d7e8eb;border-radius:7px;min-height:31px}
+#yara-sketch button:hover:not(:disabled){background:#355053}
+#yara-sketch button:disabled{opacity:.40;cursor:not-allowed}
+#yara-sketch button:focus-visible,#yara-sketch input:focus-visible{outline:2px solid #7cdae2;outline-offset:2px}
+#yara-sketch .ys-header{flex:0 0 61px;display:flex;align-items:center;justify-content:space-between;
+  gap:15px;padding:0 19px;border-bottom:1px solid #354245;background:#1a1c1c}
+#yara-sketch .ys-brand,.ys-head-actions{display:flex;align-items:center;gap:12px;min-width:0}
+#yara-sketch .ys-mark{background:#0097a7;padding:9px;border-radius:10px;font-size:19px}
+#yara-sketch .ys-brand strong{font-size:21px}
+#yara-sketch .ys-brand #ys-title{color:#b4c6c9;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+#yara-sketch .ys-separator{color:#718a8e}
+#yara-sketch .ys-status{color:#9cbabe;white-space:nowrap}
+#yara-sketch .ys-btn-primary{background:#0097a7;border-color:#0097a7;color:white;padding:0 16px;font-weight:700}
+#yara-sketch .ys-btn-primary:hover:not(:disabled){background:#008390}
+#yara-sketch .ys-btn-quiet{background:transparent;border-color:#465558;padding:0 13px}
+#yara-sketch kbd{font-size:10px;font-weight:400;color:#c6ecf0;margin-left:7px}
+#yara-sketch .ys-toolbar{display:flex;align-items:center;justify-content:space-between;padding:9px 16px;gap:10px;
+  background:#243133;border-bottom:1px solid #3c4d50;overflow-x:auto;flex:0 0 auto}
+#yara-sketch .ys-tools-main,#yara-sketch .ys-quick{display:flex;gap:5px;align-items:center;white-space:nowrap}
+#yara-sketch .ys-toolbar button{padding:0 10px;font-size:12px}
+#yara-sketch .ys-toolbar button.active{color:#b2ebf2;border-color:#0097a7;background:#16545d}
+#yara-sketch .ys-divider{width:1px;height:23px;margin:0 7px;background:#516367}
+#yara-sketch #ys-zoom-label{width:45px;text-align:center;color:#b2ebf2}
+#yara-sketch .ys-layout{display:grid;grid-template-columns:196px minmax(0,1fr) 254px;flex:1;min-height:0}
+#yara-sketch .ys-panel{background:#1a1c1c;overflow:auto;padding:18px 13px}
+#yara-sketch .ys-left{border-right:1px solid #36464a}
+#yara-sketch .ys-right{border-left:1px solid #36464a;display:flex;flex-direction:column;gap:20px}
+#yara-sketch .ys-panel-title{font-size:10px;letter-spacing:1.6px;font-weight:800;color:#c6e3e7}
+#yara-sketch .ys-panel-spaced{margin-top:30px}
+#yara-sketch .ys-hint{font-size:11px;color:#90a5a7;line-height:1.6}
+#yara-sketch .ys-note{color:#b2ebf2}
+#yara-sketch .ys-component-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:18px}
+#yara-sketch .ys-component-grid button{display:flex;flex-direction:column;gap:8px;padding:13px 4px;font-size:20px}
+#yara-sketch .ys-component-grid button span{font-size:10px}
+#yara-sketch .ys-tool-description{margin-top:12px;font-size:12px;line-height:1.65;color:#aec4c7}
+#yara-sketch .ys-workspace{background:#3b5054;display:flex;flex-direction:column;position:relative;min-height:0;min-width:0}
+#yara-sketch .ys-workspace-title{height:48px;display:flex;gap:12px;align-items:center;padding:0 25px;color:#e0eeee;font-weight:600}
+#yara-sketch .ys-workspace-title>span:nth-child(2){color:#9bb4b7}
+#yara-sketch .ys-device-indicator{margin-left:auto;color:#a4e3e8;font-weight:400}
+#yara-sketch .ys-scroll{flex:1;min-height:0;overflow:auto;display:flex;align-items:safe center;justify-content:safe center;
+  padding:35px 50px;background-color:#344a4e;background-image:radial-gradient(#6a858955 1px,transparent 1px);background-size:21px 21px;}
+#yara-sketch .ys-stage{flex:0 0 auto;position:relative}
+#yara-sketch .ys-canvas-wrap{position:absolute;left:0;top:0;background:white;transform-origin:top left;
+  border:7px solid #101a1c;border-radius:8px;box-shadow:0 15px 45px #07161988;overflow:hidden}
+#yara-sketch .ys-canvas-wrap .canvas-container{background:#fff}
+#yara-sketch .ys-canvas-wrap canvas{touch-action:none}
+#yara-sketch .ys-message{position:absolute;bottom:17px;left:50%;transform:translateX(-50%);max-width:90%;
+  padding:12px 17px;background:#182a2dcc;border:1px solid #5baab1;border-radius:8px;text-align:center}
+#yara-sketch .ys-field{display:flex;flex-direction:column;gap:7px;margin:13px 0;color:#bed0d2;font-size:11px}
+#yara-sketch .ys-field input[type=color]{height:33px;width:100%;padding:3px;background:#293b3f;border:1px solid #506266;border-radius:7px}
+#yara-sketch .ys-field input[type=range]{accent-color:#0097a7;width:100%}
+#yara-sketch .ys-field input[type=number]{width:100%;height:32px;padding:4px 8px;background:#293739;border:1px solid #435457;color:#fff;border-radius:5px}
+#yara-sketch .ys-property-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}
+#yara-sketch .ys-prop-actions,#yara-sketch .ys-layer-actions{display:flex;gap:5px;flex-wrap:wrap}
+#yara-sketch .ys-prop-actions button,#yara-sketch .ys-layer-actions button{padding:0 9px;font-size:11px}
+#yara-sketch .ys-layers{border-top:1px solid #425153;padding-top:18px}
+#yara-sketch .ys-layers-heading{display:flex;justify-content:space-between;align-items:center}
+#yara-sketch .ys-layers-heading button{padding:0 10px;background:#134c52;border-color:#0097a7}
+#yara-sketch .ys-layer-list{display:flex;flex-direction:column;gap:5px;margin:14px 0}
+#yara-sketch .ys-layer-item{display:flex;align-items:center;gap:4px;padding:4px;border-radius:7px;background:#263437;border:1px solid transparent}
+#yara-sketch .ys-layer-item.active{border-color:#0097a7;background:#16464c}
+#yara-sketch .ys-layer-item .ys-layer-select{flex:1;min-width:0;text-align:left;border:0;background:transparent;padding:0 4px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#yara-sketch .ys-layer-item button{flex:0 0 auto;border:0;min-height:26px;padding:0 5px;background:transparent}
+#yara-sketch .ys-layer-item button.active-flag{color:#70e4eb}
+#yara-sketch .ys-layer-item .ys-layer-select:focus-visible{outline-offset:-2px}
+#yara-sketch .ys-footer{flex:0 0 29px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;
+  border-top:1px solid #3b4c4f;font-size:10px;color:#9db8bb;background:#1a1c1c}
+#yara-sketch .ys-fatal{position:absolute;inset:0;background:#1a1c1c;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:25px}
+#yara-sketch .ys-fatal p{max-width:550px;line-height:1.7;color:#b0c5c8}
+#yara-sketch .ys-fatal button{padding:9px 20px}
+@media(max-width:1000px){#yara-sketch .ys-layout{grid-template-columns:150px minmax(0,1fr) 210px}
+  #yara-sketch .ys-toolbar button span{display:none}
+  #yara-sketch .ys-left,#yara-sketch .ys-right{padding:12px 8px}}
+@media(max-width:690px){#yara-sketch .ys-layout{grid-template-columns:75px minmax(0,1fr) 175px}
+  #yara-sketch .ys-component-grid{grid-template-columns:1fr}
+  #yara-sketch .ys-left .ys-hint,#yara-sketch .ys-panel-spaced{display:none}
+  #yara-sketch .ys-header{padding:0 9px}
+  #yara-sketch .ys-head-actions kbd,#yara-sketch .ys-status{display:none}
+  #yara-sketch .ys-toolbar{padding:6px}
+  #yara-sketch .ys-toolbar button{padding:0 5px}
+  #yara-sketch .ys-scroll{padding:20px}}

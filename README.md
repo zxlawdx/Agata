@@ -64,3 +64,37 @@ O identificador de pasta é um UUID aleatório validado no backend. O nome forne
 4. Editor SVG e editor de interfaces com exportadores separados.
 
 Este repositório consome o Vela como dependência sem alterar o código-fonte do framework.
+
+
+## Etapa 2 — Editor de esboços (branch `feat/sketch-editor`)
+
+A home abre o editor após criar um projeto; clicar num projeto existente também o abre.
+O editor oferece ferramentas de seleção, caneta para mouse/mesa digitalizadora,
+borracha por objeto, texto editável, retângulo, elipse, linha, componentes de interface,
+zoom, desfazer/refazer, propriedades e camadas com visibilidade, bloqueio, isolamento,
+duplicação e reordenação. As posições são expressas nas dimensões lógicas da prancheta.
+
+**Preparação obrigatória do motor local de desenho** (uma vez por checkout):
+
+```bash
+npm install --ignore-scripts
+npm run vendor
+python manage.py runapp
+```
+
+O Fabric.js 5.3.0 é usado como dependência de build. O arquivo distribuído fica em
+`apps/sketch_editor/static/vendor/fabric.js` (não versionado); depois de preparado
+o Yara funciona sem internet. Sem esse arquivo, o editor mostra um erro explícito.
+
+Use a camada selecionada para inserir elementos, o cadeado para travar e o olho
+para ocultar. O ícone de alvo isola visualmente uma camada. A borracha apaga objetos
+inteiros, não pixels individuais. A escrita à mão funciona como traços de caneta;
+sensibilidade à pressão real ainda precisa ser verificada com a mesa digitalizadora no Linux.
+
+**Salvar** ou Ctrl+S grava em `~/Yara/Projetos/<id>/project.json`. A edição
+ainda é por uma tela por projeto. XML, HTML e ferramentas vetoriais avançadas
+não fazem parte desta etapa.
+
+Validação: `python -m unittest discover -s tests -v`,
+`node --test tests/sketch_core.test.cjs`, `npm run check:js` e testes
+manuais na WebView Qt6 e com a caneta física.

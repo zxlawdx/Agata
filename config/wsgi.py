@@ -1,4 +1,4 @@
-"""Composition root do Yara; integra apps e Bridge no Vela."""
+"""Composition root do Yara; registra módulos no runtime nativo do Vela."""
 import sys
 
 from config import settings
@@ -6,7 +6,7 @@ from config.bridge import YaraBridge
 from vela.cli.collectstatic import collect_static
 from vela.core.app import VelaApp
 
-INSTALLED_APPS = ["apps.home", "apps.workspace"]
+INSTALLED_APPS = ["apps.home", "apps.workspace", "apps.sketch_editor"]
 
 
 def run():
