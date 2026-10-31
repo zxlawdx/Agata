@@ -2,7 +2,7 @@ const test=require("node:test"),assert=require("node:assert/strict");
 const fs=require("node:fs"),vm=require("node:vm");
 const ctx={window:{}};vm.createContext(ctx);
 vm.runInContext(fs.readFileSync("apps/sketch_editor/static/js/element_tree.js","utf8"),ctx);
-const tree=ctx.window.YaraElementTree;
+const tree=ctx.window.AgataElementTree;
 test("hierarquia lista camadas, componentes e filhos sem perder os objetos",()=>{
  const text={type:"i-text",text:"Salvar",componentRole:"label"};
  const icon={type:"path",componentRole:"icon"};

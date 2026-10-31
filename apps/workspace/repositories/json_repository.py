@@ -11,8 +11,16 @@ _VALID_ID = re.compile(r"^[0-9a-f]{32}$")
 
 
 class JsonProjectRepository:
-    def __init__(self, root: Path):
+    def __init__(self, root: Path, legacy_root: Path | None = None):
         self.root = Path(root)
+        self.legacy_root = Path(legacy_root) if legacy_root is not None else None
+
+    def _read_path(self, project_id: str) -> Path:
+        current = self._path(project_id)
+        if current.is_file() or self.legacy_root is None:
+            return current
+        legacy = self.legacy_root / project_id / "project.json"
+        return legacy if legacy.is_file() else current
 
     def _path(self, project_id: str) -> Path:
         if not isinstance(project_id, str) or not _VALID_ID.fullmatch(project_id):
@@ -20,7 +28,7 @@ class JsonProjectRepository:
         return self.root / project_id / "project.json"
 
     def save(self, project: dict) -> None:
-        path = self._path(project["id"])
+        path = self._read_path(project["id"])
         path.parent.mkdir(parents=True, exist_ok=True)
         temporary = path.with_suffix(".tmp")
         temporary.write_text(
@@ -30,7 +38,7 @@ class JsonProjectRepository:
         temporary.replace(path)
 
     def get(self, project_id: str) -> dict:
-        path = self._path(project_id)
+        path = self._read_path(project_id)
         if not path.is_file():
             raise FileNotFoundError("Projeto não encontrado.")
         document = json.loads(path.read_text(encoding="utf-8"))
@@ -39,16 +47,20 @@ class JsonProjectRepository:
         return document
 
     def list(self) -> list[dict]:
-        if not self.root.exists():
-            return []
-        projects = []
-        for path in self.root.glob("*/project.json"):
-            try:
-                projects.append(self.get(path.parent.name))
-            except (ValueError, OSError, json.JSONDecodeError):
-                logger.warning("Ignorando projeto inválido: %s", path)
-        return sorted(
-            projects,
-            key=lambda item: item.get("updated_at", ""),
-            reverse=True,
-        )
+        roots = [self.root]
+        if self.legacy_root is not None and self.legacy_root != self.root:
+            roots.append(self.legacy_root)
+        projects, ids = [], set()
+        for root in roots:
+            if not root.is_dir():
+                continue
+            for path in root.glob("*/project.json"):
+                project_id = path.parent.name
+                if project_id in ids:
+                    continue
+                try:
+                    projects.append(self.get(project_id))
+                    ids.add(project_id)
+                except (ValueError, OSError, json.JSONDecodeError):
+                    logger.warning("Ignorando projeto inválido: %s", path)
+        return sorted(projects, key=lambda item: item.get("updated_at", ""), reverse=True)

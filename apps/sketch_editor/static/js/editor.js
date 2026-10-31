@@ -1,11 +1,11 @@
-/* Editor de esboços do Yara: Fabric.js 5, Vela Bridge e modelo de camadas. */
+/* Editor de esboços do Agata: Fabric.js 5, Vela Bridge e modelo de camadas. */
 (() => {
   "use strict";
-  const C = () => window.YaraSketchCore;
+  const C = () => window.AgataSketchCore;
   const F = () => window.fabric;
-  const COMPONENTS = () => window.YaraSketchComponents;
-  const TOOLS = ["select", "pen", "erase", "text", "rect", "ellipse", "line"];
-  const SHAPES = new Set(["rect", "ellipse", "line"]);
+  const COMPONENTS = () => window.AgataSketchComponents;
+  const TOOLS = ["select", "pen", "erase", "text", "rect", "ellipse", "triangle", "diamond", "line"];
+  const SHAPES = new Set(["rect", "ellipse", "triangle", "diamond", "line"]);
   const HELP = {
     select: "Selecione, movimente ou redimensione apenas os objetos da camada ativa.",
     pen: "Desenhe e escreva à mão com sua mesa digitalizadora ou mouse.",
@@ -13,6 +13,8 @@
     text: "Clique na prancheta para inserir texto editável.",
     rect: "Clique e arraste para desenhar um retângulo.",
     ellipse: "Clique e arraste para desenhar uma elipse.",
+    triangle: "Clique e arraste para desenhar um triângulo vetorial.",
+    diamond: "Clique e arraste para desenhar um losango vetorial.",
     line: "Clique e arraste para desenhar uma linha."
   };
   const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
@@ -44,7 +46,7 @@
     let savedSnapshot = "";
     const abort = new AbortController();
     const collapsedLayers = new Set();
-    const E = () => window.YaraElementTree;
+    const E = () => window.AgataElementTree;
     const on = (element, event, callback) => element?.addEventListener(event, callback, {signal: abort.signal});
     const message = (text, error = false) => {
       const host = get("ys-message");
@@ -325,7 +327,7 @@
          object?.type!=="group" || !object.componentKind)return;
       try {
         canvas.discardActiveObject();
-        componentSession=window.YaraComponentEditing.enter(canvas,object,F());
+        componentSession=window.AgataComponentEditing.enter(canvas,object,F());
         setTool("select");
         message("Edite texto, ícones e fundo separadamente. Depois conclua a edição.");
         renderComponentControls();
@@ -337,7 +339,7 @@
       const session=componentSession;
       try {
         canvas.discardActiveObject();
-        const grouped=window.YaraComponentEditing.finish(canvas,session,F());
+        const grouped=window.AgataComponentEditing.finish(canvas,session,F());
         componentSession=null;
         if(grouped){canvas.setActiveObject(grouped);ensureInside(grouped);}
         applyLayerRules();commit();
@@ -469,12 +471,18 @@
       const base = {left:x, top:y, objectCaching:false, strokeWidth:2, stroke:color};
       if (kind === "rect") return new (F().Rect)({...base, width:1,height:1,fill:"transparent"});
       if (kind === "ellipse") return new (F().Ellipse)({...base,rx:1,ry:1,fill:"transparent"});
+      if (kind === "triangle") return new (F().Triangle)({...base,width:1,height:1,fill:"transparent"});
+      if (kind === "diamond") return new (F().Polygon)(
+        [{x:50,y:0},{x:100,y:50},{x:50,y:100},{x:0,y:50}],
+        {...base,scaleX:0.01,scaleY:0.01,fill:"transparent"}
+      );
       return new (F().Line)([x,y,x,y],{stroke:color,strokeWidth:Math.max(2,Number(get("ys-brush-size").value)),objectCaching:false});
     }
     function resizeShape(shape, type, origin, point) {
       const x = Math.min(origin.x,point.x), y=Math.min(origin.y,point.y);
       const w=Math.max(1,Math.abs(point.x-origin.x)), h=Math.max(1,Math.abs(point.y-origin.y));
-      if (type === "rect") shape.set({left:x,top:y,width:w,height:h});
+      if (type === "rect" || type === "triangle") shape.set({left:x,top:y,width:w,height:h});
+      if (type === "diamond") shape.set({left:x,top:y,scaleX:w/100,scaleY:h/100});
       if (type === "ellipse") shape.set({left:x,top:y,rx:w/2,ry:h/2});
       if (type === "line") shape.set({x1:origin.x,y1:origin.y,x2:point.x,y2:point.y});
       shape.setCoords();canvas.requestRenderAll();
@@ -542,7 +550,7 @@
         if (disposed) return;
         copy.set({left:object.left+16, top:object.top+16});
         copy.componentKind=object.componentKind;
-        if(object.componentKind)copy.componentId=window.YaraComponentEditing.newId();
+        if(object.componentKind)copy.componentId=window.AgataComponentEditing.newId();
         if (addObject(copy)) {canvas.setActiveObject(copy);canvas.requestRenderAll();commit();}
       }, ["layerId", "componentKind"]);
     }
@@ -560,6 +568,12 @@
       } catch(error) { if(!disposed) alertError(error); }
       finally{saving=false;if(!disposed)get("ys-save").disabled=false;}
     }
+    function leaveTo(section,create=false) {
+      finishComponent();
+      if(snapshot()!==savedSnapshot &&
+         !window.confirm("Existem alterações não salvas. Sair sem salvar?"))return;
+      window.Vela.navigate("/home",{section,create});
+    }
     function back() {
       finishComponent();
       if (snapshot() !== savedSnapshot &&
@@ -569,6 +583,9 @@
 
     get("ys-title").textContent = project.name;
     get("ys-platform").textContent = project.platform.toUpperCase();
+    const modes={svg:"Vetores · SVG",drawing:"Área de desenho",sketch:"Esboço"};
+    root.querySelector(".ys-device-indicator").textContent =
+      "● "+(modes[project.editor_mode] || "Esboço");
     get("ys-screen-name").textContent = screen.name || "Tela 1";
     get("ys-screen-size").textContent = width + " × " + height + " px";
 
@@ -590,13 +607,48 @@
       canvas.on(event,renderProps);
     }
     on(get("ys-save"),"click",save);
+    on(get("ys-go-new"),"click",()=>leaveTo("home",true));
+    on(get("ys-go-recents"),"click",()=>leaveTo("projects"));
+    on(get("ys-go-models"),"click",()=>leaveTo("templates"));
+    on(get("ys-toggle-grid"),"click",()=>{
+      const host=get("ys-scroll");
+      const off=host.classList.toggle("ys-grid-off");
+      get("ys-toggle-grid").textContent=off?"Grade ○":"Grade ●";
+      get("ys-toggle-grid").setAttribute("aria-pressed",String(!off));
+    });
+    for(const btn of root.querySelectorAll("[data-swatch]")){
+      on(btn,"click",()=>{
+        get("ys-color").value=btn.dataset.swatch;
+        get("ys-color").dispatchEvent(new Event("input",{bubbles:true}));
+        get("ys-color").dispatchEvent(new Event("change",{bubbles:true}));
+        root.querySelectorAll("[data-swatch]").forEach(other=>
+          other.classList.toggle("active",other===btn));
+      });
+    }
+    on(get("ys-pick-color"),"click",()=>get("ys-color").click());
+    async function exportAs(format) {
+      if(saving || disposed)return;
+      try{
+        if(snapshot()!==savedSnapshot)await save();
+        if(snapshot()!==savedSnapshot)throw Error("Salve o projeto antes de exportar.");
+        const payload=format==="svg"?canvas.toSVG({suppressPreamble:true}):
+          format==="png"?canvas.toDataURL({format:"png",multiplier:1}):"";
+        if(typeof api.export_artwork!=="function")throw Error("Atualize o backend para exportar.");
+        const result=await api.export_artwork(project.id,format,payload);
+        if(!result?.ok)throw Error("Não foi possível exportar o projeto.");
+        message("Exportado: "+result.path);
+      }catch(e){alertError(e);}
+    }
+    for(const format of ["svg","png","json"]){
+      on(get("ys-export-"+format),"click",()=>exportAs(format));
+    }
     on(get("ys-edit-component"),"click",()=>enterComponent(canvas.getActiveObject()));
     on(get("ys-finish-component"),"click",finishComponent);
     on(get("ys-add-icon"),"click",addComponentIcon);
     on(get("ys-link-component"),"click",()=>{
       if(!componentSession)return;
       const object=canvas.getActiveObject();
-      if(window.YaraComponentEditing.link(object,componentSession)){
+      if(window.AgataComponentEditing.link(object,componentSession)){
         message("Elemento vinculado: acompanhará o componente.");
         renderComponentControls();
       } else message("Selecione um elemento solto da camada para vincular.",true);
@@ -604,7 +656,7 @@
     on(get("ys-unlink-component"),"click",()=>{
       if(!componentSession)return;
       const object=canvas.getActiveObject();
-      if(window.YaraComponentEditing.unlink(object,componentSession)){
+      if(window.AgataComponentEditing.unlink(object,componentSession)){
         message("Elemento desvinculado e independente.");
         renderComponentControls();
       }
@@ -758,5 +810,5 @@
     updateHistoryButtons();updateDirty();setTool("select");setZoom(fitZoom());
     get("ys-save").disabled=false;get("ys-message").hidden=true;renderElementTree();
   }
-  window.YaraSketchEditor={mount};
+  window.AgataSketchEditor={mount};
 })();

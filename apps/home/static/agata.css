@@ -1,0 +1,105 @@
+/* Tema Picadeiro Pop inspirado no protótipo do usuário: sem recursos externos. */
+#agata-home{--cream:#FFF9EF;--paper:#fff;--cyan:#96E6EC;--blue:#53AFF2;--pink:#FFCCCF;
+  --mint:#B9EFC1;--yellow:#FFE28A;--lilac:#BCACF5;--ink:#242424;
+  font:14px "Comic Sans MS","Trebuchet MS",system-ui,sans-serif;color:var(--ink);
+  background:#fff;min-height:100vh;width:100%;padding:clamp(8px,2.3vw,30px)}
+#agata-home *,#agata-home *::before,#agata-home *::after{box-sizing:border-box}
+#agata-home [hidden]{display:none!important}
+#agata-home button,#agata-home input,#agata-home select{font:inherit}
+#agata-home button{cursor:pointer;color:var(--ink)}
+#agata-home button:disabled{cursor:not-allowed;opacity:.55}
+#agata-home :is(button,input,select):focus-visible{outline:3px solid var(--blue);outline-offset:3px}
+#agata-home .agata-shell{max-width:1430px;min-height:calc(100vh - 60px);margin:auto;
+  display:grid;grid-template-columns:220px minmax(0,1fr);gap:14px;
+  padding:10px;background:var(--cream);border:2px solid var(--ink);border-radius:25px}
+#agata-home .agata-sidebar{background:var(--cyan);border-radius:18px;padding:22px 11px;
+  display:flex;flex-direction:column;gap:25px;min-width:0}
+#agata-home .agata-logo{display:flex;align-items:center;gap:7px;font-size:23px;font-weight:800;
+  padding:0 12px}
+#agata-home .agata-logo small{font-size:10px;letter-spacing:2px;margin-left:auto}
+#agata-home .agata-logo-star{background:var(--yellow);border:2px solid var(--ink);
+  border-radius:50%;font-size:20px;width:35px;height:35px;text-align:center}
+#agata-home .agata-nav{display:flex;flex-direction:column;gap:7px}
+#agata-home .agata-nav button{border:2px solid transparent;background:transparent;
+  border-radius:11px;text-align:left;padding:11px 12px;transition:background .13s}
+#agata-home .agata-nav button:hover:not(:disabled){background:#ffffff80}
+#agata-home .agata-nav button.active{background:var(--blue);border-color:var(--ink);
+  box-shadow:2px 3px 0 #24242433;font-weight:800}
+#agata-home .agata-soon{font-size:9px;margin-left:4px}
+#agata-home .agata-side-bottom{margin-top:auto;display:flex;gap:11px;align-items:center;
+  font-size:11px;padding:10px 8px}
+#agata-home .agata-side-bubble{border:2px solid var(--ink);border-radius:50%;
+  background:var(--yellow);font-size:24px;width:37px;height:37px;text-align:center}
+#agata-home .agata-main{background:var(--paper);border:2px solid var(--ink);
+  border-radius:22px;min-width:0;padding:clamp(17px,3vw,45px);display:flex;
+  flex-direction:column;gap:22px}
+#agata-home .agata-welcome{background:var(--yellow);border:2px solid var(--ink);
+  border-radius:25px;min-height:190px;padding:26px;display:flex;align-items:center;
+  gap:22px;position:relative}
+#agata-home .agata-smile{flex:0 0 auto;font-family:Arial,sans-serif;font-size:53px;text-align:center;
+  line-height:72px;width:78px;height:78px;border:2px solid var(--ink);border-radius:50%;
+  background:#ffe48b}
+#agata-home .agata-welcome h1{font-size:clamp(22px,2.4vw,33px);line-height:1.24;margin:6px 0 9px}
+#agata-home .agata-welcome p{margin:0;max-width:450px}
+#agata-home .agata-welcome small,#agata-home .agata-heading small,
+#agata-home .agata-dialog small{font-size:10px;font-weight:800;letter-spacing:1.1px}
+#agata-home .agata-create-hero{margin-left:auto;align-self:flex-end;border:2px solid var(--ink);
+  border-radius:11px;padding:10px 12px;background:var(--cream);white-space:nowrap;font-weight:700}
+#agata-home .agata-heading{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-bottom:14px}
+#agata-home .agata-heading h2{font-size:23px;margin:3px 0}
+#agata-home .agata-heading>button{border:2px solid var(--ink);border-radius:10px;
+  background:var(--cream);padding:8px 13px}
+#agata-home .agata-project-list{border:2px solid var(--ink);border-radius:23px;
+  overflow:hidden;background:var(--pink);min-height:150px}
+#agata-home .agata-project-card{display:grid;grid-template-columns:115px minmax(0,1fr) minmax(160px,.7fr);
+  align-items:center;text-align:left;min-height:125px;width:100%;padding:0;
+  background:var(--pink);border:0;border-bottom:2px solid var(--ink)}
+#agata-home .agata-project-card:last-child{border-bottom:0}
+#agata-home .agata-project-card:hover{background:#ffe0df}
+#agata-home .agata-project-preview{display:flex;align-items:center;justify-content:center;height:100%;padding:13px}
+#agata-home .agata-mini-device{width:46px;height:78px;background:var(--cream);border:2px solid var(--ink);
+  border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:28px}
+#agata-home .agata-project-name{font-weight:800;font-size:clamp(17px,2vw,25px);
+  overflow:hidden;text-overflow:ellipsis}
+#agata-home .agata-project-meta{align-self:stretch;border-left:2px solid var(--ink);
+  padding:15px;display:flex;flex-direction:column;justify-content:space-between;gap:10px;font-size:13px}
+#agata-home .agata-project-meta small{align-self:flex-end;font-size:11px}
+#agata-home .agata-empty{display:flex;flex-direction:column;gap:12px;align-items:center;
+  justify-content:center;padding:40px 20px;text-align:center}
+#agata-home .agata-empty button{background:var(--yellow);border:2px solid var(--ink);
+  padding:10px 20px;border-radius:12px}
+#agata-home .agata-preset-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+#agata-home .agata-preset-grid button{display:flex;align-items:center;gap:15px;flex-wrap:wrap;
+  background:var(--pink);border:2px solid var(--ink);border-radius:16px;padding:20px;
+  text-align:left}
+#agata-home .agata-preset-grid button:nth-child(2){background:var(--cyan)}
+#agata-home .agata-preset-grid button:nth-child(3){background:var(--lilac)}
+#agata-home .agata-preset-grid button:nth-child(4){background:var(--mint)}
+#agata-home .agata-preset-grid button span{font-size:32px}
+#agata-home .agata-preset-grid button small{width:100%}
+#agata-home .agata-honest-note{font-size:12px;line-height:1.6}
+#agata-home .agata-error{background:var(--pink);border:2px solid #a93131;
+  padding:10px 14px;border-radius:10px}
+#agata-home .agata-dialog{border:2px solid var(--ink);background:var(--cream);
+  border-radius:20px;width:min(500px,94vw);padding:24px;color:var(--ink);box-shadow:8px 10px 0 #1b1b1b30}
+#agata-home .agata-dialog::backdrop{background:#1119}
+#agata-home .agata-dialog header{display:flex;justify-content:space-between;gap:15px}
+#agata-home .agata-dialog header h2{font-size:26px;margin:3px 0 16px}
+#agata-home .agata-dialog header button{border:2px solid var(--ink);border-radius:50%;
+  background:var(--pink);width:32px;height:32px}
+#agata-home .agata-dialog form{display:flex;flex-direction:column;gap:14px}
+#agata-home .agata-dialog label{display:flex;flex-direction:column;gap:6px;font-weight:700}
+#agata-home .agata-dialog input,#agata-home .agata-dialog select{
+  min-height:39px;border:2px solid var(--ink);border-radius:9px;background:white;padding:7px 9px}
+#agata-home .agata-field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+#agata-home .agata-dialog footer{display:flex;gap:10px;justify-content:flex-end;margin-top:8px}
+#agata-home .agata-dialog footer button{padding:10px 14px;border:2px solid var(--ink);border-radius:10px}
+#agata-home .agata-btn-outline{background:white}#agata-home .agata-btn-yellow{background:var(--yellow);font-weight:800}
+@media(max-width:900px){#agata-home .agata-shell{grid-template-columns:170px 1fr}
+#agata-home .agata-welcome{flex-wrap:wrap}#agata-home .agata-create-hero{margin-left:0}}
+@media(max-width:680px){#agata-home .agata-shell{grid-template-columns:1fr}
+#agata-home .agata-sidebar{gap:10px}#agata-home .agata-nav{flex-direction:row;flex-wrap:wrap}
+#agata-home .agata-nav button{padding:7px}#agata-home .agata-side-bottom{display:none}
+#agata-home .agata-project-card{grid-template-columns:66px 1fr;gap:5px}
+#agata-home .agata-project-meta{grid-column:1/-1;border-left:0;border-top:1px solid var(--ink);padding:8px 15px}
+#agata-home .agata-preset-grid{grid-template-columns:1fr}}

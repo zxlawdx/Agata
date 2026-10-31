@@ -1,6 +1,6 @@
 /* Entra/sai de um componente preservando coordenadas absolutas e associação.
    Dependência: Fabric.js 5.3 — util.applyTransformToObject e Group. */
-window.YaraComponentEditing=(()=>{
+window.AgataComponentEditing=(()=>{
  "use strict";
  let counter=0;
  const makeId=()=> "component_"+Date.now().toString(36)+"_"+(++counter).toString(36);
@@ -28,9 +28,9 @@ window.YaraComponentEditing=(()=>{
      if(child.componentRole)object.componentRole=child.componentRole;
      return object;
    });
-   // Compatibilidade com componentes já salvos pela primeira versão do Yara.
+   // Compatibilidade com componentes já salvos pela primeira versão do Agata.
    // Antigos rótulos continham ícones e itens unidos num único Text.
-   const factory=window.YaraSketchComponents;
+   const factory=window.AgataSketchComponents;
    const attach=object=>{
      object.componentParentId=componentId;
      object.layerId=group.layerId;

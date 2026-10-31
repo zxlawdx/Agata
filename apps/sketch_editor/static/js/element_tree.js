@@ -1,7 +1,7 @@
-/* Hierarquia de objetos do editor Yara — modelo independente de HTML e eventos.
+/* Hierarquia de objetos do editor Agata — modelo independente de HTML e eventos.
    Base conceitual: árvores de nós de Craft.js e Layer Manager do GrapesJS.
    Os objetos continuam sendo entidades Fabric; não há dependência React. */
-window.YaraElementTree = (() => {
+window.AgataElementTree = (() => {
   "use strict";
   const ids = new WeakMap();
   let count=0;

@@ -1,4 +1,4 @@
-"""Rota visual da página inicial do Yara."""
+"""Rota visual da página inicial do Agata."""
 from apps.home.views.home import home_view
 
 

@@ -29,8 +29,8 @@ vm.createContext(context);
 for(const file of ["components.js","component_edit.js"]){
   vm.runInContext(fs.readFileSync("apps/sketch_editor/static/js/"+file,"utf8"),context);
 }
-const factory=context.window.YaraSketchComponents;
-const edit=context.window.YaraComponentEditing;
+const factory=context.window.AgataSketchComponents;
+const edit=context.window.AgataComponentEditing;
 class FakeCanvas {
  constructor(objects){this.objects=[...objects];}
  getObjects(){return this.objects;}

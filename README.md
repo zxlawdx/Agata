@@ -1,160 +1,97 @@
-# Yara — visual workspace
+# Agata — Estúdio criativo 🎪
 
-Yara é uma aplicação desktop para criação visual, construída com [Vela Framework](https://github.com/zxlawdx/Vela-framework) (Python + WebView + HTML/CSS/JavaScript).
+**Agata** é um aplicativo desktop de desenho, esboços e design visual, desenvolvido em homenagem à esposa do autor. Seu visual *Picadeiro Pop* combina formas arredondadas, contornos escuros e uma paleta alegre. É desenvolvido em Python, [Vela Framework](https://github.com/zxlawdx/Vela-framework), HTML, CSS, JavaScript e Fabric.js.
 
-## Primeira etapa: home e projetos
+Repositório oficial: **https://github.com/zxlawdx/Agata**
 
-- Tela inicial no estilo de aplicativo criativo, com Novo projeto e Projetos recentes.
-- Painel lateral com Início e Projetos.
-- Cards para Esboço, Interface e SVG. Interface e SVG estão sinalizados como Em breve.
-- Formulário de criação de projeto de esboço com nome, plataforma e resolução.
-- Leitura, listagem e criação de projetos locais por Bridge Python/JavaScript.
-- Identidade visual do Lunacy: #1A1C1C, #0097A7, #B2EBF2, branco e tipografia Inter com fallback do sistema.
-- Arquitetura separada: views, services, repositories e contrato de persistência.
+## Paleta Picadeiro Pop
 
-O editor real de esboços ainda não faz parte desta etapa. Ao abrir um projeto, a home mostra seus detalhes. A manipulação em Canvas e a edição com mesa digitalizadora serão desenvolvidas na próxima entrega.
+| Cor | Hex |
+|---|---|
+| Azul picadeiro | `#53AFF2` |
+| Ciano algodão-doce | `#96E6EC` |
+| Rosa chiclete | `#FFCCCF` |
+| Verde menta | `#B9EFC1` |
+| Amarelo pipoca | `#FFE28A` |
+| Lilás fantasia | `#BCACF5` |
+| Creme baunilha | `#FFF9EF` |
 
-## Executar em Linux
+## Funcionalidades implementadas
 
-Clone o repositório e use a branch feat/home-workspace:
+- Workspace com projetos recentes e criação de projetos.
+- Modelos de **prancheta vazia** Android, Web, SVG e Tablet.
+- Ferramentas de desenho: seleção, caneta, texto editável, retângulo, elipse, triângulo, losango, linha e borracha por objeto.
+- Componentes de interface editáveis: botão, cartão, entrada de texto, top bar, sidebar e bottom bar.
+- Camadas com visibilidade, bloqueio, isolamento, duplicação, ordem e renomeação.
+- Árvore de objetos e edição de partes dos componentes.
+- Zoom, alinhamento, grade visual, desfazer/refazer, salvamento local JSON.
+- Exportação SVG/PNG/JSON em `~/Agata/Exports`.
 
-    git clone https://github.com/zxlawdx/Yara.git
-    cd Yara
-    git switch feat/home-workspace
+**Em desenvolvimento:** editor SVG avançado com curvas Bézier e pontos, editor de fluxo de apps, exportação de layouts Android XML, HTML/CSS e importação de modelos completos. A seleção de formato SVG atualmente oferece ferramentas vetoriais básicas e exportação SVG.
 
-Instale o Vela com backend gráfico conforme a documentação do próprio framework. Para um ambiente virtual Linux usando Qt6:
-
-    python3 -m venv .venv
-    source .venv/bin/activate
-    python -m pip install "vela-framework[qt6] @ git+https://github.com/zxlawdx/Vela-framework.git"
-    python manage.py collectstatic --no-tailwind --no-install
-    python manage.py runapp
-
-O sistema pode exigir bibliotecas Qt6 específicas, conforme a distribuição Linux. Uma instalação sem extras GUI não é suficiente para abrir a WebView.
-
-## Testes
-
-    python -m unittest discover -s tests -v
-    python -m compileall -q apps config manage.py
-    node --check apps/home/static/yara.js
-
-O workflow do GitHub Actions executa esses testes. A validação visual nativa do Linux ainda precisa ser feita no computador do desenvolvedor.
-
-## Dados locais
-
-Os projetos ficam em:
-
-    ~/Yara/Projetos/<id>/project.json
-
-O identificador de pasta é um UUID aleatório validado no backend. O nome fornecido pelo usuário não é usado diretamente no caminho. Os arquivos são salvos com substituição atômica no mesmo diretório.
-
-## Módulos
-
-- config/ — VelaApp, configurações e YaraBridge.
-- apps/home/ — view e interface da tela inicial.
-- apps/workspace/services/ — regras de validação e criação.
-- apps/workspace/repositories/ — interface abstrata e persistência JSON.
-- tests/ — testes de serviços sem dependência de interface gráfica.
-
-## Próximas entregas
-
-1. Prancheta de esboços com Fabric.js e dimensões de dispositivo.
-2. Ferramentas de desenho livres, formas, mesa digitalizadora e persistência de objetos.
-3. Bibliotecas de componentes e paletas.
-4. Editor SVG e editor de interfaces com exportadores separados.
-
-Este repositório consome o Vela como dependência sem alterar o código-fonte do framework.
-
-
-## Etapa 2 — Editor de esboços (branch `feat/sketch-editor`)
-
-A home abre o editor após criar um projeto; clicar num projeto existente também o abre.
-O editor oferece ferramentas de seleção, caneta para mouse/mesa digitalizadora,
-borracha por objeto, texto editável, retângulo, elipse, linha, componentes de interface,
-zoom, desfazer/refazer, propriedades e camadas com visibilidade, bloqueio, isolamento,
-duplicação e reordenação. As posições são expressas nas dimensões lógicas da prancheta.
-
-**Preparação obrigatória do motor local de desenho** (uma vez por checkout):
+## Executar no Linux
 
 ```bash
+git clone https://github.com/zxlawdx/Agata.git
+cd Agata
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install "vela-framework[qt6] @ git+https://github.com/zxlawdx/Vela-framework.git"
 npm install --ignore-scripts
 npm run vendor
 python manage.py runapp
 ```
 
-O Fabric.js 5.3.0 é usado como dependência de build. O arquivo distribuído fica em
-`apps/sketch_editor/static/vendor/fabric.js` (não versionado); depois de preparado
-o Yara funciona sem internet. Sem esse arquivo, o editor mostra um erro explícito.
+Fabric.js é copiado para os arquivos estáticos locais por `npm run vendor`. A operação da ferramenta após essa preparação não precisa de CDN.
 
-Use a camada selecionada para inserir elementos, o cadeado para travar e o olho
-para ocultar. O ícone de alvo isola visualmente uma camada. A borracha apaga objetos
-inteiros, não pixels individuais. A escrita à mão funciona como traços de caneta;
-sensibilidade à pressão real ainda precisa ser verificada com a mesa digitalizadora no Linux.
+### Se você já tinha o Yara clonado
 
-**Salvar** ou Ctrl+S grava em `~/Yara/Projetos/<id>/project.json`. A edição
-ainda é por uma tela por projeto. XML, HTML e ferramentas vetoriais avançadas
-não fazem parte desta etapa.
-
-Validação: `python -m unittest discover -s tests -v`,
-`node --test tests/sketch_core.test.cjs`, `npm run check:js` e testes
-manuais na WebView Qt6 e com a caneta física.
-
-
-### Corrigindo erro 404 de `sketch_core.js`
-
-Os arquivos JavaScript do editor ficam em `apps/sketch_editor/static/js/` e
-são servidos pelo Vela em `/__vela__/static/sketch_editor/js/`.
-Após atualizar o código, se necessário execute:
+O GitHub foi renomeado. No diretório existente execute, **depois de preservar ou guardar suas alterações locais**:
 
 ```bash
+git remote set-url origin https://github.com/zxlawdx/Agata.git
+git fetch origin
+git switch main
+git pull --ff-only origin main
 npm run vendor
-python manage.py collectstatic --no-tailwind --no-install
 python manage.py runapp
 ```
 
-A CI verifica cada referência `static(...)` dos templates, inclusive o arquivo
-Fabric criado pelo NPM. Isso evita regressões de caminho para recursos estáticos.
+Não é obrigatório renomear a pasta local `Yara`; o título da janela e os textos do programa serão **Agata**. Não use `git reset --hard` para atualizar o checkout se tiver edições próprias.
 
+## Projetos locais e compatibilidade
 
-## Componentes internos editáveis
+Os **novos** projetos são gravados em:
 
-A partir da entrega "component parts", os componentes são grupos vetoriais de partes
-reais: cada ícone é um Path Fabric, cada texto é IText e cada fundo é Rect.
-Clique em um componente e em **Editar partes** (ou dê dois cliques).
-Durante a edição, ajuste o texto no painel ou diretamente sobre o Canvas, mova
-o ícone independentemente, ou adicione outro ícone com **+ Ícone**.
+```text
+~/Agata/Projetos/<id>/project.json
+```
 
-**Vincular** incorpora um objeto independente da mesma camada ao componente em edição.
-**Desvincular** devolve o objeto selecionado à prancheta, independente do conjunto.
-**Concluir edição** recompõe o grupo; depois disso, arrastar o botão ou top bar
-também arrasta ícones e textos vinculados. O grupo é serializado como parte do projeto.
+Os projetos criados com a marca anterior continuam acessíveis em:
 
-A edição interna é tratada como uma única transação no histórico. Use Concluir
-para fechar a edição e depois Ctrl+Z para desfazer o conjunto de alterações.
-O salvar fecha automaticamente a edição interna antes de persistir o JSON.
+```text
+~/Yara/Projetos/<id>/project.json
+```
 
- 
-### Inspetor hierárquico (base conceitual Craft.js e GrapesJS)
+Os diretórios antigos **não são apagados, copiados ou migrados automaticamente**. A listagem combina os dois; ao salvar um projeto legado, o arquivo é atualizado na pasta original. O aplicativo mantém reconhecimento das extensões `.agata` e `.yara`.
 
-O editor apresenta uma árvore de objetos por camada no lado esquerdo.
-Clique numa parte de um componente fechado: o Yara abre a edição interna e
-seleciona o texto, o ícone ou o fundo escolhido. Os botões de alinhamento e a
-ordem de objetos operam apenas sobre o objeto da camada ativa. Um clique
-duplo em um texto interno (ou F2) inicia a edição; o campo **Texto selecionado**
-também permite alterar o conteúdo. A cor, fonte e o arredondamento são
-editáveis quando se aplicam ao elemento selecionado.
+Os arquivos exportados são armazenados em `~/Agata/Exports`.
 
-Na edição interna, ícones vetoriais são escolhidos pelo seletor
-(Menu, Início, Grade, Configurações ou Adicionar) e inseridos como
-objetos independentes. O botão **Concluir edição** transforma as partes
-novamente em um grupo. Ctrl+D duplica, Esc sai da seleção ou da edição
-interna. Os controles estão ligados ao JavaScript e recebem testes de
-contrato com `node --test tests/editor_controls.test.cjs`.
+## Arquitetura
 
-Esta entrega **não usa React, Craft.js ou GrapesJS diretamente**. Ela
-implementa seus conceitos de árvore de elementos e inspetor sobre o
-modelo existente do Fabric.js e a Bridge do Vela, sem copiar código
-de outros editores. Exportação Web/Android fica para outra etapa.
+- `apps/home`: Workspace, visual Picadeiro Pop e criação de projetos.
+- `apps/workspace`: modelos, serviços e persistência JSON com suporte legado.
+- `apps/sketch_editor`: Fabric.js, desenho, texto, componentes, camadas, propriedades, exportações.
+- `config`: Vela, `AgataBridge` e configurações desktop.
+- `tests`: regras de domínio, modelos gráficos, controles de interface e compatibilidade dos projetos.
 
-A WebView desktop e a mesa digitalizadora ainda requerem validação
-manual no Linux antes do merge.
+## Testes
+
+```bash
+python -m unittest discover -s tests -v
+python -m compileall -q apps config manage.py
+npm run check:js
+node --test tests/*.test.cjs
+```
+
+O GitHub Actions realiza os testes automatizados, mas eles não substituem a verificação manual da interface na WebView Linux e com mesa digitalizadora.
