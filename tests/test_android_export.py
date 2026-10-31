@@ -79,6 +79,10 @@ class AndroidExportTests(unittest.TestCase):
         for kind in REGISTRY:
             if kind=='Image':continue
             doc=new_document();doc['screens'][0]['root']['children']=[new_node(kind)]
+            if kind in {'Guideline','Barrier'}:
+                parent=new_node('ConstraintLayout');target=new_node('TextLabel');helper=new_node(kind)
+                if kind=='Barrier':helper['props']['references']=target['id']
+                parent['children']=[target,helper];doc['screens'][0]['root']=parent
             for backend in ['compose','xml']:
                 files=generate(doc,backend)
                 for path,content in files.items():

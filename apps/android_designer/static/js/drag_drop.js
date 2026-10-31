@@ -32,7 +32,7 @@ window.AgataDragDrop={mount(root,{model,selection,registry,commit,notify,isDesig
   return nodes.length>0&&nodes.every(n=>model.accepts(target.parent,n)&&(!n.id||(!model.contains(n.id,target.parent.id)&&!model.locked(n.id)&&model.find(n.id)?.parent)));
  }
  on(root,'pointerdown',event=>{
-  if(event.button!==0||!isDesign()||event.target.closest('input,textarea,select,.ad-frame-title'))return;
+  if(event.button!==0||!isDesign()||event.target.closest('input,textarea,select,.ad-frame-title,.ad-constraint-anchor,.ad-constraint-lines'))return;
   const palette=event.target.closest('[data-palette-kind]'),resize=event.target.closest('[data-resize-node]'),handle=event.target.closest('[data-drag-node]'),node=event.target.closest('[data-node-id]');
   const id=resize?.dataset.resizeNode||handle?.dataset.dragNode||node?.dataset.nodeId;
   if(!palette&&!id)return;if(id&&model.locked(id)){notify('Componente bloqueado.',true);return;}
@@ -58,10 +58,10 @@ window.AgataDragDrop={mount(root,{model,selection,registry,commit,notify,isDesig
    if(current.resize){model.resizeNode(current.resize,current.size.width,current.size.height);}
    else{
     session=current;const validDrop=valid(current.target);session=null;if(!validDrop)throw Error('Destino não aceita a operação.');
-    const t=current.target;if(current.kind){const n=window.AgataUIModel.node(registry,current.kind);if(t.parent.type==='Box'&&t.parent.layout.mode==='free')Object.assign(n.layout,t.position,{width:120,height:48});model.insertNode(t.parent.id,n,t.index);}
+    const t=current.target;if(current.kind){const n=window.AgataUIModel.node(registry,current.kind);if(n.type==='Barrier')n.props.references=t.parent.children.filter(c=>!['Guideline','Barrier'].includes(c.type)).map(c=>c.id).join(' ');if(t.parent.type==='Box'&&t.parent.layout.mode==='free')Object.assign(n.layout,t.position,{width:120,height:48});model.insertNode(t.parent.id,n,t.index);}
     else model.moveNodes(current.ids,t.parent.id,t.index,t.position);
    }
-   commit();
+   commit();if(!current.resize&&current.target?.parent.type==='ConstraintLayout')root.dispatchEvent(new CustomEvent('agata:constraint-drop',{detail:{parent:current.target.parent.id,ids:current.kind?current.target.parent.children.slice(current.target.index,current.target.index+1).map(n=>n.id):current.ids,position:current.target.position}}));
   }catch(error){session=null;notify(error.message,true);}
  }
  on(root,'pointerup',event=>finish(event));on(root,'pointercancel',event=>finish(event,true));

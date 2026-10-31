@@ -100,3 +100,13 @@ O GitHub Actions realiza os testes automatizados, mas eles não substituem a ver
 O editor Android possui drag-and-drop da biblioteca/árvore/canvas, histórico atômico,
 Auto Layout, Box livre e regras por classe de janela no IR v2. Consulte o
 [guia](docs/ANDROID_GUIDE.md) e a [arquitetura, pesquisa e limites](docs/DRAG_DROP_RESPONSIVE_ARCHITECTURE.md).
+
+## Constraints, regiões e tutorial Android
+
+Na criação, escolha **Meu Primeiro Aplicativo Android** para abrir um projeto editável com
+três Screens. O IR v3 acrescenta âncoras visuais, bias, guidelines, barriers, regiões e camadas.
+O botão **Ajuda · Tutorial** inicia/retoma as práticas. Veja o
+[passo a passo](docs/tutorials/MEU_PRIMEIRO_APP.md),
+[constraints e camadas](docs/tutorials/CONSTRAINTS_E_CAMADAS.md),
+[exportação](docs/tutorials/EXPORTANDO_ANDROID.md) e
+[arquitetura e limites](docs/CONSTRAINTS_REGIONS_TUTORIAL_ARCHITECTURE.md).

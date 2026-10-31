@@ -9,6 +9,10 @@ ET.register_namespace('android',A);ET.register_namespace('app',APP)
 
 class XmlGenerator(ComposeGenerator):
     def view(self,n,parent_type=None):
+        if n['type']=='ConstraintLayout':
+            from .constraints import xml_container
+            return xml_container(self,n)
+        if n['type']=='Region':return self.view({**n,'type':'Row' if n['props'].get('orientation')=='horizontal' else 'Column'},parent_type)
         if n['type']=='Surface':return self.view({**n,'type':'Card','props':{**n['props'],'variant':'filled','elevation':0}},parent_type)
         if n['type']=='ScrollContainer':return self.view({**n,'type':'Column'},parent_type)
         if n['type']=='IconButton':return self.view({**n,'type':'Button'},parent_type)
@@ -23,6 +27,7 @@ class XmlGenerator(ComposeGenerator):
         v=ET.Element(tag,{f'{{{A}}}id':'@+id/'+n['id'],f'{{{A}}}layout_width':size('width'),f'{{{A}}}layout_height':size('height')})
         def attr(k,val):v.set('{'+A+'}'+k,str(val))
         def app(k,val):v.set('{'+APP+'}'+k,str(val))
+        if n.get('_layer'):attr('translationZ',f"{n['_layer']['order']}dp");attr('alpha',n['_layer']['opacity'])
         if not layout['visible']:attr('visibility','gone')
         if kind=='Grid':attr('columnCount',layout['columns'])
         if kind=='Divider':attr('background','#CCCCCC')
@@ -96,7 +101,7 @@ class XmlGenerator(ComposeGenerator):
                     if l['anchorX']=='fill':child.set('{'+A+'}layout_width','match_parent')
                     if l['anchorY']=='fill':child.set('{'+A+'}layout_height','match_parent')
                 v.append(child)
-        if layout['maxWidth']<4096 or layout['maxHeight']<4096 or layout['aspectRatio']:
+        if parent_type!='ConstraintLayout' and (layout['maxWidth']<4096 or layout['maxHeight']<4096 or layout['aspectRatio']):
             wrapper=ET.Element('androidx.constraintlayout.widget.ConstraintLayout',{f'{{{A}}}layout_width':size('width'),f'{{{A}}}layout_height':size('height')})
             for key in ['layout_weight','layout_columnWeight']:
                 value=v.attrib.pop('{'+A+'}'+key,None)

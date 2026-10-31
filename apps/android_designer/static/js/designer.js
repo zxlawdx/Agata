@@ -10,7 +10,7 @@ window.AgataAndroidDesigner={async mount(root){
  const model=new M.Document(loaded.document,registry);let revision=loaded.revision,screenId=model.value.start_screen;
  let selected=new Set(),clipboard=[],mode='design',zoom=model.value.viewport?.zoom||.8,showLinks=true,disposed=false,saving=false;
  let previewStack=[model.value.start_screen],previewState={},files={},filePath='',codeEditor=null,codeUpdating=false,customMode=false,generation=0,modelDraft=null,modelDraftBase='',generationTimer=null;
- let dragController=null,previewObserver=null,panelObservers=[],previewWidth=390,previewHeight=844,fontScale=1,responsiveScope='base';const collapsed=new Set();
+ let constraintMode=false,constraintEditor=null,tour=null;let dragController=null,previewObserver=null,panelObservers=[],previewWidth=390,previewHeight=844,fontScale=1,responsiveScope='base';const collapsed=new Set();
  const screen=()=>model.value.screens.find(s=>s.id===screenId)||model.value.screens[0];
  const chosen=()=>[...selected].map(id=>model.find(id)).filter(Boolean);
  function dirty(){ $('ad-dirty').textContent=model.dirty?'● Alterações não salvas':'✓ Salvo';$('ad-undo').disabled=!model.past.length;$('ad-redo').disabled=!model.future.length; }
@@ -18,7 +18,7 @@ window.AgataAndroidDesigner={async mount(root){
  function selectNode(id,multi=false){if(!multi)selected.clear();if(multi&&selected.has(id))selected.delete(id);else selected.add(id);const found=model.find(id);if(found)screenId=found.screen.id;render();}
  function selectScreen(id){screenId=id;selected.clear();render();}
  function render(){
-  if(disposed)return;dirty();renderScreens();renderTree();renderWorkspace();renderInspector();
+  if(disposed)return;dirty();renderScreens();renderTree();renderLayers();renderWorkspace();renderInspector();requestAnimationFrame(()=>constraintEditor?.redraw());
   if(mode==='preview')renderPreview();
   if(mode==='split'){clearTimeout(generationTimer);generationTimer=setTimeout(generate,250);}
  }
@@ -46,7 +46,7 @@ window.AgataAndroidDesigner={async mount(root){
    const title=R.el('button','ad-frame-title',item.name);title.type='button';title.title='Arraste para mover a Screen';
    title.onclick=()=>selectScreen(item.id);title.onpointerdown=e=>moveScreen(e,item,frame);
    const content=R.el('div','ad-screen-content');content.style.height=item.height+'px';
-   content.append(R.render(item.root,{width:item.width,height:item.height,selected,select:selectNode,editText:n=>{const value=window.prompt('Editar texto',n.props.text);if(value!==null)transact(()=>n.props.text=value);}}));
+   content.append(R.render(AgataConstraints.layered(item).root,{width:item.width,height:item.height,selected,select:selectNode,editText:n=>{const value=window.prompt('Editar texto',n.props.text);if(value!==null)transact(()=>n.props.text=value);}}));
    frame.append(title,content);host.append(frame);
   }
   $('ad-space').style.width=maxX*zoom+'px';$('ad-space').style.height=maxY*zoom+'px';
@@ -63,6 +63,37 @@ window.AgataAndroidDesigner={async mount(root){
   for(const [id,point] of scrolls){const e=host.querySelector(`[data-node-id="${id}"]`);if(e){e.scrollTop=point.y;e.scrollLeft=point.x;}}
   $('ad-zoom').value=Math.round(zoom*100)+'%';
  }
+
+ function renderConstraints(host,current){
+  const n=current.node;if(current.parent?.type!=='ConstraintLayout')return;
+  const section=R.el('details','ad-inspector-section');section.open=true;section.append(R.el('summary','','Constraints · layout'));host.append(section);
+  for(const anchor of ['start','end','top','bottom',...(n.type==='TextLabel'?['baseline']:[])]){
+   const row=R.el('div','ad-constraint-field'),link=n.layout.constraints[anchor];row.append(R.el('span','',anchor));
+   const target=R.el('select');target.dataset.linkTarget=anchor;target.setAttribute('aria-label','Alvo '+anchor);
+   for(const [value,label] of [['','Livre'],['parent','Pai'],...current.parent.children.filter(c=>c!==n).map(c=>[c.id,c.name])]){const o=R.el('option','',label);o.value=value;target.append(o);}target.value=link?.target||'';
+   const edge=R.el('select');edge.dataset.linkAnchor=anchor;edge.setAttribute('aria-label','Âncora destino '+anchor);for(const a of anchor==='baseline'?['baseline']:['start','end'].includes(anchor)?['start','end']:['top','bottom']){const o=R.el('option','',a);o.value=a;edge.append(o);}edge.value=link?.anchor||anchor;
+   const margin=R.el('input');margin.type='number';margin.min=0;margin.max=4096;margin.value=link?.margin||0;margin.setAttribute('aria-label','Margem '+anchor);margin.dataset.linkMargin=anchor;
+   const update=()=>{try{model.setConstraint(n.id,anchor,target.value?{target:target.value,anchor:edge.value,margin:Number(margin.value)}:null);document.dispatchEvent(new CustomEvent('agata:action',{detail:'constraint'}));render();}catch(e){message(e.message,true);render();}};target.onchange=edge.onchange=margin.onchange=update;row.append(target,edge,margin);section.append(row);
+  }
+  for(const key of ['horizontalBias','verticalBias']){const control=R.el('input');control.type='range';control.min=0;control.max=1;control.step=.01;control.value=n.layout[key];control.setAttribute('aria-label','Ajustar '+key);control.onchange=()=>transact(()=>n.layout[key]=Number(control.value));section.append(control);}
+  const action=R.el('button','','Centralizar com bias 0,5');action.onclick=()=>{try{model.centerNode(n.id);document.dispatchEvent(new CustomEvent('agata:action',{detail:'center'}));render();}catch(e){message(e.message,true);}};section.append(action);
+  const free=R.el('button','','Manter posição livre (remover links)');free.onclick=()=>{const view=root.querySelector(`#ad-frames [data-node-id="${n.id}"]`);const x=view?.offsetLeft||0,y=view?.offsetTop||0;transact(()=>{n.layout.constraints={};n.layout.x=x;n.layout.y=y;});};section.append(free);
+  if(model.locked(n.id))for(const input of section.querySelectorAll('input,select,button'))input.disabled=true;
+  requestAnimationFrame(()=>{const element=root.querySelector(`#ad-frames [data-node-id="${current.parent.id}"]`);for(const warning of element?._constraintWarnings||[]){const p=R.el('p','ad-constraint-warning',warning.message);section.append(p);}});
+ }
+ function renderLayers(){
+  const host=$('ad-layers');host.replaceChildren();const s=screen();
+  for(const [index,l] of (s.layers||[]).entries()){
+   const row=R.el('div','ad-layer');row.dataset.layerId=l.id;
+   const select=R.el('button','',l.name);select.onclick=()=>{selected=new Set(l.nodes);render();};select.ondblclick=()=>{const name=prompt('Nome da camada',l.name);if(name)transact(()=>l.name=name);};row.append(select);
+   for(const [label,key] of [['Visível','visible'],['Bloqueada','locked']]){const check=R.el('input');check.type='checkbox';check.checked=l[key];check.setAttribute('aria-label',label+' '+l.name);check.onchange=()=>transact(()=>l[key]=check.checked);row.append(check);}
+   const opacity=R.el('input');opacity.type='range';opacity.min=0;opacity.max=1;opacity.step=.05;opacity.value=l.opacity;opacity.setAttribute('aria-label','Opacidade '+l.name);opacity.onchange=()=>transact(()=>l.opacity=Number(opacity.value));row.append(opacity);
+   for(const [label,step] of [['↑',-1],['↓',1]]){const b=R.el('button','',label);b.setAttribute('aria-label','Mover camada '+label);b.onclick=()=>transact(()=>{const next=Math.max(0,Math.min(s.layers.length-1,index+step));s.layers.splice(index,1);s.layers.splice(next,0,l);});row.append(b);}
+   const duplicate=R.el('button','','Duplicar');duplicate.onclick=()=>{try{const sources=model.topNodes(l.nodes);model.transact(()=>{const copies=sources.map(c=>{const node=model.cloneNode(c.node);c.parent.children.push(node);return node.id;});s.layers.push({...M.clone(l),id:M.id('l'),name:l.name+' cópia',nodes:copies});});render();}catch(e){message(e.message,true);}};row.append(duplicate);
+   const remove=R.el('button','','Remover camada');remove.onclick=()=>transact(()=>s.layers=s.layers.filter(x=>x!==l));row.append(remove);host.append(row);
+  }
+ }
+
  function moveScreen(event,item,frame){
   if(event.button!==0)return;event.stopPropagation();const start={x:event.clientX,y:event.clientY,...item.position};const old={...item.position};let position=old;
   frame.setPointerCapture(event.pointerId);
@@ -93,7 +124,7 @@ window.AgataAndroidDesigner={async mount(root){
   const n=current.node;host.append(R.el('h4','',n.type+' · '+n.id.slice(0,12)));
   field(host,'Nome',n.name,v=>n.name=v);
   field(host,'Papel',n.role,v=>n.role=v,['','title','subtitle','navigation','action','header','label','description','icon','leading','trailing','item','content']);
-  const enums={variant:['filled','outlined','text','tonal','elevated'],keyboard:['text','email','number','password','phone'],overflow:['clip','ellipsis'],align:['start','center','end'],icon:['none','menu','back','home','search','close','settings','plus']};
+  const enums={orientation:['horizontal','vertical'],direction:['start','end','top','bottom'],variant:['filled','outlined','text','tonal','elevated'],keyboard:['text','email','number','password','phone'],overflow:['clip','ellipsis'],align:['start','center','end'],icon:['none','menu','back','home','search','close','settings','plus']};
   for(const [key,value] of Object.entries(n.props)){
    if(key==='source'){
     const input=R.el('input');input.type='file';input.accept='image/png';input.setAttribute('aria-label','Imagem PNG local');input.onchange=async()=>{const file=input.files[0];if(!file)return;if(file.size>2_000_000){message('Imagem deve ter até 2 MB.',true);return;}const reader=new FileReader();reader.onload=()=>transact(()=>n.props.source=reader.result);reader.readAsDataURL(file);};host.append(input);
@@ -104,8 +135,8 @@ window.AgataAndroidDesigner={async mount(root){
   const supported=['width','height','minWidth','maxWidth','minHeight','maxHeight','padding','gap','weight','columns','alignment','arrangement','visible','wrap'];
   const currentLayout=responsiveScope==='base'?n.layout:{...n.layout,...n.layout.responsive[responsiveScope]};
   for(const [key,value] of Object.entries(currentLayout)){
-   if(key==='responsive'||responsiveScope!=='base'&&!supported.includes(key))continue;
-   const options={mode:['auto','free'],anchorX:['start','center','end','fill'],anchorY:['top','center','bottom','fill'],alignment:['start','center','end'],arrangement:['start','center','end','spaceBetween'],scroll:['none','vertical','horizontal']}[key];
+   if(['responsive','constraints'].includes(key)||responsiveScope!=='base'&&!supported.includes(key))continue;
+   const options={mode:n.type==='ConstraintLayout'?['constraint']:['auto','free'],anchorX:['start','center','end','fill'],anchorY:['top','center','bottom','fill'],alignment:['start','center','end'],arrangement:['start','center','end','spaceBetween'],scroll:['none','vertical','horizontal']}[key];
    field(host,key,value,v=>{
     const target=responsiveScope==='base'?n.layout:(n.layout.responsive[responsiveScope]??={});
     if(key==='mode'&&v==='free'&&n.type!=='Box')throw Error('Posicionamento livre requer Box.');
@@ -119,7 +150,7 @@ window.AgataAndroidDesigner={async mount(root){
   for(const [value,label] of [['','Sem ação'],['back','Voltar'],...model.value.screens.map(s=>[s.id,s.name])]){const option=R.el('option','',label);option.value=value;actions.append(option);}
   actions.value=n.events.onClick?.action==='back'?'back':n.events.onClick?.target||'';
   actions.onchange=()=>transact(()=>{if(!actions.value)delete n.events.onClick;else n.events.onClick=actions.value==='back'?{action:'back'}:{action:'navigate',target:actions.value};});host.append(actions);
-  groupInspector(host,n);
+  groupInspector(host,n);renderConstraints(host,current);
  }
  function groupInspector(host,node){
   const groups={};const section=name=>{if(groups[name])return groups[name];const details=R.el('details','ad-inspector-section');details.open=true;details.append(R.el('summary','',name));groups[name]=details;host.append(details);return details;};
@@ -150,7 +181,7 @@ window.AgataAndroidDesigner={async mount(root){
  function renderPreview(){
   const active=model.value.screens.find(s=>s.id===previewStack.at(-1))||model.value.screens.find(s=>s.id===model.value.start_screen);
   $('ad-preview-name').value=active.name;$('ad-preview-screen').style.width='100%';$('ad-preview-screen').style.minHeight=previewHeight+'px';$('ad-preview-screen').style.height=previewHeight+'px';$('ad-preview-viewport').style.width=previewWidth+'px';$('ad-preview-viewport').style.height=previewHeight+'px';
-  $('ad-preview-screen').replaceChildren(R.render(active.root,{preview:true,width:previewWidth,height:previewHeight,fontScale,state:previewState,action:e=>{if(e.action==='back'){if(previewStack.length>1)previewStack.pop();}else if(model.value.screens.some(s=>s.id===e.target))previewStack.push(e.target);renderPreview();}}));
+  $('ad-preview-screen').replaceChildren(R.render(AgataConstraints.layered(active).root,{preview:true,width:previewWidth,height:previewHeight,fontScale,state:previewState,action:e=>{if(e.action==='back'){if(previewStack.length>1)previewStack.pop();}else if(model.value.screens.some(s=>s.id===e.target))previewStack.push(e.target);renderPreview();}}));
   requestAnimationFrame(()=>{if(disposed)return;const diagnostics=window.AgataLayout.measure($('ad-preview-screen'));$('ad-layout-diagnostics').replaceChildren(...diagnostics.warnings.map(w=>R.el('li','',w.message)));$('ad-status').textContent=window.AgataLayout.sizeClass(previewWidth)+' · '+diagnostics.warnings.length+' aviso(s) de layout';});
  }
  function ensureEditor(){if(codeEditor)return;codeEditor=window.AgataCodeEditor.create($('ad-code-editor'),(text)=>{
@@ -177,7 +208,7 @@ window.AgataAndroidDesigner={async mount(root){
   $('ad-palette').hidden=!['design','split'].includes(mode);
   $('ad-workspace').hidden=!['design','split'].includes(mode);$('ad-workspace-tools').hidden=!['design','split'].includes(mode);$('ad-code').hidden=!['code','split'].includes(mode);$('ad-preview').hidden=mode!=='preview';
   if(mode==='preview'){previewStack=[model.value.start_screen];previewState={};renderPreview();}
-  if(['code','split'].includes(mode))await generate();
+  constraintEditor?.redraw();if(['code','split'].includes(mode))await generate();
  }
  // One command path per UI action; all edits go through semantic history.
  on($('ad-save'),'click',()=>save().catch(()=>{}));
@@ -190,7 +221,7 @@ window.AgataAndroidDesigner={async mount(root){
  const childOption=R.el('label','','Inserir como filho selecionado '),childCheck=R.el('input');childCheck.type='checkbox';childCheck.id='ad-as-child';childOption.append(childCheck);$('ad-add-component').before(childOption);
  on($('ad-add-component'),'click',()=>{
   let parent=screen().root;if(childCheck.checked){const n=chosen()[0]?.node;if(!n||!registry[n.type].container){message('Selecione um contêiner para inserir filhos.',true);return;}parent=n;}
-  const n=M.node(registry,$('ad-component-kind').value);try{model.insertNode(parent.id,n);selectNode(n.id);}catch(e){message(e.message,true);}
+  const n=M.node(registry,$('ad-component-kind').value);if(n.type==='Barrier')n.props.references=parent.children.filter(c=>!['Guideline','Barrier'].includes(c.type)).map(c=>c.id).join(' ');try{model.insertNode(parent.id,n);selectNode(n.id);}catch(e){message(e.message,true);}
  });
  on($('ad-copy'),'click',()=>{clipboard=chosen().filter(c=>c.parent).map(c=>M.clone(c.node));message('Componentes copiados. Selecione outra Screen para colar.');});
  on($('ad-paste'),'click',()=>{try{model.insertNodes(screen().root.id,clipboard.map(n=>model.cloneNode(n)));render();}catch(e){message(e.message,true);}});
@@ -219,11 +250,11 @@ window.AgataAndroidDesigner={async mount(root){
   model.transact(d=>d.custom_files[$('ad-backend').value+'/'+filePath]=files[filePath]);showFile();dirty();
  });
  on($('ad-apply-model'),'click',async()=>{
-  if($('ad-backend').value!=='model')return;try{if(modelDraft!==null&&modelDraftBase!==JSON.stringify(model.value))throw Error('O Design mudou desde o início deste rascunho. Preserve seu JSON e descarte o rascunho antes de tentar novamente.');const value=JSON.parse(codeEditor.getValue());await api.validate_interface(value);modelDraft=null;transact(()=>model.value=value);$('ad-code-error').textContent='';}catch(e){$('ad-code-error').textContent=e.message;}
+  if($('ad-backend').value!=='model')return;try{if(modelDraft!==null&&modelDraftBase!==JSON.stringify(model.value))throw Error('O Design mudou desde o início deste rascunho. Preserve seu JSON e descarte o rascunho antes de tentar novamente.');const value=JSON.parse(codeEditor.getValue());const clean=await api.validate_interface(value);modelDraft=null;transact(()=>model.value=clean.document);$('ad-code-error').textContent='';}catch(e){$('ad-code-error').textContent=e.message;}
  });
  on($('ad-discard-json'),'click',()=>{modelDraft=null;showFile();});
  on($('ad-format-json'),'click',()=>{try{codeEditor.setValue(JSON.stringify(JSON.parse(codeEditor.getValue()),null,2),'json',true);}catch(e){$('ad-code-error').textContent=e.message;}});
- for(const backend of ['xml','compose'])on($('ad-export-'+backend),'click',async()=>{try{await save();const result=await api.export_android(root.dataset.projectId,backend);if(!disposed)message('Exportado: '+result.path+(result.warnings?.length?' · '+result.warnings.length+' aviso(s); veja agata-export-diagnostics.json':''));}catch(e){if(!disposed)message(e.message,true);}});
+ for(const backend of ['xml','compose'])on($('ad-export-'+backend),'click',async()=>{try{await save();const result=await api.export_android(root.dataset.projectId,backend);document.dispatchEvent(new CustomEvent('agata:exported',{detail:backend}));if(!disposed)message('Exportado: '+result.path+(result.warnings?.length?' · '+result.warnings.length+' aviso(s); veja agata-export-diagnostics.json':''));}catch(e){if(!disposed)message(e.message,true);}});
  on($('ad-example'),'click',()=>{
   const first=screen(),second=model.addScreen();second.name='Dashboard';second.root.children=[M.node(registry,'TextLabel',{text:'Dashboard',fontSize:24,bold:true})];
   const top=M.node(registry,'TopBar'),card=M.node(registry,'Card'),field=M.node(registry,'TextField'),button=M.node(registry,'Button'),bottom=M.node(registry,'BottomBar');
@@ -260,7 +291,22 @@ window.AgataAndroidDesigner={async mount(root){
   if(event.altKey&&['ArrowUp','ArrowDown'].includes(event.key)){event.preventDefault();$('ad-'+(event.key==='ArrowUp'?'up':'down')).click();}
   if((event.ctrlKey||event.metaKey)&&['c','v','d'].includes(event.key.toLowerCase())){event.preventDefault();$('ad-'+{c:'copy',v:'paste',d:'duplicate'}[event.key.toLowerCase()]).click();}
  });
- window.VelaPage={...(window.VelaPage||{}),beforeUnmount(){disposed=true;clearTimeout(generationTimer);abort.abort();notifications.dispose();codeEditor?.destroy();dragController?.dispose();previewObserver?.disconnect();panelObservers.forEach(o=>o.disconnect());}};
- render();await setMode('design');
+ constraintEditor=window.AgataConstraintEditor.mount(root,{model,selection:()=>selected,commit:()=>{document.dispatchEvent(new CustomEvent('agata:action',{detail:'constraint'}));render();},notify:message,enabled:()=>constraintMode&&['design','split'].includes(mode)});
+ on($('ad-constraint-mode'),'click',()=>{constraintMode=!constraintMode;$('ad-constraint-mode').setAttribute('aria-pressed',String(constraintMode));constraintEditor.redraw();});
+ on($('ad-center-node'),'click',()=>{try{model.centerNode([...selected][0]);document.dispatchEvent(new CustomEvent('agata:action',{detail:'center'}));render();}catch(e){message(e.message,true);}});
+ on($('ad-new-layer'),'click',()=>{try{model.addLayer(screen(),[...selected]);render();}catch(e){message(e.message,true);}});
+ on($('ad-add-region'),'click',()=>{try{const current=chosen()[0],parent=current&&registry[current.node.type]?.container?current.node:current?.parent||screen().root;const region=M.node(registry,'Region');region.name='Região';region.layout.width=160;region.layout.height=200;model.insertNode(parent.id,region);selected=new Set([region.id]);render();}catch(e){message(e.message,true);}});
+ on(root,'agata:constraint-drop',event=>{
+  root.querySelector('.ad-placement-choice')?.remove();const {ids,position}=event.detail;if(!position)return;
+  const card=R.el('section','ad-tour-card ad-placement-choice');card.setAttribute('role','dialog');card.setAttribute('aria-label','Posicionamento do componente');card.append(R.el('h3','','Como posicionar?'),R.el('p','','As restrições existentes foram preservadas. Escolha uma regra explícita para esta posição.'));
+  const action=(label,fn)=>{const b=R.el('button','',label);b.onclick=()=>{try{fn();card.remove();render();}catch(e){message(e.message,true);}};card.append(b);};
+  action('Fixar ao pai / criar constraints',()=>model.transact(()=>{for(const id of ids){const c=model.find(id);if(!c||model.locked(id))continue;c.node.layout.constraints={start:{target:'parent',anchor:'start',margin:position.x},top:{target:'parent',anchor:'top',margin:position.y}};}}));
+  action('Centralizar',()=>{for(const id of ids)model.centerNode(id);});
+  action('Manter posicionamento livre',()=>model.transact(()=>{for(const id of ids){const n=model.find(id)?.node;if(n){n.layout.constraints={};n.layout.x=position.x;n.layout.y=position.y;}}}));
+  action('Editar manualmente',()=>{selected=new Set(ids);});action('Fechar',()=>{});root.append(card);
+ });
+ tour=window.AgataTutorial.mount(root,{model,render,setMode,notify:message});on($('ad-help'),'click',()=>tour.offer(true));
+ window.VelaPage={...(window.VelaPage||{}),beforeUnmount(){disposed=true;clearTimeout(generationTimer);abort.abort();notifications.dispose();codeEditor?.destroy();dragController?.dispose();constraintEditor?.dispose();tour?.dispose();previewObserver?.disconnect();panelObservers.forEach(o=>o.disconnect());}};
+ render();await setMode('design');tour.maybeOffer();
  if(model.value.viewport){$('ad-workspace').scrollTo(model.value.viewport.x,model.value.viewport.y);}else fit();
 }};

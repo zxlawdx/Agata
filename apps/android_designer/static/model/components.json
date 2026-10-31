@@ -35,7 +35,10 @@
       "wrap": false,
       "visible": true,
       "locked": false,
-      "responsive": {}
+      "responsive": {},
+      "constraints": {},
+      "horizontalBias": 0.5,
+      "verticalBias": 0.5
     }
   },
   "Icon": {
@@ -70,7 +73,10 @@
       "wrap": false,
       "visible": true,
       "locked": false,
-      "responsive": {}
+      "responsive": {},
+      "constraints": {},
+      "horizontalBias": 0.5,
+      "verticalBias": 0.5
     }
   },
   "Button": {
@@ -92,7 +98,7 @@
       {
         "type": "TextLabel",
         "props": {
-          "text": "Botão"
+          "text": "Bot\u00e3o"
         },
         "role": "label"
       }
@@ -122,7 +128,10 @@
       "wrap": false,
       "visible": true,
       "locked": false,
-      "responsive": {}
+      "responsive": {},
+      "constraints": {},
+      "horizontalBias": 0.5,
+      "verticalBias": 0.5
     }
   },
   "Card": {
@@ -136,7 +145,7 @@
       {
         "type": "TextLabel",
         "props": {
-          "text": "Título do cartão",
+          "text": "T\u00edtulo do cart\u00e3o",
           "bold": true,
           "fontSize": 20
         },
@@ -145,7 +154,7 @@
       {
         "type": "TextLabel",
         "props": {
-          "text": "Descrição do cartão"
+          "text": "Descri\u00e7\u00e3o do cart\u00e3o"
         },
         "role": "description"
       }
@@ -175,7 +184,10 @@
       "wrap": false,
       "visible": true,
       "locked": false,
-      "responsive": {}
+      "responsive": {},
+      "constraints": {},
+      "horizontalBias": 0.5,
+      "verticalBias": 0.5
     }
   },
   "TopBar": {
@@ -195,7 +207,7 @@
       {
         "type": "TextLabel",
         "props": {
-          "text": "Minha aplicação",
+          "text": "Minha aplica\u00e7\u00e3o",
           "bold": true
         },
         "role": "title"
@@ -226,7 +238,10 @@
       "wrap": false,
       "visible": true,
       "locked": false,
-      "responsive": {}
+      "responsive": {},
+      "constraints": {},
+      "horizontalBias": 0.5,
+      "verticalBias": 0.5
     }
   },
   "Sidebar": {
@@ -237,7 +252,7 @@
       {
         "type": "TextLabel",
         "props": {
-          "text": "Minha aplicação",
+          "text": "Minha aplica\u00e7\u00e3o",
           "bold": true
         },
         "role": "header"
@@ -278,7 +293,10 @@
       "wrap": false,
       "visible": true,
       "locked": false,
-      "responsive": {}
+      "responsive": {},
+      "constraints": {},
+      "horizontalBias": 0.5,
+      "verticalBias": 0.5
     }
   },
   "BottomBar": {
@@ -322,7 +340,10 @@
       "wrap": false,
       "visible": true,
       "locked": false,
-      "responsive": {}
+      "responsive": {},
+      "constraints": {},
+      "horizontalBias": 0.5,
+      "verticalBias": 0.5
     }
   },
   "NavigationItem": {
@@ -335,14 +356,14 @@
         "type": "Icon",
         "props": {
           "icon": "home",
-          "description": "Início"
+          "description": "In\u00edcio"
         },
         "role": "icon"
       },
       {
         "type": "TextLabel",
         "props": {
-          "text": "Início"
+          "text": "In\u00edcio"
         },
         "role": "label"
       }
@@ -372,7 +393,10 @@
       "wrap": false,
       "visible": true,
       "locked": false,
-      "responsive": {}
+      "responsive": {},
+      "constraints": {},
+      "horizontalBias": 0.5,
+      "verticalBias": 0.5
     }
   },
   "TextField": {
@@ -429,7 +453,10 @@
       "wrap": false,
       "visible": true,
       "locked": false,
-      "responsive": {}
+      "responsive": {},
+      "constraints": {},
+      "horizontalBias": 0.5,
+      "verticalBias": 0.5
     }
   },
   "SearchBar": {
@@ -473,7 +500,10 @@
       "wrap": false,
       "visible": true,
       "locked": false,
-      "responsive": {}
+      "responsive": {},
+      "constraints": {},
+      "horizontalBias": 0.5,
+      "verticalBias": 0.5
     }
   },
   "Row": {
@@ -504,7 +534,10 @@
       "wrap": false,
       "visible": true,
       "locked": false,
-      "responsive": {}
+      "responsive": {},
+      "constraints": {},
+      "horizontalBias": 0.5,
+      "verticalBias": 0.5
     }
   },
   "Column": {
@@ -535,7 +568,10 @@
       "wrap": false,
       "visible": true,
       "locked": false,
-      "responsive": {}
+      "responsive": {},
+      "constraints": {},
+      "horizontalBias": 0.5,
+      "verticalBias": 0.5
     }
   },
   "Box": {
@@ -566,7 +602,10 @@
       "wrap": false,
       "visible": true,
       "locked": false,
-      "responsive": {}
+      "responsive": {},
+      "constraints": {},
+      "horizontalBias": 0.5,
+      "verticalBias": 0.5
     }
   },
   "Spacer": {
@@ -597,7 +636,10 @@
       "wrap": false,
       "visible": true,
       "locked": false,
-      "responsive": {}
+      "responsive": {},
+      "constraints": {},
+      "horizontalBias": 0.5,
+      "verticalBias": 0.5
     }
   },
   "Image": {
@@ -631,7 +673,10 @@
       "wrap": false,
       "visible": true,
       "locked": false,
-      "responsive": {}
+      "responsive": {},
+      "constraints": {},
+      "horizontalBias": 0.5,
+      "verticalBias": 0.5
     }
   },
   "Checkbox": {
@@ -665,7 +710,10 @@
       "wrap": false,
       "visible": true,
       "locked": false,
-      "responsive": {}
+      "responsive": {},
+      "constraints": {},
+      "horizontalBias": 0.5,
+      "verticalBias": 0.5
     }
   },
   "Switch": {
@@ -699,7 +747,10 @@
       "wrap": false,
       "visible": true,
       "locked": false,
-      "responsive": {}
+      "responsive": {},
+      "constraints": {},
+      "horizontalBias": 0.5,
+      "verticalBias": 0.5
     }
   },
   "Slider": {
@@ -735,7 +786,10 @@
       "wrap": false,
       "visible": true,
       "locked": false,
-      "responsive": {}
+      "responsive": {},
+      "constraints": {},
+      "horizontalBias": 0.5,
+      "verticalBias": 0.5
     }
   },
   "FloatingButton": {
@@ -778,7 +832,10 @@
       "wrap": false,
       "visible": true,
       "locked": false,
-      "responsive": {}
+      "responsive": {},
+      "constraints": {},
+      "horizontalBias": 0.5,
+      "verticalBias": 0.5
     }
   },
   "Grid": {
@@ -809,7 +866,10 @@
       "wrap": false,
       "visible": true,
       "locked": false,
-      "responsive": {}
+      "responsive": {},
+      "constraints": {},
+      "horizontalBias": 0.5,
+      "verticalBias": 0.5
     }
   },
   "Surface": {
@@ -843,7 +903,10 @@
       "wrap": false,
       "visible": true,
       "locked": false,
-      "responsive": {}
+      "responsive": {},
+      "constraints": {},
+      "horizontalBias": 0.5,
+      "verticalBias": 0.5
     }
   },
   "ScrollContainer": {
@@ -874,7 +937,10 @@
       "wrap": false,
       "visible": true,
       "locked": false,
-      "responsive": {}
+      "responsive": {},
+      "constraints": {},
+      "horizontalBias": 0.5,
+      "verticalBias": 0.5
     }
   },
   "Divider": {
@@ -905,7 +971,10 @@
       "wrap": false,
       "visible": true,
       "locked": false,
-      "responsive": {}
+      "responsive": {},
+      "constraints": {},
+      "horizontalBias": 0.5,
+      "verticalBias": 0.5
     }
   },
   "IconButton": {
@@ -950,7 +1019,158 @@
       "wrap": false,
       "visible": true,
       "locked": false,
-      "responsive": {}
+      "responsive": {},
+      "constraints": {},
+      "horizontalBias": 0.5,
+      "verticalBias": 0.5
+    }
+  },
+  "ConstraintLayout": {
+    "properties": {
+      "background": "#FFFFFF"
+    },
+    "children": [],
+    "container": true,
+    "layout": {
+      "width": "fill",
+      "height": 300,
+      "padding": 0,
+      "gap": 8,
+      "alignment": "start",
+      "arrangement": "start",
+      "scroll": "none",
+      "weight": 0,
+      "mode": "constraint",
+      "x": 0,
+      "y": 0,
+      "minWidth": 0,
+      "maxWidth": 4096,
+      "minHeight": 0,
+      "maxHeight": 4096,
+      "aspectRatio": 0,
+      "margin": 0,
+      "anchorX": "start",
+      "anchorY": "top",
+      "columns": 2,
+      "wrap": false,
+      "visible": true,
+      "locked": false,
+      "responsive": {},
+      "constraints": {},
+      "horizontalBias": 0.5,
+      "verticalBias": 0.5
+    }
+  },
+  "Region": {
+    "properties": {
+      "background": "#FFFFFF",
+      "orientation": "vertical"
+    },
+    "children": [],
+    "container": true,
+    "layout": {
+      "width": "fill",
+      "height": "wrap",
+      "padding": 12,
+      "gap": 8,
+      "alignment": "start",
+      "arrangement": "start",
+      "scroll": "none",
+      "weight": 0,
+      "mode": "auto",
+      "x": 0,
+      "y": 0,
+      "minWidth": 0,
+      "maxWidth": 4096,
+      "minHeight": 0,
+      "maxHeight": 4096,
+      "aspectRatio": 0,
+      "margin": 0,
+      "anchorX": "start",
+      "anchorY": "top",
+      "columns": 2,
+      "wrap": false,
+      "visible": true,
+      "locked": false,
+      "responsive": {},
+      "constraints": {},
+      "horizontalBias": 0.5,
+      "verticalBias": 0.5
+    }
+  },
+  "Guideline": {
+    "properties": {
+      "orientation": "vertical",
+      "percent": 0.5
+    },
+    "children": [],
+    "container": false,
+    "layout": {
+      "width": "wrap",
+      "height": "wrap",
+      "padding": 0,
+      "gap": 8,
+      "alignment": "start",
+      "arrangement": "start",
+      "scroll": "none",
+      "weight": 0,
+      "mode": "auto",
+      "x": 0,
+      "y": 0,
+      "minWidth": 0,
+      "maxWidth": 4096,
+      "minHeight": 0,
+      "maxHeight": 4096,
+      "aspectRatio": 0,
+      "margin": 0,
+      "anchorX": "start",
+      "anchorY": "top",
+      "columns": 2,
+      "wrap": false,
+      "visible": true,
+      "locked": false,
+      "responsive": {},
+      "constraints": {},
+      "horizontalBias": 0.5,
+      "verticalBias": 0.5
+    }
+  },
+  "Barrier": {
+    "properties": {
+      "direction": "end",
+      "references": "",
+      "barrierMargin": 0
+    },
+    "children": [],
+    "container": false,
+    "layout": {
+      "width": "wrap",
+      "height": "wrap",
+      "padding": 0,
+      "gap": 8,
+      "alignment": "start",
+      "arrangement": "start",
+      "scroll": "none",
+      "weight": 0,
+      "mode": "auto",
+      "x": 0,
+      "y": 0,
+      "minWidth": 0,
+      "maxWidth": 4096,
+      "minHeight": 0,
+      "maxHeight": 4096,
+      "aspectRatio": 0,
+      "margin": 0,
+      "anchorX": "start",
+      "anchorY": "top",
+      "columns": 2,
+      "wrap": false,
+      "visible": true,
+      "locked": false,
+      "responsive": {},
+      "constraints": {},
+      "horizontalBias": 0.5,
+      "verticalBias": 0.5
     }
   }
 }

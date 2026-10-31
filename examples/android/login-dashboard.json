@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "namespace": "com.example.agata",
   "app_name": "Agata App",
   "start_screen": "s_screen_0",
@@ -43,7 +43,10 @@
           "wrap": false,
           "visible": true,
           "locked": false,
-          "responsive": {}
+          "responsive": {},
+          "constraints": {},
+          "horizontalBias": 0.5,
+          "verticalBias": 0.5
         },
         "events": {},
         "states": {},
@@ -82,7 +85,10 @@
               "wrap": false,
               "visible": true,
               "locked": false,
-              "responsive": {}
+              "responsive": {},
+              "constraints": {},
+              "horizontalBias": 0.5,
+              "verticalBias": 0.5
             },
             "events": {},
             "states": {},
@@ -122,7 +128,10 @@
                   "wrap": false,
                   "visible": true,
                   "locked": false,
-                  "responsive": {}
+                  "responsive": {},
+                  "constraints": {},
+                  "horizontalBias": 0.5,
+                  "verticalBias": 0.5
                 },
                 "events": {},
                 "states": {},
@@ -167,7 +176,10 @@
                   "wrap": false,
                   "visible": true,
                   "locked": false,
-                  "responsive": {}
+                  "responsive": {},
+                  "constraints": {},
+                  "horizontalBias": 0.5,
+                  "verticalBias": 0.5
                 },
                 "events": {},
                 "states": {},
@@ -211,7 +223,10 @@
               "wrap": false,
               "visible": true,
               "locked": false,
-              "responsive": {}
+              "responsive": {},
+              "constraints": {},
+              "horizontalBias": 0.5,
+              "verticalBias": 0.5
             },
             "events": {},
             "states": {},
@@ -255,7 +270,10 @@
                   "wrap": false,
                   "visible": true,
                   "locked": false,
-                  "responsive": {}
+                  "responsive": {},
+                  "constraints": {},
+                  "horizontalBias": 0.5,
+                  "verticalBias": 0.5
                 },
                 "events": {},
                 "states": {},
@@ -300,7 +318,10 @@
                   "wrap": false,
                   "visible": true,
                   "locked": false,
-                  "responsive": {}
+                  "responsive": {},
+                  "constraints": {},
+                  "horizontalBias": 0.5,
+                  "verticalBias": 0.5
                 },
                 "events": {},
                 "states": {},
@@ -348,7 +369,10 @@
               "wrap": false,
               "visible": true,
               "locked": false,
-              "responsive": {}
+              "responsive": {},
+              "constraints": {},
+              "horizontalBias": 0.5,
+              "verticalBias": 0.5
             },
             "events": {},
             "states": {},
@@ -388,7 +412,10 @@
                   "wrap": false,
                   "visible": true,
                   "locked": false,
-                  "responsive": {}
+                  "responsive": {},
+                  "constraints": {},
+                  "horizontalBias": 0.5,
+                  "verticalBias": 0.5
                 },
                 "events": {},
                 "states": {},
@@ -429,7 +456,10 @@
                   "wrap": false,
                   "visible": true,
                   "locked": false,
-                  "responsive": {}
+                  "responsive": {},
+                  "constraints": {},
+                  "horizontalBias": 0.5,
+                  "verticalBias": 0.5
                 },
                 "events": {},
                 "states": {},
@@ -473,7 +503,10 @@
               "wrap": false,
               "visible": true,
               "locked": false,
-              "responsive": {}
+              "responsive": {},
+              "constraints": {},
+              "horizontalBias": 0.5,
+              "verticalBias": 0.5
             },
             "events": {
               "onClick": {
@@ -518,7 +551,10 @@
                   "wrap": false,
                   "visible": true,
                   "locked": false,
-                  "responsive": {}
+                  "responsive": {},
+                  "constraints": {},
+                  "horizontalBias": 0.5,
+                  "verticalBias": 0.5
                 },
                 "events": {},
                 "states": {},
@@ -563,7 +599,10 @@
                   "wrap": false,
                   "visible": true,
                   "locked": false,
-                  "responsive": {}
+                  "responsive": {},
+                  "constraints": {},
+                  "horizontalBias": 0.5,
+                  "verticalBias": 0.5
                 },
                 "events": {},
                 "states": {},
@@ -604,7 +643,10 @@
               "wrap": false,
               "visible": true,
               "locked": false,
-              "responsive": {}
+              "responsive": {},
+              "constraints": {},
+              "horizontalBias": 0.5,
+              "verticalBias": 0.5
             },
             "events": {},
             "states": {},
@@ -643,7 +685,10 @@
                   "wrap": false,
                   "visible": true,
                   "locked": false,
-                  "responsive": {}
+                  "responsive": {},
+                  "constraints": {},
+                  "horizontalBias": 0.5,
+                  "verticalBias": 0.5
                 },
                 "events": {},
                 "states": {},
@@ -683,7 +728,10 @@
                       "wrap": false,
                       "visible": true,
                       "locked": false,
-                      "responsive": {}
+                      "responsive": {},
+                      "constraints": {},
+                      "horizontalBias": 0.5,
+                      "verticalBias": 0.5
                     },
                     "events": {},
                     "states": {},
@@ -728,7 +776,10 @@
                       "wrap": false,
                       "visible": true,
                       "locked": false,
-                      "responsive": {}
+                      "responsive": {},
+                      "constraints": {},
+                      "horizontalBias": 0.5,
+                      "verticalBias": 0.5
                     },
                     "events": {},
                     "states": {},
@@ -770,7 +821,10 @@
                   "wrap": false,
                   "visible": true,
                   "locked": false,
-                  "responsive": {}
+                  "responsive": {},
+                  "constraints": {},
+                  "horizontalBias": 0.5,
+                  "verticalBias": 0.5
                 },
                 "events": {
                   "onClick": {
@@ -815,7 +869,10 @@
                       "wrap": false,
                       "visible": true,
                       "locked": false,
-                      "responsive": {}
+                      "responsive": {},
+                      "constraints": {},
+                      "horizontalBias": 0.5,
+                      "verticalBias": 0.5
                     },
                     "events": {},
                     "states": {},
@@ -860,7 +917,10 @@
                       "wrap": false,
                       "visible": true,
                       "locked": false,
-                      "responsive": {}
+                      "responsive": {},
+                      "constraints": {},
+                      "horizontalBias": 0.5,
+                      "verticalBias": 0.5
                     },
                     "events": {},
                     "states": {},
@@ -872,7 +932,8 @@
             ]
           }
         ]
-      }
+      },
+      "layers": []
     },
     {
       "id": "s_screen_1",
@@ -913,7 +974,10 @@
           "wrap": false,
           "visible": true,
           "locked": false,
-          "responsive": {}
+          "responsive": {},
+          "constraints": {},
+          "horizontalBias": 0.5,
+          "verticalBias": 0.5
         },
         "events": {},
         "states": {},
@@ -957,7 +1021,10 @@
               "wrap": false,
               "visible": true,
               "locked": false,
-              "responsive": {}
+              "responsive": {},
+              "constraints": {},
+              "horizontalBias": 0.5,
+              "verticalBias": 0.5
             },
             "events": {},
             "states": {},
@@ -999,7 +1066,10 @@
               "wrap": false,
               "visible": true,
               "locked": false,
-              "responsive": {}
+              "responsive": {},
+              "constraints": {},
+              "horizontalBias": 0.5,
+              "verticalBias": 0.5
             },
             "events": {
               "onClick": {
@@ -1043,7 +1113,10 @@
                   "wrap": false,
                   "visible": true,
                   "locked": false,
-                  "responsive": {}
+                  "responsive": {},
+                  "constraints": {},
+                  "horizontalBias": 0.5,
+                  "verticalBias": 0.5
                 },
                 "events": {},
                 "states": {},
@@ -1088,7 +1161,10 @@
                   "wrap": false,
                   "visible": true,
                   "locked": false,
-                  "responsive": {}
+                  "responsive": {},
+                  "constraints": {},
+                  "horizontalBias": 0.5,
+                  "verticalBias": 0.5
                 },
                 "events": {},
                 "states": {},
@@ -1098,7 +1174,8 @@
             ]
           }
         ]
-      }
+      },
+      "layers": []
     }
   ],
   "theme": {

@@ -70,3 +70,8 @@ jobs:
         env:
           AGATA_UI_SCRIPT: tests/responsive_ui.cjs
         run: node tests/run_ui.cjs
+
+      - name: Exercise constraints, regions, layers and guided tutorial
+        env:
+          AGATA_UI_SCRIPT: tests/constraints_ui.cjs
+        run: node tests/run_ui.cjs

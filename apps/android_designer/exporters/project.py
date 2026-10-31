@@ -23,8 +23,8 @@ def generate(document,backend='compose'):
     if backend=='compose':
         plugins+=f'id("org.jetbrains.kotlin.plugin.compose") version "{KOTLIN}" apply false\n'
         app_plugins+='id("org.jetbrains.kotlin.plugin.compose")\n'
-        deps+=['androidx.activity:activity-compose:1.11.0','androidx.compose.ui:ui','androidx.compose.foundation:foundation','androidx.compose.material3:material3',f'androidx.navigation:navigation-compose:{NAVIGATION}']
-    else:deps+=['androidx.constraintlayout:constraintlayout:2.2.1','androidx.appcompat:appcompat:1.7.1','com.google.android.material:material:1.13.0']
+        deps+=['androidx.constraintlayout:constraintlayout-compose:1.1.2','androidx.activity:activity-compose:1.11.0','androidx.compose.ui:ui','androidx.compose.foundation:foundation','androidx.compose.material3:material3',f'androidx.navigation:navigation-compose:{NAVIGATION}']
+    else:deps+=['androidx.constraintlayout:constraintlayout:2.2.2','androidx.appcompat:appcompat:1.7.1','com.google.android.material:material:1.13.0']
     dependencies=(f'implementation(platform("androidx.compose:compose-bom:{BOM}"))\n' if backend=='compose' else '')+'\n'.join(f'implementation("{d}")' for d in deps)
     files['settings.gradle.kts']='''pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }
 dependencyResolutionManagement { repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS); repositories { google(); mavenCentral() } }
@@ -48,6 +48,15 @@ dependencies {{ {dependencies} }}
     files['app/src/main/AndroidManifest.xml']=f'''<manifest xmlns:android="http://schemas.android.com/apk/res/android"><application android:label="@string/app_name" android:theme="{theme}" android:supportsRtl="true"><activity android:name="{namespace}.MainActivity" android:exported="true"><intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter></activity></application></manifest>\n'''
     files['app/src/main/res/values/colors.xml']=f'<resources><color name="agata_primary">{document["theme"]["primary"]}</color></resources>\n'
     warnings=[]
+    for screen in document['screens']:
+        for parent in walk(screen['root']):
+            if parent['type']!='ConstraintLayout':continue
+            for child in parent['children']:
+                if child['type'] in {'Guideline','Barrier'}:continue
+                c=child['layout']['constraints']
+                for axis,anchors in [('horizontal',{'start','end'}),('vertical',{'top','bottom','baseline'})]:
+                    if not set(c)&anchors:warnings.append({'node':child['id'],'message':'ConstraintLayout: eixo '+axis+' sem links; x/y convertido em margem explícita ao pai.'})
+                if 'baseline' in c:warnings.append({'node':child['id'],'message':'Baseline: Preview estima métricas de fonte; confira a baseline nativa no Android.'})
     if backend=='xml':
         for screen in document['screens']:
             for node in walk(screen['root']):

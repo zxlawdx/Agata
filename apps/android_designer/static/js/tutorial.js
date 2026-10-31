@@ -1,0 +1,41 @@
+/* Definitions use stable UI IDs, not screen coordinates. Tour never traps practice clicks. */
+window.AgataTutorial=(()=>{
+ const steps=[
+  {id:'workspace',title:'Seu workspace',target:'ad-workspace',description:'Cada frame é uma Screen independente. Use Ajustar telas para centralizar.'},
+  {id:'screen',title:'Criar uma Screen',target:'ad-new-screen',description:'Clique em Nova Screen. Ela entra no histórico e no projeto.',action:'screen'},
+  {id:'insert',title:'Inserir um componente',target:'ad-add-component',description:'Escolha um componente na biblioteca e clique em Inserir componente.',action:'node'},
+  {id:'move',title:'Arrastar componentes',target:'ad-tree',description:'Arraste um handle da árvore ou canvas para um contêiner compatível. A árvore é a fonte de verdade.'},
+  {id:'tree',title:'Hierarquia',target:'ad-tree',description:'Clique para selecionar; Ctrl/Cmd+clique seleciona múltiplos. Cadeado bloqueia o ramo.'},
+  {id:'region',title:'Criar uma região',target:'ad-add-region',description:'Selecione um contêiner e clique em Nova região. Uma Region é genérica e aceita filhos.',action:'region'},
+  {id:'bar',title:'Um botão na barra',target:'ad-component-kind',description:'Na Screen Inicial, selecione a região Top Bar. Escolha Button e insira como filho selecionado.'},
+  {id:'constraint',title:'Conectar uma âncora',target:'ad-constraint-mode',description:'Selecione um filho de ConstraintLayout. Ative Constraints e arraste uma alça azul até o pai ou um irmão. Também pode usar o Inspector.',action:'constraint'},
+  {id:'bias',title:'Centralizar com bias',target:'ad-center-node',description:'Com um filho de ConstraintLayout selecionado, clique em Centralizar no pai. Edite horizontalBias no Inspector.',action:'center'},
+  {id:'layers',title:'Camadas',target:'ad-new-layer',description:'Selecione componentes e crie uma camada. Ela organiza visibilidade, bloqueio, opacidade e empilhamento local.',action:'layer'},
+  {id:'navigation',title:'Navegação',target:'ad-connect',description:'Selecione um Button. Arraste Conectar selecionado até outra Screen ou configure Destino da navegação no Inspector.'},
+  {id:'preview',title:'Executar o Preview',target:'ad-preview',mode:'preview',description:'Clique nos botões para navegar. As linhas de layout não aparecem aqui.'},
+  {id:'responsive',title:'Redimensionar',target:'ad-preview-preset',mode:'preview',description:'Alterne celular e tablet, gire e amplie a fonte. Observe as regiões e o botão centralizado.'},
+  {id:'compose',title:'Exportar Kotlin/Compose',target:'ad-export-compose',description:'Clique em Exportar Kotlin. O projeto Gradle é salvo no computador; exige SDK para compilar.',action:'compose'},
+  {id:'xml',title:'Exportar Android XML',target:'ad-export-xml',description:'Clique em Exportar XML. Abra o ZIP no Android Studio para sincronizar e compilar.',action:'xml'}
+ ].map((s,i)=>({...s,position:'bottom',next:stepsNext(i)}));
+ function stepsNext(i){return i+1<15?i+1:null;}
+ function mount(root,{model,setMode}){
+  const key='agata-android-tour-v1:'+root.dataset.projectId,abort=new AbortController();let state;try{state=JSON.parse(localStorage.getItem(key)||'{}');}catch{state={};}let card=null,index=state.index||0,timer=null,highlight=null,baseline=null,exports=new Set();
+  const save=()=>localStorage.setItem(key,JSON.stringify(state));const button=(text,fn)=>{const b=document.createElement('button');b.type='button';b.textContent=text;b.onclick=fn;return b;};
+  const stats=()=>{let nodes=0,regions=0,links=0,center=0,layers=0;for(const s of model.value.screens){layers+=(s.layers||[]).length;AgataUIModel.walk(s.root,n=>{nodes++;if(n.type==='Region')regions++;links+=Object.keys(n.layout.constraints||{}).length;if(n.layout.constraints.start?.target==='parent'&&n.layout.constraints.end?.target==='parent'&&n.layout.horizontalBias===.5)center++;});}return {screen:model.value.screens.length,node:nodes,region:regions,constraint:links,center,layer:layers};};
+  function clear(){clearInterval(timer);timer=null;highlight?.classList.remove('ad-tour-highlight');highlight=null;card?.remove();card=null;}
+  function panel(title,description){clear();card=document.createElement('section');card.className='ad-tour-card';card.setAttribute('role','dialog');card.setAttribute('aria-modal','false');card.setAttribute('aria-label',title);card.tabIndex=-1;const h=document.createElement('h3');h.textContent=title;const p=document.createElement('p');p.textContent=description;card.append(h,p);root.append(card);return card;}
+  async function show(){state={...state,status:'active',index};save();const step=steps[index];if(step.mode)await setMode(step.mode);else if(index<11)await setMode('design');
+   const box=panel(step.title,step.description),progress=document.createElement('small');progress.textContent=`${index+1} de ${steps.length}`;box.prepend(progress);
+   const target=root.querySelector('#'+step.target);if(target){for(const cls of ['ad-library','ad-inspector']){const p=target.closest('.'+cls);if(p?.hidden)p.hidden=false;}target.scrollIntoView({block:'nearest',inline:'nearest'});target.classList.add('ad-tour-highlight');highlight=target;}else{const warning=document.createElement('p');warning.textContent='Este alvo não está disponível. Você pode pular a prática ou voltar.';box.append(warning);}
+   baseline=stats();if(step.action)exports.delete(step.action);const previous=button('Voltar',()=>{index=Math.max(0,index-1);show();});previous.disabled=index===0;const next=button(index===steps.length-1?'Concluir':'Próximo',()=>{if(index===steps.length-1){state={status:'completed',index:0};save();clear();}else{index++;show();}});next.dataset.tourNext='';next.disabled=!!step.action;
+   if(step.action){const check=()=>{if(exports.has(step.action)||(stats()[step.action]||0)>(baseline[step.action]||0))next.disabled=false;};timer=setInterval(check,150);box.append(button('Pular esta prática',()=>{next.disabled=false;next.click();}));}
+   box.append(previous,next,button('Pular tutorial',()=>{state={status:'paused',index};save();clear();}));box.focus();
+  }
+  function offer(force=false){const box=panel('Deseja conhecer o editor Android do Agata?','Aprenda com operações reais. Você pode pular ou retomar pelo menu Ajuda.');box.append(button(state.status==='paused'?'Retomar tutorial':'Iniciar tutorial',()=>{index=state.index||0;show();}),button('Agora não',()=>{state.status='paused';save();clear();}),button('Não mostrar novamente',()=>{localStorage.setItem('agata-android-tour-never','1');state.status='dismissed';save();clear();}));if(force)box.append(button('Reiniciar tutorial',()=>{index=0;state={};show();}));}
+  document.addEventListener('agata:action',e=>exports.add(e.detail),{signal:abort.signal});
+  document.addEventListener('agata:exported',e=>exports.add(e.detail),{signal:abort.signal});
+  document.addEventListener('keydown',e=>{if(!card)return;if(e.key==='Escape'){state={status:'paused',index};save();clear();}if(e.altKey&&e.key==='ArrowRight')card.querySelector('[data-tour-next]')?.click();if(e.altKey&&e.key==='ArrowLeft'&&index>0){index--;show();}},{signal:abort.signal});
+  return {offer,maybeOffer(){if(!state.status&&!localStorage.getItem('agata-android-tour-never'))offer();},dispose(){clear();abort.abort();}};
+ }
+ return {steps,mount};
+})();

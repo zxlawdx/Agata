@@ -6,7 +6,7 @@ import re
 from pathlib import Path
 from uuid import uuid4
 
-VERSION = 2
+VERSION = 3
 REGISTRY = json.loads((Path(__file__).resolve().parents[1]/'static/model/components.json').read_text())
 ICONS = {'none','menu','back','home','search','close','settings','plus'}
 ID = re.compile(r'^[a-z][a-z0-9_]{0,63}$')
@@ -26,7 +26,7 @@ def new_node(kind: str, props=None, role='') -> dict:
 def new_screen(name='Tela Inicial', x=80, y=80):
     root=new_node('Column');root['layout'].update(padding=24,gap=16)
     return {'id':'s_'+uuid4().hex,'name':name,'width':390,'height':844,
-            'position':{'x':x,'y':y},'root':root}
+            'position':{'x':x,'y':y},'root':root,'layers':[]}
 
 
 def new_document():
@@ -50,6 +50,12 @@ def migrate(document):
                 defaults=REGISTRY.get(n['type'],{}).get('layout',{})
                 n['layout']={**copy.deepcopy(defaults),**n['layout']}
                 if n['type']=='TextLabel':n['props']={'maxLines':0,'overflow':'clip',**n['props']}
+        document['version']=2
+    if isinstance(document,dict) and document.get('version')==2:
+        for screen in document.get('screens',[]):
+            screen.setdefault('layers',[])
+            for n in walk(screen['root']):
+                n['layout']={**copy.deepcopy(REGISTRY.get(n['type'],{}).get('layout',{})),**n['layout']}
         document['version']=VERSION
     return document
 
@@ -140,10 +146,19 @@ def validate(document):
         if not number(layout['aspectRatio'],0,100):raise ValueError('Aspect ratio inválido.')
         if layout['aspectRatio'] and (layout['minWidth']>layout['maxHeight']*layout['aspectRatio'] or layout['minHeight']*layout['aspectRatio']>layout['maxWidth']):raise ValueError('Aspect ratio incompatível com os limites.')
         if type(layout['columns']) is not int or not 1<=layout['columns']<=12:raise ValueError('Use 1–12 colunas.')
-        if layout['mode'] not in {'auto','free'} or layout['mode']=='free' and n['type']!='Box':raise ValueError('Posicionamento livre requer Box.')
+        if layout['mode'] not in {'auto','free','constraint'} or layout['mode']=='free' and n['type']!='Box':raise ValueError('Posicionamento livre requer Box.')
         if layout['anchorX'] not in {'start','center','end','fill'} or layout['anchorY'] not in {'top','center','bottom','fill'}:raise ValueError('Âncora inválida.')
         for key in ('wrap','visible','locked'):
             if type(layout[key]) is not bool:raise ValueError('Estado de layout inválido.')
+        if layout['mode']=='constraint' and n['type']!='ConstraintLayout':raise ValueError('Modo constraint requer ConstraintLayout.')
+        for bias in ('horizontalBias','verticalBias'):
+            if not number(layout[bias],0,1):raise ValueError('Bias deve estar entre 0 e 1.')
+        if not isinstance(layout['constraints'],dict):raise ValueError('Constraints inválidas.')
+        if layout['constraints'] and (parent is None or parent['type']!='ConstraintLayout'):raise ValueError('Constraints requerem pai ConstraintLayout.')
+        if n['type']=='Region' and props['orientation'] not in {'horizontal','vertical'}:raise ValueError('Orientação de região inválida.')
+        if n['type']=='Guideline' and (props['orientation'] not in {'vertical','horizontal'} or not number(props['percent'],0,1)):raise ValueError('Guideline inválida.')
+        if n['type']=='Barrier' and (props['direction'] not in {'start','end','top','bottom'} or not number(props['barrierMargin'],0,4096)):raise ValueError('Barrier inválida.')
+        if n['type'] in {'Guideline','Barrier'} and (parent is None or parent['type']!='ConstraintLayout'):raise ValueError('Helper requer ConstraintLayout.')
         overrides=layout['responsive']
         if not isinstance(overrides,dict) or set(overrides)-{'compact','medium','expanded','landscape'}:raise ValueError('Classe de janela inválida.')
         for rule in overrides.values():
@@ -167,7 +182,13 @@ def validate(document):
         children=n.get('children')
         if not isinstance(children,list) or children and not spec['container']:raise ValueError('Este componente não aceita filhos.')
         for c in children:node(c,depth+1,n)
-    for screen in screens:node(screen.get('root'))
+    from apps.android_designer.domain.constraints import validate_container, validate_layers
+    for screen in screens:
+        node(screen.get('root'))
+        for n in walk(screen['root']):
+            if n['type']=='ConstraintLayout':validate_container(n)
+        validate_layers(screen)
+
     if document.get('start_screen') not in screen_ids:raise ValueError('Screen inicial inexistente.')
     theme=document.get('theme',{})
     if type(theme.get('dynamicColor')) is not bool or theme.get('darkMode') not in {'system','light','dark'} or not COLOR.fullmatch(theme.get('primary','')):raise ValueError('Tema inválido.')
