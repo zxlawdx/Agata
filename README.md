@@ -158,3 +158,14 @@ de outros editores. Exportação Web/Android fica para outra etapa.
 
 A WebView desktop e a mesa digitalizadora ainda requerem validação
 manual no Linux antes do merge.
+
+
+## Picadeiro Pop — novo visual (branch `feat/picadeiro-pop`)
+
+A referência visual é o protótipo Excalidraw do autor: creme `#FFF9EF`, azul `#53AFF2`, ciano `#96E6EC`, rosa `#FFCCCF`, verde `#B9EFC1`, amarelo `#FFE28A`, lilás `#BCACF5` e contorno escuro.
+
+A home foi reconstruída com navegação de projetos reais, modelos de prancheta para Android, Web, SVG e Tablet e formulário de criação conectado à Bridge Vela. O editor preserva Fabric.js, edição de texto e componentes, camadas, desenhos e histórico, acrescentando seletor de paleta, triângulo, losango, grade visual e exportação SVG, PNG e JSON para `~/Yara/Exports`.
+
+**Delimitação funcional:** a opção SVG hoje significa desenho de formas vetoriais e exportação SVG, não edição avançada de nós e curvas Bézier. "Fluxo de App" e geradores Godot/Forge IR do protótipo de outro aplicativo **não são funcionalidades do Yara** nesta etapa; o link para Fluxo de App permanece desabilitado. Os modelos de prancheta selecionam tamanho e ambiente, sem criar componentes prontos. O aplicativo permanece offline em tempo de execução e nenhum projeto existente é migrado automaticamente.
+
+Use `npm install --ignore-scripts && npm run vendor && python manage.py runapp` a partir da raiz. O Yara coleta CSS/JS automaticamente durante o boot. Para testar, crie um projeto SVG, desenhe triângulo ou losango, altere a cor, salve e exporte SVG, PNG ou JSON pelo cabeçalho. Confira os arquivos gerados na pasta Exports. Teste a WebView no Linux antes do merge.

@@ -1,111 +1,105 @@
-/* Paleta definida no protótipo Lunacy: grafite, turquesa, azul claro e Inter. */
-#yara-home {
-  --ink:#1a1c1c; --teal:#0097a7; --aqua:#b2ebf2; --grey:#4c4c4c; --muted:#73888c;
-  font-family:Inter,"Segoe UI",Arial,sans-serif; color:#213e42; background:#f3f8f8;
-  min-height:100vh; width:100%; font-size:14px;
-}
-#yara-home, #yara-home * {box-sizing:border-box}
+/* Tema Picadeiro Pop inspirado no protótipo do usuário: sem recursos externos. */
+#yara-home{--cream:#FFF9EF;--paper:#fff;--cyan:#96E6EC;--blue:#53AFF2;--pink:#FFCCCF;
+  --mint:#B9EFC1;--yellow:#FFE28A;--lilac:#BCACF5;--ink:#242424;
+  font:14px "Comic Sans MS","Trebuchet MS",system-ui,sans-serif;color:var(--ink);
+  background:#fff;min-height:100vh;width:100%;padding:clamp(8px,2.3vw,30px)}
+#yara-home *,#yara-home *::before,#yara-home *::after{box-sizing:border-box}
 #yara-home [hidden]{display:none!important}
 #yara-home button,#yara-home input,#yara-home select{font:inherit}
-#yara-home button{cursor:pointer}
-#yara-home button:disabled{cursor:not-allowed}
-#yara-home :is(button,input,select,a):focus-visible{outline:3px solid var(--teal);outline-offset:3px}
-#yara-home .yara-layout{min-height:100vh;display:grid;grid-template-columns:245px minmax(0,1fr)}
-#yara-home .yara-sidebar{background:var(--ink);color:#f6ffff;padding:30px 20px;display:flex;flex-direction:column}
-#yara-home .yara-logo{display:flex;gap:12px;color:inherit;text-decoration:none;align-items:center;margin-bottom:52px}
-#yara-home .yara-logo-icon{display:grid;place-items:center;border-radius:14px;background:var(--teal);font-size:29px;width:47px;height:47px;box-shadow:0 9px 24px #0097a745}
-#yara-home .yara-logo strong{display:block;font-size:27px;line-height:1;letter-spacing:-1px}
-#yara-home .yara-logo small{display:block;font-size:9px;letter-spacing:1.4px;color:#a2b8bb;margin-top:9px}
-#yara-home .yara-menu-title{font-size:10px;letter-spacing:2px;color:#829b9e;margin-bottom:16px;padding-left:10px;font-weight:700}
-#yara-home .yara-nav{display:grid;gap:6px}
-#yara-home .yara-nav button{display:flex;align-items:center;gap:13px;width:100%;border:0;border-radius:10px;padding:12px;color:#dce8e9;background:transparent;text-align:left;font-size:12px}
-#yara-home .yara-nav button:hover:not(:disabled){background:#303d3e}
-#yara-home .yara-nav button.active{background:#194a50;color:#c1faff;font-weight:750}
-#yara-home .yara-nav button:disabled{opacity:.57}
-#yara-home .yara-nav b{width:24px;text-align:center;font-size:20px;font-weight:400}
-#yara-home .yara-nav small{margin-left:auto;font-size:9px}
-#yara-home .yara-sidebar-footer{margin-top:auto}
-#yara-home .yara-side-note{border:1px solid #39494a;background:#273334;border-radius:13px;padding:17px}
-#yara-home .yara-side-note span{display:block;color:#83e9ef;font-size:26px;margin-bottom:10px}
-#yara-home .yara-side-note strong{font-size:12px}
-#yara-home .yara-side-note p{font-size:11px;color:#b0c3c5;line-height:1.7;margin:9px 0 0}
-#yara-home .yara-sidebar-footer>small{display:block;color:#7d989d;margin-top:22px;font-size:10px}
-#yara-home .yara-main{min-width:0}
-#yara-home .yara-topbar{height:70px;padding:0 48px;background:#fff;border-bottom:1px solid #e5eeee;display:flex;justify-content:space-between;align-items:center;font-size:11px;color:#899d9f}
-#yara-home .yara-topbar strong{color:#2d494d}
-#yara-home .yara-topbar span{margin:0 10px}
-#yara-home .yara-header-right{display:flex;gap:14px;align-items:center}
-#yara-home .yara-header-right i{display:inline-block;background:#45c9b5;width:7px;height:7px;border-radius:50%;margin-right:7px}
-#yara-home .yara-avatar{display:grid;place-items:center;width:32px;height:32px;border-radius:9px;background:#d9f3f4;color:#147f89;font-weight:800}
-#yara-home .yara-content{padding:38px 48px 60px;max-width:1440px;margin:auto}
-#yara-home .yara-intro{margin-bottom:28px}
-#yara-home .yara-eyebrow,#yara-home .yara-heading small,#yara-home .yara-dialog header small{color:var(--teal);font-size:10px;font-weight:800;letter-spacing:1.7px}
-#yara-home .yara-intro h1{margin:12px 0 10px;font-size:clamp(31px,3.4vw,48px);line-height:1.14;letter-spacing:-2px}
-#yara-home .yara-intro h1 em{color:var(--teal);font-style:normal}
-#yara-home .yara-intro p{font-size:12px;color:#75898d}
-#yara-home .yara-hero{display:grid;grid-template-columns:1.1fr .9fr;background:#1d383d;border-radius:18px;overflow:hidden;color:white;min-height:234px}
-#yara-home .yara-hero-copy{padding:35px}
-#yara-home .yara-hero-copy small{font-size:10px;color:#9be8ed;font-weight:800;letter-spacing:1px}
-#yara-home .yara-hero h2{font-size:33px;letter-spacing:-1px;margin:14px 0 8px}
-#yara-home .yara-hero p{font-size:12px;color:#b4c9cd;line-height:1.6;max-width:360px;margin:0 0 21px}
-#yara-home .yara-primary{border:0;border-radius:9px;background:var(--teal);color:white;padding:12px 18px;font-size:12px;font-weight:750;min-height:42px}
-#yara-home .yara-primary:hover{background:#007f8c}
-#yara-home .yara-primary:disabled{opacity:.65;cursor:wait}
-#yara-home .yara-primary span{margin-left:25px}
-#yara-home .yara-hero-art{position:relative;background:radial-gradient(circle at center,#316c73,#18353c);overflow:hidden}
-#yara-home .yara-hero-art:before{content:"";position:absolute;inset:-60px;background-image:linear-gradient(#ffffff0c 1px,transparent 1px),linear-gradient(90deg,#ffffff0c 1px,transparent 1px);background-size:26px 26px;transform:rotate(-9deg)}
-#yara-home .yara-art-device{position:absolute;left:42%;top:15px;background:#fff;width:119px;height:222px;border:7px solid #111b1e;border-radius:22px;padding:32px 9px 10px;transform:rotate(-10deg);box-shadow:12px 18px 22px #10202277}
-#yara-home .yara-art-device span{display:block;border-radius:4px;margin-bottom:12px}
-#yara-home .yara-art-device .bar{background:var(--aqua);height:25px}
-#yara-home .yara-art-device .title{height:7px;width:60%;background:#31565d}
-#yara-home .yara-art-device .block{height:28px;background:#e4eeee}
-#yara-home .yara-art-device .block.small{height:19px;background:#e0f8f8}
-#yara-home .yara-art-device .button{height:16px;background:var(--teal)}
-#yara-home .yara-art-shape{position:absolute;z-index:1}
-#yara-home .yara-art-shape.square{width:67px;height:67px;border-radius:17px;background:#ffc39b;transform:rotate(12deg);left:18%;top:30px}
-#yara-home .yara-art-shape.circle{width:40px;height:40px;border-radius:100%;border:10px solid #318c94;background:#b2ebf2;right:12%;top:34px}
-#yara-home .yara-art-tag{position:absolute;right:8%;bottom:25px;z-index:1;background:#fff;color:#25848c;box-shadow:0 12px 20px #09232358;padding:12px;border-radius:9px;transform:rotate(5deg);font-size:10px;font-weight:700}
-#yara-home .yara-heading{display:flex;align-items:end;justify-content:space-between;margin:36px 0 18px}
-#yara-home .yara-heading h2{font-size:21px;margin:8px 0 0;letter-spacing:-.6px}
-#yara-home .yara-tools,#yara-home .yara-project-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
-#yara-home .yara-tool-card,#yara-home .yara-project-card{background:#fff;border:1px solid #e4eeee;border-radius:13px;padding:19px;display:flex;flex-direction:column;align-items:stretch;text-align:left;color:#243f44}
-#yara-home .yara-tool-card{min-height:171px;gap:11px}
-#yara-home button.yara-tool-card:hover,#yara-home button.yara-project-card:hover{border-color:#78d2d7}
-#yara-home .yara-tool-icon{display:grid;place-items:center;width:40px;height:40px;border-radius:10px;font-size:25px}
-#yara-home .teal{color:#008795;background:#d4f3f4}
-#yara-home .violet{color:#8667aa;background:#eee7f6}
-#yara-home .peach{color:#bd8355;background:#fff0e2}
-#yara-home .yara-tool-card strong{display:flex;justify-content:space-between;align-items:center;font-size:13px}
-#yara-home .yara-tool-card strong i{font-size:8px;font-style:normal;color:#929a9d;background:#f0f4f4;padding:5px}
-#yara-home .yara-tool-card p{margin:0;color:#819598;font-size:11px;line-height:1.6}
-#yara-home .yara-tool-card small{margin-top:auto;color:#008c98;font-size:11px;font-weight:700}
-#yara-home .yara-tool-card.soon{opacity:.85}
-#yara-home .yara-tool-card.soon small{color:#a1acad}
-#yara-home .yara-heading button{border:0;background:transparent;color:var(--teal);font-size:12px;font-weight:700}
-#yara-home .yara-project-card{min-height:176px;gap:11px}
-#yara-home .yara-project-preview{height:95px;border-radius:8px;background:#edf6f6;display:grid;place-items:center}
-#yara-home .yara-mini-device{width:43px;height:79px;background:#fff;border:4px solid #273c40;border-radius:9px;display:flex;flex-direction:column;padding:7px 4px;gap:5px}
-#yara-home .yara-mini-device i{height:7px;border-radius:2px;background:#b2ebf2}
-#yara-home .yara-mini-device i:nth-child(2){height:23px;background:#e4eeee}
-#yara-home .yara-mini-device i:nth-child(3){margin-top:auto;background:var(--teal)}
-#yara-home .yara-project-card strong{font-size:13px}
-#yara-home .yara-project-card small{font-size:10px;color:#83999c}
-#yara-home .yara-empty{grid-column:1/-1;border:1px dashed #b9d3d6;background:#f9fcfc;border-radius:12px;text-align:center;padding:29px;color:#71878b}
-#yara-home .yara-empty strong{display:block;color:#36595d;margin-bottom:7px}
-#yara-home .yara-error{background:#fff1e9;border:1px solid #f6c7ac;border-radius:9px;padding:12px 15px;margin-bottom:17px;color:#8d4f30}
-#yara-home .yara-dialog{width:min(460px,calc(100vw - 30px));max-height:92vh;overflow:auto;border-radius:17px;border:1px solid #dce8e8;box-shadow:0 30px 75px #0a303255;padding:27px;background:white;color:#244448}
-#yara-home .yara-dialog::backdrop{background:#0c262baf}
-#yara-home .yara-dialog header{display:flex;justify-content:space-between;align-items:flex-start}
-#yara-home .yara-dialog header h2{font-size:24px;margin:8px 0 0}
-#yara-home .yara-dialog header button{background:#eff5f5;border:0;border-radius:8px;width:32px;height:32px;font-size:23px;color:#547178}
-#yara-home .yara-dialog p{color:#72888b;font-size:12px;line-height:1.6;margin:12px 0 23px}
-#yara-home .yara-dialog label{display:block;font-size:12px;font-weight:700;color:#36555a;margin-bottom:15px}
-#yara-home .yara-dialog :is(input,select){display:block;margin-top:7px;width:100%;height:42px;border:1px solid #dce8e8;border-radius:8px;padding:9px 12px;color:#224448;background:white}
+#yara-home button{cursor:pointer;color:var(--ink)}
+#yara-home button:disabled{cursor:not-allowed;opacity:.55}
+#yara-home :is(button,input,select):focus-visible{outline:3px solid var(--blue);outline-offset:3px}
+#yara-home .yara-shell{max-width:1430px;min-height:calc(100vh - 60px);margin:auto;
+  display:grid;grid-template-columns:220px minmax(0,1fr);gap:14px;
+  padding:10px;background:var(--cream);border:2px solid var(--ink);border-radius:25px}
+#yara-home .yara-sidebar{background:var(--cyan);border-radius:18px;padding:22px 11px;
+  display:flex;flex-direction:column;gap:25px;min-width:0}
+#yara-home .yara-logo{display:flex;align-items:center;gap:7px;font-size:23px;font-weight:800;
+  padding:0 12px}
+#yara-home .yara-logo small{font-size:10px;letter-spacing:2px;margin-left:auto}
+#yara-home .yara-logo-star{background:var(--yellow);border:2px solid var(--ink);
+  border-radius:50%;font-size:20px;width:35px;height:35px;text-align:center}
+#yara-home .yara-nav{display:flex;flex-direction:column;gap:7px}
+#yara-home .yara-nav button{border:2px solid transparent;background:transparent;
+  border-radius:11px;text-align:left;padding:11px 12px;transition:background .13s}
+#yara-home .yara-nav button:hover:not(:disabled){background:#ffffff80}
+#yara-home .yara-nav button.active{background:var(--blue);border-color:var(--ink);
+  box-shadow:2px 3px 0 #24242433;font-weight:800}
+#yara-home .yara-soon{font-size:9px;margin-left:4px}
+#yara-home .yara-side-bottom{margin-top:auto;display:flex;gap:11px;align-items:center;
+  font-size:11px;padding:10px 8px}
+#yara-home .yara-side-bubble{border:2px solid var(--ink);border-radius:50%;
+  background:var(--yellow);font-size:24px;width:37px;height:37px;text-align:center}
+#yara-home .yara-main{background:var(--paper);border:2px solid var(--ink);
+  border-radius:22px;min-width:0;padding:clamp(17px,3vw,45px);display:flex;
+  flex-direction:column;gap:22px}
+#yara-home .yara-welcome{background:var(--yellow);border:2px solid var(--ink);
+  border-radius:25px;min-height:190px;padding:26px;display:flex;align-items:center;
+  gap:22px;position:relative}
+#yara-home .yara-smile{flex:0 0 auto;font-family:Arial,sans-serif;font-size:53px;text-align:center;
+  line-height:72px;width:78px;height:78px;border:2px solid var(--ink);border-radius:50%;
+  background:#ffe48b}
+#yara-home .yara-welcome h1{font-size:clamp(22px,2.4vw,33px);line-height:1.24;margin:6px 0 9px}
+#yara-home .yara-welcome p{margin:0;max-width:450px}
+#yara-home .yara-welcome small,#yara-home .yara-heading small,
+#yara-home .yara-dialog small{font-size:10px;font-weight:800;letter-spacing:1.1px}
+#yara-home .yara-create-hero{margin-left:auto;align-self:flex-end;border:2px solid var(--ink);
+  border-radius:11px;padding:10px 12px;background:var(--cream);white-space:nowrap;font-weight:700}
+#yara-home .yara-heading{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-bottom:14px}
+#yara-home .yara-heading h2{font-size:23px;margin:3px 0}
+#yara-home .yara-heading>button{border:2px solid var(--ink);border-radius:10px;
+  background:var(--cream);padding:8px 13px}
+#yara-home .yara-project-list{border:2px solid var(--ink);border-radius:23px;
+  overflow:hidden;background:var(--pink);min-height:150px}
+#yara-home .yara-project-card{display:grid;grid-template-columns:115px minmax(0,1fr) minmax(160px,.7fr);
+  align-items:center;text-align:left;min-height:125px;width:100%;padding:0;
+  background:var(--pink);border:0;border-bottom:2px solid var(--ink)}
+#yara-home .yara-project-card:last-child{border-bottom:0}
+#yara-home .yara-project-card:hover{background:#ffe0df}
+#yara-home .yara-project-preview{display:flex;align-items:center;justify-content:center;height:100%;padding:13px}
+#yara-home .yara-mini-device{width:46px;height:78px;background:var(--cream);border:2px solid var(--ink);
+  border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:28px}
+#yara-home .yara-project-name{font-weight:800;font-size:clamp(17px,2vw,25px);
+  overflow:hidden;text-overflow:ellipsis}
+#yara-home .yara-project-meta{align-self:stretch;border-left:2px solid var(--ink);
+  padding:15px;display:flex;flex-direction:column;justify-content:space-between;gap:10px;font-size:13px}
+#yara-home .yara-project-meta small{align-self:flex-end;font-size:11px}
+#yara-home .yara-empty{display:flex;flex-direction:column;gap:12px;align-items:center;
+  justify-content:center;padding:40px 20px;text-align:center}
+#yara-home .yara-empty button{background:var(--yellow);border:2px solid var(--ink);
+  padding:10px 20px;border-radius:12px}
+#yara-home .yara-preset-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+#yara-home .yara-preset-grid button{display:flex;align-items:center;gap:15px;flex-wrap:wrap;
+  background:var(--pink);border:2px solid var(--ink);border-radius:16px;padding:20px;
+  text-align:left}
+#yara-home .yara-preset-grid button:nth-child(2){background:var(--cyan)}
+#yara-home .yara-preset-grid button:nth-child(3){background:var(--lilac)}
+#yara-home .yara-preset-grid button:nth-child(4){background:var(--mint)}
+#yara-home .yara-preset-grid button span{font-size:32px}
+#yara-home .yara-preset-grid button small{width:100%}
+#yara-home .yara-honest-note{font-size:12px;line-height:1.6}
+#yara-home .yara-error{background:var(--pink);border:2px solid #a93131;
+  padding:10px 14px;border-radius:10px}
+#yara-home .yara-dialog{border:2px solid var(--ink);background:var(--cream);
+  border-radius:20px;width:min(500px,94vw);padding:24px;color:var(--ink);box-shadow:8px 10px 0 #1b1b1b30}
+#yara-home .yara-dialog::backdrop{background:#1119}
+#yara-home .yara-dialog header{display:flex;justify-content:space-between;gap:15px}
+#yara-home .yara-dialog header h2{font-size:26px;margin:3px 0 16px}
+#yara-home .yara-dialog header button{border:2px solid var(--ink);border-radius:50%;
+  background:var(--pink);width:32px;height:32px}
+#yara-home .yara-dialog form{display:flex;flex-direction:column;gap:14px}
+#yara-home .yara-dialog label{display:flex;flex-direction:column;gap:6px;font-weight:700}
+#yara-home .yara-dialog input,#yara-home .yara-dialog select{
+  min-height:39px;border:2px solid var(--ink);border-radius:9px;background:white;padding:7px 9px}
 #yara-home .yara-field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-#yara-home .yara-dialog footer{display:flex;justify-content:flex-end;gap:10px;margin-top:20px}
-#yara-home .yara-secondary{border:0;border-radius:8px;color:#3d6065;background:#ecf4f4;padding:12px 18px}
-#yara-home .yara-form-error{color:#ae4d2c;font-size:12px}
-#yara-home .yara-details>p{display:flex;justify-content:space-between;margin:0;padding:12px 0;border-bottom:1px solid #edf3f3}
-#yara-home .yara-details>p span{color:#819799}
-@media(max-width:1050px){#yara-home .yara-layout{grid-template-columns:195px minmax(0,1fr)}#yara-home .yara-content{padding:30px 27px}#yara-home .yara-topbar{padding:0 27px}#yara-home .yara-tools,#yara-home .yara-project-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:710px){#yara-home .yara-layout{grid-template-columns:70px minmax(0,1fr)}#yara-home .yara-sidebar{padding:20px 9px}#yara-home .yara-logo>span:last-child,#yara-home .yara-menu-title,#yara-home .yara-sidebar-footer{display:none}#yara-home .yara-logo{justify-content:center}#yara-home .yara-nav button{font-size:0;justify-content:center}#yara-home .yara-nav small{display:none}#yara-home .yara-nav b{font-size:23px}#yara-home .yara-header-right{display:none}#yara-home .yara-tools,#yara-home .yara-project-grid{grid-template-columns:1fr}#yara-home .yara-hero{grid-template-columns:1fr}#yara-home .yara-hero-art{display:none}}
+#yara-home .yara-dialog footer{display:flex;gap:10px;justify-content:flex-end;margin-top:8px}
+#yara-home .yara-dialog footer button{padding:10px 14px;border:2px solid var(--ink);border-radius:10px}
+#yara-home .yara-btn-outline{background:white}#yara-home .yara-btn-yellow{background:var(--yellow);font-weight:800}
+@media(max-width:900px){#yara-home .yara-shell{grid-template-columns:170px 1fr}
+#yara-home .yara-welcome{flex-wrap:wrap}#yara-home .yara-create-hero{margin-left:0}}
+@media(max-width:680px){#yara-home .yara-shell{grid-template-columns:1fr}
+#yara-home .yara-sidebar{gap:10px}#yara-home .yara-nav{flex-direction:row;flex-wrap:wrap}
+#yara-home .yara-nav button{padding:7px}#yara-home .yara-side-bottom{display:none}
+#yara-home .yara-project-card{grid-template-columns:66px 1fr;gap:5px}
+#yara-home .yara-project-meta{grid-column:1/-1;border-left:0;border-top:1px solid var(--ink);padding:8px 15px}
+#yara-home .yara-preset-grid{grid-template-columns:1fr}}

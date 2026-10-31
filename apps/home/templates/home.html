@@ -1,58 +1,67 @@
-<!-- Yara Home: Vela fornece janela e documento base. -->
+<!-- Yara Picadeiro Pop: home integrada à Bridge nativa do Vela. -->
 <style>@import url("{{ static('home/yara.css') }}");</style>
-<div id="yara-home" class="yara-app">
-  <div class="yara-layout">
-    <aside class="yara-sidebar" aria-label="Menu principal">
-      <a class="yara-logo" href="/home"><span class="yara-logo-icon">✦</span><span><strong>Yara</strong><small>DESIGN STUDIO</small></span></a>
-      <div class="yara-menu-title">WORKSPACE</div>
-      <nav class="yara-nav" aria-label="Navegação do Yara">
-        <button class="active" data-section="home" aria-current="page" type="button"><b>⌂</b> Início</button>
-        <button data-section="projects" type="button"><b>▦</b> Projetos</button>
-        <button type="button" disabled><b>◇</b> Biblioteca <small>Em breve</small></button>
-        <button type="button" disabled><b>▤</b> Templates <small>Em breve</small></button>
+<div id="yara-home" class="yara-app" data-home-start="{{ home_start }}" data-create="{{ home_create }}">
+  <div class="yara-shell">
+    <aside class="yara-sidebar" aria-label="Navegação">
+      <div class="yara-logo"><span class="yara-logo-star">✦</span> Yara <small>STUDIO</small></div>
+      <nav class="yara-nav" aria-label="Áreas de criação">
+        <button type="button" data-section="home" class="active">Workspace</button>
+        <button type="button" data-editor-mode="svg">Editor de SVG</button>
+        <button type="button" data-editor-mode="drawing">Área de Desenho</button>
+        <button type="button" data-editor-mode="sketch">Esboço</button>
+        <button type="button" data-section="templates">Modelos de prancheta</button>
+        <button type="button" data-section="projects">Projetos recentes</button>
+        <button type="button" disabled title="O editor de fluxo ainda não está disponível">Fluxo de App <span class="yara-soon">em breve</span></button>
       </nav>
-      <div class="yara-sidebar-footer"><div class="yara-side-note"><span>✳</span><strong>Seu espaço criativo</strong><p>Desenhe com liberdade. Seus projetos ficam salvos no seu computador.</p></div><small>Yara v{{ app_version }} · Powered by Vela</small></div>
+      <div class="yara-side-bottom"><span class="yara-side-bubble">☺</span><span>Yara v{{ app_version }}<br>Feito para criar.</span></div>
     </aside>
-    <div class="yara-main">
-      <header class="yara-topbar">
-        <div>Workspace <span>/</span> <strong id="yara-crumb">Início</strong></div>
-        <div class="yara-header-right"><span><i></i> Ambiente local</span><span class="yara-avatar">Y</span></div>
-      </header>
-      <main class="yara-content">
-        <div id="yara-error" class="yara-error" role="alert" hidden></div>
-        <section id="yara-dashboard">
-          <div class="yara-intro"><div class="yara-eyebrow">✦ SEU ESTÚDIO DE CRIAÇÃO</div><h1>Sua próxima ideia<br><em>começa aqui.</em></h1><p>Um espaço para explorar, desenhar e criar interfaces do seu jeito.</p></div>
-          <section class="yara-hero" aria-labelledby="yara-hero-title">
-            <div class="yara-hero-copy"><small>COMECE A CRIAR</small><h2 id="yara-hero-title">Crie sem limites.</h2><p>Comece com uma tela em branco e transforme suas ideias em projetos.</p><button id="yara-create" class="yara-primary" type="button">＋ Novo projeto <span>↗</span></button></div>
-            <div class="yara-hero-art" aria-hidden="true"><div class="yara-art-shape square"></div><div class="yara-art-device"><span class="bar"></span><span class="title"></span><span class="block"></span><span class="block small"></span><span class="button"></span></div><div class="yara-art-shape circle"></div><div class="yara-art-tag">✳ Crie do seu jeito</div></div>
-          </section>
-          <div class="yara-heading"><div><small>FERRAMENTAS CRIATIVAS</small><h2>O que você quer criar?</h2></div></div>
-          <div class="yara-tools">
-            <button type="button" class="yara-tool-card" id="yara-create-sketch"><span class="yara-tool-icon teal">✎</span><strong>Novo esboço <span>↗</span></strong><p>Desenhe livremente dentro de uma prancheta.</p><small>Criar esboço →</small></button>
-            <div class="yara-tool-card soon"><span class="yara-tool-icon violet">▣</span><strong>Editor de interfaces <i>EM BREVE</i></strong><p>Monte layouts estruturados para Android e Web.</p><small>Em desenvolvimento</small></div>
-            <div class="yara-tool-card soon"><span class="yara-tool-icon peach">◇</span><strong>Editor SVG <i>EM BREVE</i></strong><p>Crie componentes vetoriais, formas e curvas.</p><small>Em desenvolvimento</small></div>
-          </div>
-        </section>
-        <section class="yara-projects" aria-labelledby="yara-projects-title"><div class="yara-heading"><div><small>CONTINUE DE ONDE PAROU</small><h2 id="yara-projects-title">Projetos recentes</h2></div><button id="yara-view-all" type="button">Ver todos →</button></div><div class="yara-project-grid" id="yara-project-list" aria-live="polite"></div></section>
-      </main>
-    </div>
+
+    <main class="yara-main">
+      <div id="yara-error" class="yara-error" role="alert" hidden></div>
+      <section id="yara-dashboard" class="yara-dashboard">
+        <header class="yara-welcome">
+          <span class="yara-smile" aria-hidden="true">☺</span>
+          <div><small>SEU CANTINHO CRIATIVO</small><h1>Bem-vindo ao Yara,<br>sua área de criação!</h1><p>Um estúdio colorido para transformar ideias em desenhos e interfaces.</p></div>
+          <button type="button" id="yara-create" class="yara-create-hero">＋ Novo projeto</button>
+        </header>
+      </section>
+
+      <section class="yara-projects">
+        <div class="yara-heading">
+          <div><small id="yara-section-kicker">CONTINUE A CRIAR</small><h2 id="yara-projects-title">Recentes</h2></div>
+          <button type="button" id="yara-view-all">Ver todos →</button>
+        </div>
+        <div id="yara-project-list" class="yara-project-list" aria-live="polite"></div>
+      </section>
+
+      <section id="yara-templates" class="yara-templates" hidden>
+        <div class="yara-heading"><div><small>COMECE COM UMA RESOLUÇÃO PRONTA</small><h2>Modelos de prancheta</h2></div></div>
+        <div class="yara-preset-grid">
+          <button type="button" data-preset="android"><span>📱</span><b>Android</b><small>390 × 844 px · Esboço</small></button>
+          <button type="button" data-preset="web"><span>▣</span><b>Website</b><small>1280 × 800 px · Desenho</small></button>
+          <button type="button" data-preset="svg"><span>✳</span><b>Ícone SVG</b><small>512 × 512 px · Vetores</small></button>
+          <button type="button" data-preset="tablet"><span>▤</span><b>Tablet</b><small>768 × 1024 px · Esboço</small></button>
+        </div>
+        <p class="yara-honest-note">Estes modelos configuram o tamanho e o tipo de prancheta. Uma biblioteca completa de componentes virá em outra etapa.</p>
+      </section>
+    </main>
   </div>
-  <dialog id="yara-create-dialog" class="yara-dialog" aria-labelledby="yara-dialog-title">
+
+  <dialog id="yara-create-dialog" class="yara-dialog">
     <form id="yara-create-form">
-      <header><div><small>NOVO PROJETO</small><h2 id="yara-dialog-title">Criar esboço</h2></div><button id="yara-close-create" type="button" aria-label="Fechar">×</button></header>
-      <p>Configure uma prancheta. Você poderá desenhar com mouse ou mesa digitalizadora, usar camadas e salvar seu esboço.</p>
-      <label>Nome do projeto<input name="name" id="yara-name" maxlength="80" required placeholder="Meu aplicativo" autocomplete="off"></label>
-      <label>Plataforma<select id="yara-platform"><option value="android">Android</option><option value="web">Web</option><option value="desktop">Desktop</option></select></label>
-      <div class="yara-field-row"><label>Largura (px)<input id="yara-width" type="number" min="240" max="4096" required value="390"></label><label>Altura (px)<input id="yara-height" type="number" min="240" max="4096" required value="844"></label></div>
-      <div id="yara-form-error" class="yara-form-error" role="alert" hidden></div>
-      <footer><button type="button" id="yara-cancel-create" class="yara-secondary">Cancelar</button><button class="yara-primary" type="submit" id="yara-confirm-create">Criar projeto</button></footer>
+      <header><div><small>COMECE UMA IDEIA</small><h2>Novo projeto ✦</h2></div><button type="button" id="yara-close-create" aria-label="Fechar">×</button></header>
+      <label>Nome do projeto<input id="yara-name" name="name" placeholder="Minha criação" maxlength="80" autocomplete="off" required></label>
+      <div class="yara-field-row">
+        <label>Ambiente<select id="yara-mode"><option value="sketch">Esboço</option><option value="drawing">Área de desenho</option><option value="svg">Vetores / SVG</option></select></label>
+        <label>Formato<select id="yara-platform"><option value="android">Android</option><option value="web">Web</option><option value="desktop">Desktop</option></select></label>
+      </div>
+      <div class="yara-field-row">
+        <label>Largura <input id="yara-width" type="number" min="240" max="4096" value="390" required></label>
+        <label>Altura <input id="yara-height" type="number" min="240" max="4096" value="844" required></label>
+      </div>
+      <p id="yara-form-error" class="yara-error" role="alert" hidden></p>
+      <footer><button type="button" id="yara-cancel-create" class="yara-btn-outline">Cancelar</button><button type="submit" id="yara-confirm-create" class="yara-btn-yellow">Criar prancheta →</button></footer>
     </form>
-  </dialog>
-  <dialog id="yara-details-dialog" class="yara-dialog" aria-labelledby="yara-details-title">
-    <header><div><small>DETALHES DO PROJETO</small><h2 id="yara-details-title">Projeto</h2></div><button id="yara-close-details" type="button" aria-label="Fechar">×</button></header>
-    <div id="yara-details" class="yara-details"></div>
-    <p>O editor de esboços será disponibilizado na próxima etapa. Este projeto já foi salvo localmente.</p>
-    <footer><button type="button" id="yara-done-details" class="yara-primary">Entendi</button></footer>
   </dialog>
 </div>
 <script src="{{ static('home/yara.js') }}"></script>

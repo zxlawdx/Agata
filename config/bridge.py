@@ -35,3 +35,8 @@ class YaraBridge(BaseBridge):
 
     def save_sketch(self, project_id: str, payload: dict) -> dict:
         return SketchService(project_repository()).save(project_id, payload)
+
+    def export_artwork(self, project_id: str, file_format: str, data: str = "") -> dict:
+        """Exporta o projeto salvo para SVG, PNG ou JSON na pasta local Exports."""
+        from apps.sketch_editor.services.exports import ArtworkExporter
+        return ArtworkExporter(project_repository()).export(project_id, file_format, data)

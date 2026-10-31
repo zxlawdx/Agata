@@ -10,6 +10,7 @@ def asset_revision(root: Path | None = None) -> str:
     for relative in (
         "templates/editor.html",
         "static/editor.css",
+        "static/picadeiro.css",
         "static/vendor/fabric.js",
         "static/js/sketch_core.js",
         "static/js/components.js",

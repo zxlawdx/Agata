@@ -8,6 +8,7 @@ from uuid import uuid4
 from apps.workspace.repositories.base import ProjectRepository
 
 _PLATFORMS = {"android", "web", "desktop"}
+_EDITOR_MODES = {"sketch", "drawing", "svg"}
 _CONTROL = re.compile(r"[\x00-\x1f\x7f]")
 
 
@@ -29,6 +30,10 @@ class ProjectService:
         if platform not in _PLATFORMS:
             raise ValueError("Plataforma inválida.")
 
+        editor_mode = payload.get("editor_mode", "sketch")
+        if editor_mode not in _EDITOR_MODES:
+            raise ValueError("Ambiente de edição inválido.")
+
         width, height = payload.get("width", 390), payload.get("height", 844)
         if type(width) is not int or type(height) is not int:
             raise ValueError("Largura e altura devem ser inteiros.")
@@ -41,6 +46,7 @@ class ProjectService:
             "id": uuid4().hex,
             "name": name,
             "kind": "sketch",
+            "editor_mode": editor_mode,
             "platform": platform,
             "canvas": {"width": width, "height": height},
             "screens": [{"id": uuid4().hex, "name": "Tela 1", "elements": []}],
