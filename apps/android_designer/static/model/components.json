@@ -1,0 +1,478 @@
+{
+  "TextLabel": {
+    "properties": {
+      "text": "Texto",
+      "color": "#242424",
+      "fontSize": 16,
+      "bold": false,
+      "align": "start"
+    },
+    "children": [],
+    "container": false,
+    "layout": {
+      "width": "wrap",
+      "height": "wrap",
+      "padding": 0,
+      "gap": 8,
+      "alignment": "start",
+      "arrangement": "start",
+      "scroll": "none",
+      "weight": 0
+    }
+  },
+  "Icon": {
+    "properties": {
+      "icon": "menu",
+      "description": "Menu",
+      "color": "#242424"
+    },
+    "children": [],
+    "container": false,
+    "layout": {
+      "width": "wrap",
+      "height": "wrap",
+      "padding": 0,
+      "gap": 8,
+      "alignment": "start",
+      "arrangement": "start",
+      "scroll": "none",
+      "weight": 0
+    }
+  },
+  "Button": {
+    "properties": {
+      "enabled": true,
+      "variant": "filled",
+      "background": "#53AFF2",
+      "radius": 12
+    },
+    "children": [
+      {
+        "type": "Icon",
+        "props": {
+          "icon": "plus",
+          "description": "Adicionar"
+        },
+        "role": "leading"
+      },
+      {
+        "type": "TextLabel",
+        "props": {
+          "text": "Botão"
+        },
+        "role": "label"
+      }
+    ],
+    "container": true,
+    "layout": {
+      "width": "fill",
+      "height": "wrap",
+      "padding": 0,
+      "gap": 8,
+      "alignment": "start",
+      "arrangement": "start",
+      "scroll": "none",
+      "weight": 0
+    }
+  },
+  "Card": {
+    "properties": {
+      "variant": "filled",
+      "background": "#FFF9EF",
+      "radius": 16,
+      "elevation": 2
+    },
+    "children": [
+      {
+        "type": "TextLabel",
+        "props": {
+          "text": "Título do cartão",
+          "bold": true,
+          "fontSize": 20
+        },
+        "role": "title"
+      },
+      {
+        "type": "TextLabel",
+        "props": {
+          "text": "Descrição do cartão"
+        },
+        "role": "description"
+      }
+    ],
+    "container": true,
+    "layout": {
+      "width": "fill",
+      "height": "wrap",
+      "padding": 12,
+      "gap": 8,
+      "alignment": "start",
+      "arrangement": "start",
+      "scroll": "none",
+      "weight": 0
+    }
+  },
+  "TopBar": {
+    "properties": {
+      "background": "#96E6EC",
+      "elevation": 0
+    },
+    "children": [
+      {
+        "type": "Icon",
+        "props": {
+          "icon": "menu",
+          "description": "Abrir menu"
+        },
+        "role": "navigation"
+      },
+      {
+        "type": "TextLabel",
+        "props": {
+          "text": "Minha aplicação",
+          "bold": true
+        },
+        "role": "title"
+      }
+    ],
+    "container": true,
+    "layout": {
+      "width": "fill",
+      "height": "wrap",
+      "padding": 0,
+      "gap": 8,
+      "alignment": "start",
+      "arrangement": "start",
+      "scroll": "none",
+      "weight": 0
+    }
+  },
+  "Sidebar": {
+    "properties": {
+      "background": "#FFF9EF"
+    },
+    "children": [
+      {
+        "type": "TextLabel",
+        "props": {
+          "text": "Minha aplicação",
+          "bold": true
+        },
+        "role": "header"
+      },
+      {
+        "type": "NavigationItem",
+        "props": {},
+        "role": "item"
+      },
+      {
+        "type": "NavigationItem",
+        "props": {},
+        "role": "item"
+      }
+    ],
+    "container": true,
+    "layout": {
+      "width": "fill",
+      "height": "wrap",
+      "padding": 12,
+      "gap": 8,
+      "alignment": "start",
+      "arrangement": "start",
+      "scroll": "none",
+      "weight": 0
+    }
+  },
+  "BottomBar": {
+    "properties": {
+      "background": "#96E6EC"
+    },
+    "children": [
+      {
+        "type": "NavigationItem",
+        "props": {},
+        "role": "item"
+      },
+      {
+        "type": "NavigationItem",
+        "props": {},
+        "role": "item"
+      }
+    ],
+    "container": true,
+    "layout": {
+      "width": "fill",
+      "height": "wrap",
+      "padding": 0,
+      "gap": 8,
+      "alignment": "start",
+      "arrangement": "start",
+      "scroll": "none",
+      "weight": 0
+    }
+  },
+  "NavigationItem": {
+    "properties": {
+      "selected": false,
+      "enabled": true
+    },
+    "children": [
+      {
+        "type": "Icon",
+        "props": {
+          "icon": "home",
+          "description": "Início"
+        },
+        "role": "icon"
+      },
+      {
+        "type": "TextLabel",
+        "props": {
+          "text": "Início"
+        },
+        "role": "label"
+      }
+    ],
+    "container": true,
+    "layout": {
+      "width": "fill",
+      "height": "wrap",
+      "padding": 0,
+      "gap": 8,
+      "alignment": "start",
+      "arrangement": "start",
+      "scroll": "none",
+      "weight": 0
+    }
+  },
+  "TextField": {
+    "properties": {
+      "label": "E-mail",
+      "placeholder": "nome@exemplo.com",
+      "value": "",
+      "helper": "",
+      "error": "",
+      "keyboard": "email",
+      "variant": "outlined",
+      "enabled": true
+    },
+    "children": [
+      {
+        "type": "Icon",
+        "props": {
+          "icon": "none",
+          "description": ""
+        },
+        "role": "leading"
+      },
+      {
+        "type": "Icon",
+        "props": {
+          "icon": "none",
+          "description": ""
+        },
+        "role": "trailing"
+      }
+    ],
+    "container": true,
+    "layout": {
+      "width": "fill",
+      "height": "wrap",
+      "padding": 0,
+      "gap": 8,
+      "alignment": "start",
+      "arrangement": "start",
+      "scroll": "none",
+      "weight": 0
+    }
+  },
+  "SearchBar": {
+    "properties": {
+      "placeholder": "Pesquisar",
+      "value": "",
+      "enabled": true
+    },
+    "children": [
+      {
+        "type": "Icon",
+        "props": {
+          "icon": "search",
+          "description": "Pesquisar"
+        },
+        "role": "leading"
+      }
+    ],
+    "container": true,
+    "layout": {
+      "width": "fill",
+      "height": "wrap",
+      "padding": 0,
+      "gap": 8,
+      "alignment": "start",
+      "arrangement": "start",
+      "scroll": "none",
+      "weight": 0
+    }
+  },
+  "Row": {
+    "properties": {},
+    "children": [],
+    "container": true,
+    "layout": {
+      "width": "fill",
+      "height": "wrap",
+      "padding": 0,
+      "gap": 8,
+      "alignment": "start",
+      "arrangement": "start",
+      "scroll": "none",
+      "weight": 0
+    }
+  },
+  "Column": {
+    "properties": {},
+    "children": [],
+    "container": true,
+    "layout": {
+      "width": "fill",
+      "height": "wrap",
+      "padding": 12,
+      "gap": 8,
+      "alignment": "start",
+      "arrangement": "start",
+      "scroll": "none",
+      "weight": 0
+    }
+  },
+  "Box": {
+    "properties": {},
+    "children": [],
+    "container": true,
+    "layout": {
+      "width": "fill",
+      "height": "wrap",
+      "padding": 0,
+      "gap": 8,
+      "alignment": "start",
+      "arrangement": "start",
+      "scroll": "none",
+      "weight": 0
+    }
+  },
+  "Spacer": {
+    "properties": {},
+    "children": [],
+    "container": false,
+    "layout": {
+      "width": "wrap",
+      "height": "wrap",
+      "padding": 0,
+      "gap": 8,
+      "alignment": "start",
+      "arrangement": "start",
+      "scroll": "none",
+      "weight": 0
+    }
+  },
+  "Image": {
+    "properties": {
+      "source": "",
+      "description": "Imagem"
+    },
+    "children": [],
+    "container": false,
+    "layout": {
+      "width": "fill",
+      "height": "wrap",
+      "padding": 0,
+      "gap": 8,
+      "alignment": "start",
+      "arrangement": "start",
+      "scroll": "none",
+      "weight": 0
+    }
+  },
+  "Checkbox": {
+    "properties": {
+      "checked": false,
+      "enabled": true
+    },
+    "children": [],
+    "container": false,
+    "layout": {
+      "width": "wrap",
+      "height": "wrap",
+      "padding": 0,
+      "gap": 8,
+      "alignment": "start",
+      "arrangement": "start",
+      "scroll": "none",
+      "weight": 0
+    }
+  },
+  "Switch": {
+    "properties": {
+      "checked": false,
+      "enabled": true
+    },
+    "children": [],
+    "container": false,
+    "layout": {
+      "width": "wrap",
+      "height": "wrap",
+      "padding": 0,
+      "gap": 8,
+      "alignment": "start",
+      "arrangement": "start",
+      "scroll": "none",
+      "weight": 0
+    }
+  },
+  "Slider": {
+    "properties": {
+      "value": 0,
+      "min": 0,
+      "max": 100,
+      "enabled": true
+    },
+    "children": [],
+    "container": false,
+    "layout": {
+      "width": "wrap",
+      "height": "wrap",
+      "padding": 0,
+      "gap": 8,
+      "alignment": "start",
+      "arrangement": "start",
+      "scroll": "none",
+      "weight": 0
+    }
+  },
+  "FloatingButton": {
+    "properties": {
+      "enabled": true,
+      "background": "#B9EFC1"
+    },
+    "children": [
+      {
+        "type": "Icon",
+        "props": {
+          "icon": "plus",
+          "description": "Adicionar"
+        },
+        "role": "icon"
+      }
+    ],
+    "container": true,
+    "layout": {
+      "width": "fill",
+      "height": "wrap",
+      "padding": 0,
+      "gap": 8,
+      "alignment": "start",
+      "arrangement": "start",
+      "scroll": "none",
+      "weight": 0
+    }
+  }
+}

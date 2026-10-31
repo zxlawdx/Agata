@@ -113,3 +113,6 @@
   #agata-sketch .ys-workspace{grid-column:1}
   #agata-sketch .ys-form-tiles button span{display:inline}
 }
+#agata-sketch .ys-message{max-width:min(600px,90%);display:flex;gap:8px;align-items:center}
+#agata-sketch .agata-toast-text{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0}
+#agata-sketch .ys-message[data-error=true]{border-color:#a93131}

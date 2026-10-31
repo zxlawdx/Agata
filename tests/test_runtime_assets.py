@@ -22,3 +22,12 @@ class RuntimeAssetTests(unittest.TestCase):
             asset=resolver.resolve_collected('sketch_editor/vendor/fabric.js')
             self.assertEqual(sha256(asset.read_bytes()).hexdigest(),FABRIC_SHA256)
             self.assertTrue(resolver.resolve_collected('home/img/agata-smile.svg').is_file())
+            self.assertTrue(resolver.resolve_collected('android_designer/vendor/codemirror.js').is_file())
+
+    def test_runapp_startup_collects_without_node_and_registers_designer(self):
+        from config.wsgi import run
+        with patch('config.wsgi.VelaApp') as app, patch.dict('os.environ',{'PATH':''}), patch('subprocess.run',side_effect=AssertionError('Frontend tool invoked')):
+            run()
+            registered=[call.args[0] for call in app.return_value.register_app.call_args_list]
+            self.assertIn('apps.android_designer',registered)
+            app.return_value.run.assert_called_once()

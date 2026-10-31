@@ -27,7 +27,9 @@ Repositório oficial: **https://github.com/zxlawdx/Agata**
 - Zoom, alinhamento, grade visual, desfazer/refazer, salvamento local JSON.
 - Exportação SVG/PNG/JSON em `~/Agata/Exports`.
 
-**Em desenvolvimento:** editor SVG avançado com curvas Bézier e pontos, editor de fluxo de apps, exportação de layouts Android XML, HTML/CSS e importação de modelos completos. A seleção de formato SVG atualmente oferece ferramentas vetoriais básicas e exportação SVG.
+**Interfaces Android (base inicial):** múltiplas Screens, componentes semânticos com filhos editáveis, Inspector, Preview, editor CodeMirror local e exportadores de projetos fonte XML/Kotlin Compose. Acesse pelo botão **Interfaces Android** no editor. Veja [guia](docs/ANDROID_GUIDE.md), [arquitetura e matriz de suporte](docs/ANDROID_ARCHITECTURE.md) e [auditoria/limitações](docs/AUDITORIA_EDITOR.md). Build Android e WebViews nativas ainda precisam de validação.
+
+**Em desenvolvimento:** editor SVG avançado com curvas Bézier e pontos, eventos avançados, gerador HTML/CSS e importação de modelos completos. A seleção de formato SVG atualmente oferece ferramentas vetoriais básicas e exportação SVG.
 
 ## Executar no Linux
 

@@ -55,6 +55,7 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE || 'playwright');
  for(const format of ['svg','png','json']){
   await page.locator('#ys-export-'+format).click();await page.locator('#ys-message').filter({hasText:'.'+format}).waitFor();
  }
+ await page.waitForFunction(()=>document.getElementById('ys-message').hidden,{},{timeout:6000});
  const document=await page.evaluate(async()=>{const p=(await pywebview.api.list_projects())[0];return pywebview.api.get_project(p.id)});
  assert.equal(document.screens[0].layers.length,4);assert.ok(document.screens[0].layers[3].objects.length>=6);
  await page.locator('#ys-home').click();await page.getByRole('button',{name:'Abrir projeto Teste SVG offline'}).waitFor();

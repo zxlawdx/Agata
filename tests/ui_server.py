@@ -21,6 +21,8 @@ collect_static(skip_tailwind=True, asset_config={'tailwind': False}, allow_insta
 router = Router()
 home_routes(router)
 editor_routes(router)
+from apps.android_designer.views import register_routes as android_routes
+android_routes(router)
 server = ApiServer(SimpleNamespace(routes=[]), port=0, docs_enabled=False)
 fixture_root = tempfile.TemporaryDirectory(prefix='agata-ui-')
 repository = JsonProjectRepository(Path(fixture_root.name)/'Agata'/'Projetos', Path(fixture_root.name)/'Yara'/'Projetos')
@@ -39,7 +41,12 @@ def export_artwork(project_id, file_format, data=''):
         assert struct.unpack('>II',payload[16:24]) == (512,512)
     return result
 bridge.export_artwork=export_artwork
-allowed = {'list_projects', 'create_project', 'get_project', 'save_sketch', 'export_artwork'}
+def export_android(project_id,backend):
+    from apps.android_designer.services.documents import InterfaceService
+    from apps.android_designer.exporters.project import export_project
+    return export_project(InterfaceService(repository).get(project_id)['document'],backend,Path(fixture_root.name)/'Exports')
+bridge.export_android=export_android
+allowed = {'list_projects', 'create_project', 'get_project', 'save_sketch', 'export_artwork', 'get_interface', 'save_interface', 'generate_android', 'validate_interface', 'export_android'}
 
 @server.app.post('/fixture/api/<method>')
 def call(method):

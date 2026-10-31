@@ -9,6 +9,7 @@
   <nav class="ys-studio-nav" aria-label="Projetos e exportação">
     <button type="button" id="ys-toggle-tools" class="ys-panel-toggle" aria-expanded="false" aria-controls="ys-tools-panel">Ferramentas</button>
     <button type="button" id="ys-toggle-inspector" class="ys-panel-toggle" aria-expanded="false" aria-controls="ys-inspector-panel">Camadas e propriedades</button>
+    <button type="button" id="ys-android">Interfaces Android</button>
     <button type="button" id="ys-go-new">＋ Novo projeto</button>
     <button type="button" id="ys-go-recents">Recentes</button>
     <button type="button" id="ys-go-models">Modelos</button>
@@ -152,6 +153,7 @@
     "{{ static('sketch_editor/js/components.js') }}?v={{ assets_version }}",
     "{{ static('sketch_editor/js/component_edit.js') }}?v={{ assets_version }}",
     "{{ static('sketch_editor/js/element_tree.js') }}?v={{ assets_version }}",
+    "{{ static('home/js/notifications.js') }}",
     "{{ static('sketch_editor/js/editor.js') }}?v={{ assets_version }}"
   ];
   const load = src => new Promise((resolve, reject) => {

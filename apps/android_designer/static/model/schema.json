@@ -1,0 +1,813 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/zxlawdx/Agata/ui-model-v1",
+  "title": "Agata semantic Android document v1",
+  "type": "object",
+  "required": [
+    "version",
+    "namespace",
+    "app_name",
+    "start_screen",
+    "screens",
+    "theme",
+    "custom_files"
+  ],
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "namespace": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+$"
+    },
+    "app_name": {
+      "type": "string"
+    },
+    "start_screen": {
+      "type": "string"
+    },
+    "screens": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 40,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "width",
+          "height",
+          "position",
+          "root"
+        ],
+        "properties": {
+          "root": {
+            "$ref": "#/$defs/node"
+          }
+        }
+      }
+    },
+    "theme": {
+      "type": "object"
+    },
+    "custom_files": {
+      "type": "object"
+    }
+  },
+  "$defs": {
+    "node": {
+      "allOf": [
+        {
+          "type": "object",
+          "required": [
+            "id",
+            "type",
+            "name",
+            "role",
+            "props",
+            "layout",
+            "events",
+            "children",
+            "states",
+            "export"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]{0,63}$"
+            },
+            "name": {
+              "type": "string"
+            },
+            "role": {
+              "type": "string"
+            },
+            "children": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/node"
+              }
+            },
+            "events": {
+              "type": "object"
+            },
+            "states": {
+              "type": "object"
+            },
+            "export": {
+              "type": "object"
+            }
+          }
+        },
+        {
+          "oneOf": [
+            {
+              "properties": {
+                "type": {
+                  "const": "TextLabel"
+                },
+                "props": {
+                  "type": "object",
+                  "properties": {
+                    "text": {
+                      "type": "string"
+                    },
+                    "color": {
+                      "type": "string"
+                    },
+                    "fontSize": {
+                      "type": "number"
+                    },
+                    "bold": {
+                      "type": "boolean"
+                    },
+                    "align": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "text",
+                    "color",
+                    "fontSize",
+                    "bold",
+                    "align"
+                  ],
+                  "additionalProperties": false
+                },
+                "layout": {
+                  "type": "object",
+                  "required": [
+                    "width",
+                    "height",
+                    "padding",
+                    "gap",
+                    "alignment",
+                    "arrangement",
+                    "scroll",
+                    "weight"
+                  ]
+                }
+              }
+            },
+            {
+              "properties": {
+                "type": {
+                  "const": "Icon"
+                },
+                "props": {
+                  "type": "object",
+                  "properties": {
+                    "icon": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "color": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "icon",
+                    "description",
+                    "color"
+                  ],
+                  "additionalProperties": false
+                },
+                "layout": {
+                  "type": "object",
+                  "required": [
+                    "width",
+                    "height",
+                    "padding",
+                    "gap",
+                    "alignment",
+                    "arrangement",
+                    "scroll",
+                    "weight"
+                  ]
+                }
+              }
+            },
+            {
+              "properties": {
+                "type": {
+                  "const": "Button"
+                },
+                "props": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean"
+                    },
+                    "variant": {
+                      "type": "string"
+                    },
+                    "background": {
+                      "type": "string"
+                    },
+                    "radius": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "enabled",
+                    "variant",
+                    "background",
+                    "radius"
+                  ],
+                  "additionalProperties": false
+                },
+                "layout": {
+                  "type": "object",
+                  "required": [
+                    "width",
+                    "height",
+                    "padding",
+                    "gap",
+                    "alignment",
+                    "arrangement",
+                    "scroll",
+                    "weight"
+                  ]
+                }
+              }
+            },
+            {
+              "properties": {
+                "type": {
+                  "const": "Card"
+                },
+                "props": {
+                  "type": "object",
+                  "properties": {
+                    "variant": {
+                      "type": "string"
+                    },
+                    "background": {
+                      "type": "string"
+                    },
+                    "radius": {
+                      "type": "number"
+                    },
+                    "elevation": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "variant",
+                    "background",
+                    "radius",
+                    "elevation"
+                  ],
+                  "additionalProperties": false
+                },
+                "layout": {
+                  "type": "object",
+                  "required": [
+                    "width",
+                    "height",
+                    "padding",
+                    "gap",
+                    "alignment",
+                    "arrangement",
+                    "scroll",
+                    "weight"
+                  ]
+                }
+              }
+            },
+            {
+              "properties": {
+                "type": {
+                  "const": "TopBar"
+                },
+                "props": {
+                  "type": "object",
+                  "properties": {
+                    "background": {
+                      "type": "string"
+                    },
+                    "elevation": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "background",
+                    "elevation"
+                  ],
+                  "additionalProperties": false
+                },
+                "layout": {
+                  "type": "object",
+                  "required": [
+                    "width",
+                    "height",
+                    "padding",
+                    "gap",
+                    "alignment",
+                    "arrangement",
+                    "scroll",
+                    "weight"
+                  ]
+                }
+              }
+            },
+            {
+              "properties": {
+                "type": {
+                  "const": "Sidebar"
+                },
+                "props": {
+                  "type": "object",
+                  "properties": {
+                    "background": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "background"
+                  ],
+                  "additionalProperties": false
+                },
+                "layout": {
+                  "type": "object",
+                  "required": [
+                    "width",
+                    "height",
+                    "padding",
+                    "gap",
+                    "alignment",
+                    "arrangement",
+                    "scroll",
+                    "weight"
+                  ]
+                }
+              }
+            },
+            {
+              "properties": {
+                "type": {
+                  "const": "BottomBar"
+                },
+                "props": {
+                  "type": "object",
+                  "properties": {
+                    "background": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "background"
+                  ],
+                  "additionalProperties": false
+                },
+                "layout": {
+                  "type": "object",
+                  "required": [
+                    "width",
+                    "height",
+                    "padding",
+                    "gap",
+                    "alignment",
+                    "arrangement",
+                    "scroll",
+                    "weight"
+                  ]
+                }
+              }
+            },
+            {
+              "properties": {
+                "type": {
+                  "const": "NavigationItem"
+                },
+                "props": {
+                  "type": "object",
+                  "properties": {
+                    "selected": {
+                      "type": "boolean"
+                    },
+                    "enabled": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "selected",
+                    "enabled"
+                  ],
+                  "additionalProperties": false
+                },
+                "layout": {
+                  "type": "object",
+                  "required": [
+                    "width",
+                    "height",
+                    "padding",
+                    "gap",
+                    "alignment",
+                    "arrangement",
+                    "scroll",
+                    "weight"
+                  ]
+                }
+              }
+            },
+            {
+              "properties": {
+                "type": {
+                  "const": "TextField"
+                },
+                "props": {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "placeholder": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "string"
+                    },
+                    "helper": {
+                      "type": "string"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "keyboard": {
+                      "type": "string"
+                    },
+                    "variant": {
+                      "type": "string"
+                    },
+                    "enabled": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "label",
+                    "placeholder",
+                    "value",
+                    "helper",
+                    "error",
+                    "keyboard",
+                    "variant",
+                    "enabled"
+                  ],
+                  "additionalProperties": false
+                },
+                "layout": {
+                  "type": "object",
+                  "required": [
+                    "width",
+                    "height",
+                    "padding",
+                    "gap",
+                    "alignment",
+                    "arrangement",
+                    "scroll",
+                    "weight"
+                  ]
+                }
+              }
+            },
+            {
+              "properties": {
+                "type": {
+                  "const": "SearchBar"
+                },
+                "props": {
+                  "type": "object",
+                  "properties": {
+                    "placeholder": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "string"
+                    },
+                    "enabled": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "placeholder",
+                    "value",
+                    "enabled"
+                  ],
+                  "additionalProperties": false
+                },
+                "layout": {
+                  "type": "object",
+                  "required": [
+                    "width",
+                    "height",
+                    "padding",
+                    "gap",
+                    "alignment",
+                    "arrangement",
+                    "scroll",
+                    "weight"
+                  ]
+                }
+              }
+            },
+            {
+              "properties": {
+                "type": {
+                  "const": "Row"
+                },
+                "props": {
+                  "type": "object",
+                  "properties": {},
+                  "required": [],
+                  "additionalProperties": false
+                },
+                "layout": {
+                  "type": "object",
+                  "required": [
+                    "width",
+                    "height",
+                    "padding",
+                    "gap",
+                    "alignment",
+                    "arrangement",
+                    "scroll",
+                    "weight"
+                  ]
+                }
+              }
+            },
+            {
+              "properties": {
+                "type": {
+                  "const": "Column"
+                },
+                "props": {
+                  "type": "object",
+                  "properties": {},
+                  "required": [],
+                  "additionalProperties": false
+                },
+                "layout": {
+                  "type": "object",
+                  "required": [
+                    "width",
+                    "height",
+                    "padding",
+                    "gap",
+                    "alignment",
+                    "arrangement",
+                    "scroll",
+                    "weight"
+                  ]
+                }
+              }
+            },
+            {
+              "properties": {
+                "type": {
+                  "const": "Box"
+                },
+                "props": {
+                  "type": "object",
+                  "properties": {},
+                  "required": [],
+                  "additionalProperties": false
+                },
+                "layout": {
+                  "type": "object",
+                  "required": [
+                    "width",
+                    "height",
+                    "padding",
+                    "gap",
+                    "alignment",
+                    "arrangement",
+                    "scroll",
+                    "weight"
+                  ]
+                }
+              }
+            },
+            {
+              "properties": {
+                "type": {
+                  "const": "Spacer"
+                },
+                "props": {
+                  "type": "object",
+                  "properties": {},
+                  "required": [],
+                  "additionalProperties": false
+                },
+                "layout": {
+                  "type": "object",
+                  "required": [
+                    "width",
+                    "height",
+                    "padding",
+                    "gap",
+                    "alignment",
+                    "arrangement",
+                    "scroll",
+                    "weight"
+                  ]
+                }
+              }
+            },
+            {
+              "properties": {
+                "type": {
+                  "const": "Image"
+                },
+                "props": {
+                  "type": "object",
+                  "properties": {
+                    "source": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "source",
+                    "description"
+                  ],
+                  "additionalProperties": false
+                },
+                "layout": {
+                  "type": "object",
+                  "required": [
+                    "width",
+                    "height",
+                    "padding",
+                    "gap",
+                    "alignment",
+                    "arrangement",
+                    "scroll",
+                    "weight"
+                  ]
+                }
+              }
+            },
+            {
+              "properties": {
+                "type": {
+                  "const": "Checkbox"
+                },
+                "props": {
+                  "type": "object",
+                  "properties": {
+                    "checked": {
+                      "type": "boolean"
+                    },
+                    "enabled": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "checked",
+                    "enabled"
+                  ],
+                  "additionalProperties": false
+                },
+                "layout": {
+                  "type": "object",
+                  "required": [
+                    "width",
+                    "height",
+                    "padding",
+                    "gap",
+                    "alignment",
+                    "arrangement",
+                    "scroll",
+                    "weight"
+                  ]
+                }
+              }
+            },
+            {
+              "properties": {
+                "type": {
+                  "const": "Switch"
+                },
+                "props": {
+                  "type": "object",
+                  "properties": {
+                    "checked": {
+                      "type": "boolean"
+                    },
+                    "enabled": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "checked",
+                    "enabled"
+                  ],
+                  "additionalProperties": false
+                },
+                "layout": {
+                  "type": "object",
+                  "required": [
+                    "width",
+                    "height",
+                    "padding",
+                    "gap",
+                    "alignment",
+                    "arrangement",
+                    "scroll",
+                    "weight"
+                  ]
+                }
+              }
+            },
+            {
+              "properties": {
+                "type": {
+                  "const": "Slider"
+                },
+                "props": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "number"
+                    },
+                    "min": {
+                      "type": "number"
+                    },
+                    "max": {
+                      "type": "number"
+                    },
+                    "enabled": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "value",
+                    "min",
+                    "max",
+                    "enabled"
+                  ],
+                  "additionalProperties": false
+                },
+                "layout": {
+                  "type": "object",
+                  "required": [
+                    "width",
+                    "height",
+                    "padding",
+                    "gap",
+                    "alignment",
+                    "arrangement",
+                    "scroll",
+                    "weight"
+                  ]
+                }
+              }
+            },
+            {
+              "properties": {
+                "type": {
+                  "const": "FloatingButton"
+                },
+                "props": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean"
+                    },
+                    "background": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "enabled",
+                    "background"
+                  ],
+                  "additionalProperties": false
+                },
+                "layout": {
+                  "type": "object",
+                  "required": [
+                    "width",
+                    "height",
+                    "padding",
+                    "gap",
+                    "alignment",
+                    "arrangement",
+                    "scroll",
+                    "weight"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

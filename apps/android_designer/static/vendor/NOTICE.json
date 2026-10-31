@@ -1,0 +1,113 @@
+{
+  "bundle_sha256": "1650df2f8c17b6da0426a3fa2533eb17bd4f9a6781317d3959e262059caa19e9",
+  "packages": [
+    {
+      "package": "crelt",
+      "version": "1.0.7",
+      "license": "MIT",
+      "license_file": "crelt.txt"
+    },
+    {
+      "package": "style-mod",
+      "version": "4.1.4",
+      "license": "MIT",
+      "license_file": "style-mod.txt"
+    },
+    {
+      "package": "w3c-keyname",
+      "version": "2.2.8",
+      "license": "MIT",
+      "license_file": "w3c-keyname.txt"
+    },
+    {
+      "package": "@codemirror/autocomplete",
+      "version": "6.20.4",
+      "license": "MIT",
+      "license_file": "codemirror_autocomplete.txt"
+    },
+    {
+      "package": "@codemirror/commands",
+      "version": "6.11.1",
+      "license": "MIT",
+      "license_file": "codemirror_commands.txt"
+    },
+    {
+      "package": "@codemirror/lang-json",
+      "version": "6.0.2",
+      "license": "MIT",
+      "license_file": "codemirror_lang-json.txt"
+    },
+    {
+      "package": "@codemirror/lang-xml",
+      "version": "6.1.0",
+      "license": "MIT",
+      "license_file": "codemirror_lang-xml.txt"
+    },
+    {
+      "package": "@codemirror/language",
+      "version": "6.13.1",
+      "license": "MIT",
+      "license_file": "codemirror_language.txt"
+    },
+    {
+      "package": "@codemirror/legacy-modes",
+      "version": "6.5.5",
+      "license": "MIT",
+      "license_file": "codemirror_legacy-modes.txt"
+    },
+    {
+      "package": "@codemirror/search",
+      "version": "6.7.2",
+      "license": "MIT",
+      "license_file": "codemirror_search.txt"
+    },
+    {
+      "package": "@codemirror/state",
+      "version": "6.7.6",
+      "license": "MIT",
+      "license_file": "codemirror_state.txt"
+    },
+    {
+      "package": "@codemirror/streamparser",
+      "version": "6.0.0",
+      "license": "MIT",
+      "license_file": "codemirror_streamparser.txt"
+    },
+    {
+      "package": "@codemirror/view",
+      "version": "6.43.15",
+      "license": "MIT",
+      "license_file": "codemirror_view.txt"
+    },
+    {
+      "package": "@lezer/common",
+      "version": "1.5.5",
+      "license": "MIT",
+      "license_file": "lezer_common.txt"
+    },
+    {
+      "package": "@lezer/highlight",
+      "version": "1.2.5",
+      "license": "MIT",
+      "license_file": "lezer_highlight.txt"
+    },
+    {
+      "package": "@lezer/json",
+      "version": "1.0.3",
+      "license": "MIT",
+      "license_file": "lezer_json.txt"
+    },
+    {
+      "package": "@lezer/lr",
+      "version": "1.4.12",
+      "license": "MIT",
+      "license_file": "lezer_lr.txt"
+    },
+    {
+      "package": "@lezer/xml",
+      "version": "1.0.6",
+      "license": "MIT",
+      "license_file": "lezer_xml.txt"
+    }
+  ]
+}

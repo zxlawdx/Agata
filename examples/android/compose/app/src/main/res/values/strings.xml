@@ -1,0 +1,19 @@
+<resources>
+<string name="app_name">Agata App</string>
+<string name="n_component_4_text">Minha aplicação</string>
+<string name="n_component_3_description">Abrir menu</string>
+<string name="n_component_6_text">Bem-vindo</string>
+<string name="n_component_7_text">Entre com seu e-mail para continuar.</string>
+<string name="n_component_8_label">E-mail</string>
+<string name="n_component_8_helper"></string>
+<string name="n_component_8_placeholder">nome@exemplo.com</string>
+<string name="n_component_12_description">Adicionar</string>
+<string name="n_component_13_text">Entrar</string>
+<string name="n_component_17_text">Início</string>
+<string name="n_component_16_description">Início</string>
+<string name="n_component_20_text">Dashboard</string>
+<string name="n_component_19_description">Início</string>
+<string name="n_component_22_text">Dashboard</string>
+<string name="n_component_24_description">Adicionar</string>
+<string name="n_component_25_text">Voltar</string>
+</resources>
