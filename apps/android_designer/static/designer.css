@@ -23,6 +23,8 @@
 #ad-links{z-index:2;pointer-events:none;overflow:visible}
 #android-designer .ad-connection{fill:none;stroke:#5a276c;stroke-width:4;pointer-events:stroke;cursor:pointer}
 #android-designer .ad-connection:hover{stroke:#ff8200;stroke-width:7}
+#android-designer .ad-nav-label{font:600 12px system-ui;fill:#5a276c;paint-order:stroke;stroke:var(--cream,#fff9ef);stroke-width:3px;pointer-events:none}
+#android-designer #ad-links[hidden]{display:none!important}
 #android-designer .ad-frame{position:absolute;box-shadow:5px 6px 0 #24242444;border:3px solid var(--ink);border-radius:12px;background:white;overflow:visible}
 #android-designer .ad-active-frame{outline:4px solid var(--yellow);outline-offset:4px}
 #android-designer .ad-frame-title{border:0;border-radius:8px 8px 0 0;width:100%;text-align:left;background:var(--cream);cursor:move;touch-action:none}
