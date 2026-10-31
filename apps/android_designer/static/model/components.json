@@ -1172,5 +1172,492 @@
       "horizontalBias": 0.5,
       "verticalBias": 0.5
     }
+  },
+  "Shape": {
+    "properties": {
+      "kind": "rect",
+      "fill": "#53AFF2",
+      "stroke": "#242424",
+      "strokeWidth": 2,
+      "opacity": 1,
+      "rotation": 0,
+      "radius": 12,
+      "path": [],
+      "text": "Texto"
+    },
+    "children": [],
+    "container": false,
+    "layout": {
+      "width": 120,
+      "height": 80,
+      "padding": 0,
+      "gap": 8,
+      "alignment": "start",
+      "arrangement": "start",
+      "scroll": "none",
+      "weight": 0,
+      "mode": "auto",
+      "x": 0,
+      "y": 0,
+      "minWidth": 0,
+      "maxWidth": 4096,
+      "minHeight": 0,
+      "maxHeight": 4096,
+      "aspectRatio": 0,
+      "margin": 0,
+      "anchorX": "start",
+      "anchorY": "top",
+      "columns": 2,
+      "wrap": false,
+      "visible": true,
+      "locked": false,
+      "responsive": {},
+      "constraints": {},
+      "horizontalBias": 0.5,
+      "verticalBias": 0.5
+    }
+  },
+  "DrawingCanvas": {
+    "properties": {
+      "background": "#FFFFFF",
+      "viewportWidth": 400,
+      "viewportHeight": 240
+    },
+    "children": [],
+    "container": true,
+    "layout": {
+      "width": 320,
+      "height": 220,
+      "padding": 0,
+      "gap": 8,
+      "alignment": "start",
+      "arrangement": "start",
+      "scroll": "none",
+      "weight": 0,
+      "mode": "auto",
+      "x": 0,
+      "y": 0,
+      "minWidth": 0,
+      "maxWidth": 4096,
+      "minHeight": 0,
+      "maxHeight": 4096,
+      "aspectRatio": 0,
+      "margin": 0,
+      "anchorX": "start",
+      "anchorY": "top",
+      "columns": 2,
+      "wrap": false,
+      "visible": true,
+      "locked": false,
+      "responsive": {},
+      "constraints": {},
+      "horizontalBias": 0.5,
+      "verticalBias": 0.5
+    }
+  },
+  "Chart": {
+    "properties": {
+      "kind": "line",
+      "title": "Dados do projeto",
+      "labels": [
+        "Jan",
+        "Fev",
+        "Mar",
+        "Abr"
+      ],
+      "series": [
+        {
+          "name": "S\u00e9rie 1",
+          "color": "#167CB8",
+          "values": [
+            12,
+            28,
+            19,
+            42
+          ]
+        }
+      ],
+      "legend": true
+    },
+    "children": [],
+    "container": false,
+    "layout": {
+      "width": 320,
+      "height": 220,
+      "padding": 0,
+      "gap": 8,
+      "alignment": "start",
+      "arrangement": "start",
+      "scroll": "none",
+      "weight": 0,
+      "mode": "auto",
+      "x": 0,
+      "y": 0,
+      "minWidth": 0,
+      "maxWidth": 4096,
+      "minHeight": 0,
+      "maxHeight": 4096,
+      "aspectRatio": 0,
+      "margin": 0,
+      "anchorX": "start",
+      "anchorY": "top",
+      "columns": 2,
+      "wrap": false,
+      "visible": true,
+      "locked": false,
+      "responsive": {},
+      "constraints": {},
+      "horizontalBias": 0.5,
+      "verticalBias": 0.5
+    }
+  },
+  "RadioButton": {
+    "properties": {
+      "checked": false,
+      "enabled": true
+    },
+    "children": [],
+    "container": false,
+    "layout": {
+      "width": "wrap",
+      "height": "wrap",
+      "padding": 0,
+      "gap": 8,
+      "alignment": "start",
+      "arrangement": "start",
+      "scroll": "none",
+      "weight": 0,
+      "mode": "auto",
+      "x": 0,
+      "y": 0,
+      "minWidth": 0,
+      "maxWidth": 4096,
+      "minHeight": 0,
+      "maxHeight": 4096,
+      "aspectRatio": 0,
+      "margin": 0,
+      "anchorX": "start",
+      "anchorY": "top",
+      "columns": 2,
+      "wrap": false,
+      "visible": true,
+      "locked": false,
+      "responsive": {},
+      "constraints": {},
+      "horizontalBias": 0.5,
+      "verticalBias": 0.5
+    }
+  },
+  "ProgressIndicator": {
+    "properties": {
+      "value": 0.5,
+      "color": "#167CB8"
+    },
+    "children": [],
+    "container": false,
+    "layout": {
+      "width": "fill",
+      "height": 12,
+      "padding": 0,
+      "gap": 8,
+      "alignment": "start",
+      "arrangement": "start",
+      "scroll": "none",
+      "weight": 0,
+      "mode": "auto",
+      "x": 0,
+      "y": 0,
+      "minWidth": 0,
+      "maxWidth": 4096,
+      "minHeight": 0,
+      "maxHeight": 4096,
+      "aspectRatio": 0,
+      "margin": 0,
+      "anchorX": "start",
+      "anchorY": "top",
+      "columns": 2,
+      "wrap": false,
+      "visible": true,
+      "locked": false,
+      "responsive": {},
+      "constraints": {},
+      "horizontalBias": 0.5,
+      "verticalBias": 0.5
+    }
+  },
+  "Avatar": {
+    "properties": {
+      "variant": "filled",
+      "background": "#FFF9EF",
+      "radius": 100,
+      "elevation": 0
+    },
+    "children": [
+      {
+        "type": "Icon",
+        "props": {
+          "icon": "home"
+        },
+        "role": "icon"
+      }
+    ],
+    "container": true,
+    "layout": {
+      "width": 64,
+      "height": 64,
+      "padding": 12,
+      "gap": 8,
+      "alignment": "start",
+      "arrangement": "start",
+      "scroll": "none",
+      "weight": 0,
+      "mode": "auto",
+      "x": 0,
+      "y": 0,
+      "minWidth": 0,
+      "maxWidth": 4096,
+      "minHeight": 0,
+      "maxHeight": 4096,
+      "aspectRatio": 0,
+      "margin": 0,
+      "anchorX": "start",
+      "anchorY": "top",
+      "columns": 2,
+      "wrap": false,
+      "visible": true,
+      "locked": false,
+      "responsive": {},
+      "constraints": {},
+      "horizontalBias": 0.5,
+      "verticalBias": 0.5
+    }
+  },
+  "Chip": {
+    "properties": {
+      "enabled": true,
+      "variant": "tonal",
+      "background": "#53AFF2",
+      "radius": 20
+    },
+    "children": [
+      {
+        "type": "Icon",
+        "props": {
+          "icon": "plus",
+          "description": "Adicionar"
+        },
+        "role": "leading"
+      },
+      {
+        "type": "TextLabel",
+        "props": {
+          "text": "Bot\u00e3o"
+        },
+        "role": "label"
+      }
+    ],
+    "container": true,
+    "layout": {
+      "width": "wrap",
+      "height": "wrap",
+      "padding": 0,
+      "gap": 8,
+      "alignment": "start",
+      "arrangement": "start",
+      "scroll": "none",
+      "weight": 0,
+      "mode": "auto",
+      "x": 0,
+      "y": 0,
+      "minWidth": 0,
+      "maxWidth": 4096,
+      "minHeight": 48,
+      "maxHeight": 4096,
+      "aspectRatio": 0,
+      "margin": 0,
+      "anchorX": "start",
+      "anchorY": "top",
+      "columns": 2,
+      "wrap": false,
+      "visible": true,
+      "locked": false,
+      "responsive": {},
+      "constraints": {},
+      "horizontalBias": 0.5,
+      "verticalBias": 0.5
+    }
+  },
+  "Badge": {
+    "properties": {
+      "text": "Novo",
+      "color": "#242424",
+      "fontSize": 12,
+      "bold": false,
+      "align": "start",
+      "maxLines": 0,
+      "overflow": "clip"
+    },
+    "children": [],
+    "container": false,
+    "layout": {
+      "width": "wrap",
+      "height": "wrap",
+      "padding": 0,
+      "gap": 8,
+      "alignment": "start",
+      "arrangement": "start",
+      "scroll": "none",
+      "weight": 0,
+      "mode": "auto",
+      "x": 0,
+      "y": 0,
+      "minWidth": 0,
+      "maxWidth": 4096,
+      "minHeight": 0,
+      "maxHeight": 4096,
+      "aspectRatio": 0,
+      "margin": 0,
+      "anchorX": "start",
+      "anchorY": "top",
+      "columns": 2,
+      "wrap": false,
+      "visible": true,
+      "locked": false,
+      "responsive": {},
+      "constraints": {},
+      "horizontalBias": 0.5,
+      "verticalBias": 0.5
+    }
+  },
+  "ListItem": {
+    "properties": {},
+    "children": [
+      {
+        "type": "Icon",
+        "props": {
+          "icon": "home"
+        },
+        "role": "leading"
+      },
+      {
+        "type": "TextLabel",
+        "props": {
+          "text": "Item da lista"
+        },
+        "role": "title"
+      }
+    ],
+    "container": true,
+    "layout": {
+      "width": "fill",
+      "height": "wrap",
+      "padding": 0,
+      "gap": 8,
+      "alignment": "start",
+      "arrangement": "start",
+      "scroll": "none",
+      "weight": 0,
+      "mode": "auto",
+      "x": 0,
+      "y": 0,
+      "minWidth": 0,
+      "maxWidth": 4096,
+      "minHeight": 0,
+      "maxHeight": 4096,
+      "aspectRatio": 0,
+      "margin": 0,
+      "anchorX": "start",
+      "anchorY": "top",
+      "columns": 2,
+      "wrap": false,
+      "visible": true,
+      "locked": false,
+      "responsive": {},
+      "constraints": {},
+      "horizontalBias": 0.5,
+      "verticalBias": 0.5
+    }
+  },
+  "NavigationRail": {
+    "properties": {
+      "background": "#FFFFFF",
+      "orientation": "vertical"
+    },
+    "children": [],
+    "container": true,
+    "layout": {
+      "width": 80,
+      "height": "fill",
+      "padding": 12,
+      "gap": 8,
+      "alignment": "start",
+      "arrangement": "start",
+      "scroll": "none",
+      "weight": 0,
+      "mode": "auto",
+      "x": 0,
+      "y": 0,
+      "minWidth": 0,
+      "maxWidth": 4096,
+      "minHeight": 0,
+      "maxHeight": 4096,
+      "aspectRatio": 0,
+      "margin": 0,
+      "anchorX": "start",
+      "anchorY": "top",
+      "columns": 2,
+      "wrap": false,
+      "visible": true,
+      "locked": false,
+      "responsive": {},
+      "constraints": {},
+      "horizontalBias": 0.5,
+      "verticalBias": 0.5
+    }
+  },
+  "TabRow": {
+    "properties": {},
+    "children": [
+      {
+        "type": "NavigationItem",
+        "props": {},
+        "role": "item"
+      },
+      {
+        "type": "NavigationItem",
+        "props": {},
+        "role": "item"
+      }
+    ],
+    "container": true,
+    "layout": {
+      "width": "fill",
+      "height": "wrap",
+      "padding": 0,
+      "gap": 8,
+      "alignment": "start",
+      "arrangement": "start",
+      "scroll": "none",
+      "weight": 0,
+      "mode": "auto",
+      "x": 0,
+      "y": 0,
+      "minWidth": 0,
+      "maxWidth": 4096,
+      "minHeight": 0,
+      "maxHeight": 4096,
+      "aspectRatio": 0,
+      "margin": 0,
+      "anchorX": "start",
+      "anchorY": "top",
+      "columns": 2,
+      "wrap": false,
+      "visible": true,
+      "locked": false,
+      "responsive": {},
+      "constraints": {},
+      "horizontalBias": 0.5,
+      "verticalBias": 0.5
+    }
   }
 }

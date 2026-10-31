@@ -47,7 +47,7 @@ class ConstraintTests(unittest.TestCase):
                 for key in ('constraints','horizontalBias','verticalBias'):n['layout'].pop(key)
                 n['events']={}
         original=copy.deepcopy(d);clean=validate(d)
-        self.assertEqual(d,original);self.assertEqual(clean['version'],3)
+        self.assertEqual(d,original);self.assertEqual(clean['version'],4)
         self.assertEqual(clean['screens'][0]['root']['id'],d['screens'][0]['root']['id'])
         self.assertEqual(clean['screens'][0]['layers'],[])
 

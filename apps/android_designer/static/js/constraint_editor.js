@@ -16,7 +16,7 @@ window.AgataConstraintEditor={mount(root,{model,selection,commit,notify,enabled}
     const element=targetId==='parent'?parent:[...parent.children].find(e=>e.dataset.nodeId===node.id);if(!element)continue;
     for(const anchor of ['start','end','top','bottom',...(node.type==='TextLabel'?['baseline']:[])]){
      const h=document.createElement('button');h.type='button';h.className='ad-constraint-anchor';h.dataset.constraintNode=targetId;h.dataset.constraintParent=c.parent.id;h.dataset.anchor=anchor;h.setAttribute('aria-label',`${node.name} · ${anchor}`);h.title=h.getAttribute('aria-label');
-     const p=point(element,anchor);h.style.left=p.x+'px';h.style.top=p.y+'px';if(targetId==='parent')h.style.zIndex=1000;if(node.id===id){h.dataset.constraintSource=id;h.style.zIndex=1100;}overlay.append(h);
+     const p=point(element,anchor);h.style.left=p.x+'px';h.style.top=p.y+'px';h.style.width=18/scale+'px';h.style.height=18/scale+'px';if(targetId==='parent')h.style.zIndex=1000;if(node.id===id){h.dataset.constraintSource=id;h.style.zIndex=1100;}overlay.append(h);
     }
    }
    const source=[...parent.children].find(e=>e.dataset.nodeId===id);

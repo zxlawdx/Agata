@@ -16,11 +16,12 @@ window.AgataUIModel=(()=>{
   find(id){let result=null;for(const screen of this.value.screens)walk(screen.root,(n,parent)=>{if(n.id===id)result={node:n,parent,screen};});return result;}
   addScreen(){const s={id:id('s'),name:'Nova Screen',width:390,height:844,position:{x:Math.max(...this.value.screens.map(s=>s.position.x+s.width))+80,y:80},root:node(this.registry,'Column')};this.transact(d=>d.screens.push(s));return s;}
   duplicateScreen(screen){const copy=clone(screen),map=new Map();map.set(copy.id,id('s'));copy.id=map.get(copy.id);copy.name+=' cópia';copy.position.x+=440;walk(copy.root,n=>{map.set(n.id,id('n'));n.id=map.get(n.id);});for(const l of copy.layers||[]){l.id=id('l');l.nodes=l.nodes.map(id=>map.get(id)).filter(Boolean);}walk(copy.root,n=>{for(const link of Object.values(n.layout.constraints||{}))if(map.has(link.target))link.target=map.get(link.target);if(n.type==='Barrier')n.props.references=n.props.references.split(/\s+/).map(id=>map.get(id)).filter(Boolean).join(' ');if(n.events.onClick?.target===screen.id)n.events.onClick.target=copy.id;});this.transact(d=>d.screens.push(copy));return copy;}
-  deleteScreen(screen){if(this.value.screens.length===1)throw Error('Mantenha ao menos uma Screen.');this.transact(d=>{d.screens=d.screens.filter(s=>s.id!==screen.id);if(d.start_screen===screen.id)d.start_screen=d.screens[0].id;for(const s of d.screens)walk(s.root,n=>{if(n.events.onClick?.target===screen.id)n.events.onClick.broken=true;});});}
+  deleteScreen(screen){if(this.value.screens.length===1)throw Error('Mantenha ao menos uma Screen.');this.transact(d=>{d.screens=d.screens.filter(s=>s.id!==screen.id);if(d.start_screen===screen.id)d.start_screen=d.screens[0].id;for(const s of d.screens)walk(s.root,n=>{if(n.events.onClick?.target===screen.id||n.events.onClick?.popUpTo===screen.id)n.events.onClick.broken=true;});});}
   locked(id){let c=this.find(id);while(c){if(c.node.layout.locked||(c.screen.layers||[]).some(l=>l.locked&&l.nodes.includes(c.node.id)))return true;c=c.parent?this.find(c.parent.id):null;}return false;}
   accepts(parent,child){
    if(!this.registry[parent.type]?.container||this.locked(parent.id))return false;
    if(['Guideline','Barrier'].includes(child.type)&&parent.type!=='ConstraintLayout')return false;
+   if(parent.type==='DrawingCanvas')return child.type==='Shape';
    if(parent.type==='BottomBar')return child.type==='NavigationItem';
    if(['Button','IconButton','FloatingButton','NavigationItem'].includes(parent.type))return ['TextLabel','Icon'].includes(child.type);
    if(['TextField','SearchBar'].includes(parent.type))return child.type==='Icon';

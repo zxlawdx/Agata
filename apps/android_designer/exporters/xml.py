@@ -9,6 +9,17 @@ ET.register_namespace('android',A);ET.register_namespace('app',APP)
 
 class XmlGenerator(ComposeGenerator):
     def view(self,n,parent_type=None):
+        aliases={'Avatar':'Card','Chip':'Button','Badge':'TextLabel','ListItem':'Row','NavigationRail':'Region','TabRow':'Row'}
+        if n['type'] in aliases:return self.view({**n,'type':aliases[n['type']]},parent_type)
+        if n['type'] in {'RadioButton','ProgressIndicator'}:
+            p=n['props'];tag='RadioButton' if n['type']=='RadioButton' else 'ProgressBar';attrs={f'{{{A}}}id':'@+id/'+n['id'],f'{{{A}}}layout_width':'wrap_content',f'{{{A}}}layout_height':'wrap_content'}
+            if tag=='RadioButton':attrs[f'{{{A}}}checked']=str(p['checked']).lower();attrs[f'{{{A}}}enabled']=str(p['enabled']).lower()
+            else:attrs.update({'style':'@android:style/Widget.ProgressBar.Horizontal',f'{{{A}}}max':'100',f'{{{A}}}progress':str(round(p['value']*100)),f'{{{A}}}layout_width':'match_parent',f'{{{A}}}indeterminate':'false'})
+            return ET.Element(tag,attrs)
+        graphic_tag=None
+        if n['type'] in {'Shape','DrawingCanvas','Chart'}:
+            from .graphics import native_graphic
+            graphic_tag=native_graphic(self,n)
         if n['type']=='ConstraintLayout':
             from .constraints import xml_container
             return xml_container(self,n)
@@ -22,7 +33,7 @@ class XmlGenerator(ComposeGenerator):
              'TextLabel':'TextView','Icon':'ImageView','Button':'com.google.android.material.button.MaterialButton',
              'FloatingButton':'com.google.android.material.floatingactionbutton.FloatingActionButton',
              'Card':'com.google.android.material.card.MaterialCardView','TextField':'com.google.android.material.textfield.TextInputLayout',
-             'SearchBar':'SearchView','Image':'ImageView','Checkbox':'CheckBox','Switch':'Switch','Slider':'SeekBar','Spacer':'Space'}[kind]
+             'SearchBar':'SearchView','Image':'ImageView','Checkbox':'CheckBox','Switch':'Switch','Slider':'SeekBar','Spacer':'Space'}.get(kind,graphic_tag)
         def size(k):return {'fill':'match_parent','wrap':'wrap_content'}.get(str(layout[k]),f'{layout[k]}dp')
         v=ET.Element(tag,{f'{{{A}}}id':'@+id/'+n['id'],f'{{{A}}}layout_width':size('width'),f'{{{A}}}layout_height':size('height')})
         def attr(k,val):v.set('{'+A+'}'+k,str(val))
@@ -69,6 +80,7 @@ class XmlGenerator(ComposeGenerator):
             child.set('{'+A+'}inputType',{'text':'text','email':'textEmailAddress','number':'numberDecimal','password':'textPassword','phone':'phone'}[p['keyboard']])
             if p['helper']:self.string(n,'helper');app('helperText','@string/'+n['id']+'_helper')
             if p['error']:app('errorEnabled','true')
+            if p['keyboard']=='password':app('endIconMode','password_toggle')
             for c in n['children']:
                 icon=c['props'].get('icon','none')
                 if icon!='none':app('startIconDrawable' if c['role']=='leading' else 'endIconDrawable','@drawable/agata_'+icon)
@@ -86,6 +98,7 @@ class XmlGenerator(ComposeGenerator):
                 child=self.view(c,kind)
                 if i:child.set('{'+A+'}layout_marginTop',f"{layout['gap']}dp")
                 inner.append(child)
+        elif kind in {'Shape','DrawingCanvas','Chart'}:pass
         else:
             if p.get('background'):attr('background',p['background'])
             for i,c in enumerate(n['children']):
@@ -143,6 +156,11 @@ class XmlGenerator(ComposeGenerator):
                     if e['action']=='navigate' and e.get('policy')=='popUpTo':action=f'while (history.size > 1 && history.last() != {quote(e["popUpTo"])}) history.removeAt(history.lastIndex); '+action
                     if e['action']=='url':action=f'startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse({quote(e["target"])})))'
                     if e['action']=='custom':action=f'android.widget.Toast.makeText(this, {quote("Ação: "+e["target"])}, android.widget.Toast.LENGTH_SHORT).show()'
+                    conditions=[]
+                    for rule in e.get('validation',[]):
+                        value=f'findViewById<android.widget.EditText>(R.id.{rule["field"]}_input).text.toString()'
+                        conditions.append(value+'.isBlank()' if rule['type']=='required' else value+'.length < 6' if rule['type']=='password' else '!android.util.Patterns.EMAIL_ADDRESS.matcher('+value+').matches()')
+                    if conditions:action='if ('+' || '.join(conditions)+') { android.widget.Toast.makeText(this, "Preencha os campos corretamente", android.widget.Toast.LENGTH_SHORT).show() } else { '+action+' }'
                     bindings.append(f'findViewById<android.view.View>(R.id.{n["id"]})?.setOnClickListener {{ {action} }}')
                 if n['type']=='TextField' and n['props']['error']:
                     bindings.append(f'findViewById<com.google.android.material.textfield.TextInputLayout>(R.id.{n["id"]}).error = {quote(n["props"]["error"])}')

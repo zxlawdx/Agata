@@ -113,7 +113,7 @@
      });
      if(!item?.id)throw Error("O serviço não retornou o ID do projeto.");
      q("agata-create-dialog").close();
-     await window.Vela.navigate(q("agata-template").value==="android-tutorial"?"/android":"/sketch",{project_id:item.id});
+     await window.Vela.navigate(q("agata-template").value!=="empty"?"/android":"/sketch",{project_id:item.id});
    }catch(e){q("agata-form-error").textContent=e.message;q("agata-form-error").hidden=false;}
    finally{if(!disposed)btn.disabled=false;}
  }
