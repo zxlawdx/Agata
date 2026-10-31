@@ -9,7 +9,7 @@ test('duplicate Screen regenerates node IDs and remaps self navigation',()=>{
 });
 test('deleting destination removes orphan connections and history restores them',()=>{
  const m=fixture(),target=m.value.screens[1];m.deleteScreen(target);assert.equal(m.value.screens.length,1);
- M.walk(m.value.screens[0].root,n=>assert.notEqual(n.events.onClick?.target,target.id));m.undo();assert.equal(m.value.screens.length,2);m.redo();assert.equal(m.value.screens.length,1);
+ M.walk(m.value.screens[0].root,n=>{if(n.events.onClick?.target===target.id)assert.equal(n.events.onClick.broken,true);});m.undo();assert.equal(m.value.screens.length,2);m.redo();assert.equal(m.value.screens.length,1);
 });
 test('clone for cross-screen paste does not share children',()=>{
  const m=fixture(),original=m.value.screens[0].root.children[1],copy=m.cloneNode(original);copy.children[0].props.text='different';

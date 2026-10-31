@@ -45,7 +45,7 @@ window.AgataUIRenderer=(()=>{
   if(['Button','NavigationItem','FloatingButton','IconButton'].includes(n.type)){
    e.setAttribute('role','button');e.setAttribute('aria-disabled',String(!p.enabled));e.tabIndex=preview&&p.enabled!==false?0:-1;
    e.dataset.variant=p.variant||'filled';if(!p.enabled)e.style.opacity='.45';
-   if(p.selected)e.classList.add('ui-item-selected');
+   if(p.selected||n.type==='NavigationItem'&&n.events.onClick?.target===options.activeScreen)e.classList.add('ui-item-selected');
   }
   e.addEventListener('click',event=>{
    if(!preview){event.preventDefault();event.stopPropagation();options.select?.(n.id,event.ctrlKey||event.metaKey);}

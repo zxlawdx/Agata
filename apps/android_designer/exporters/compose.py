@@ -50,7 +50,8 @@ class ComposeGenerator:
 
     def action(self,n):
         e=n['events'].get('onClick',{})
-        result=f'onAction({quote(e.get("action",""))}, {quote(e.get("target",""))})'
+        from apps.android_designer.domain.events import action_kind
+        result=f'onAction({quote(action_kind(e))}, {quote(e.get("target",""))})'
         return f'if (false) {{ {result} }}' if n['type']=='FloatingButton' and not n['props']['enabled'] else result
 
     def emit(self,n,omit=()):
@@ -213,12 +214,14 @@ fun Screen_{s['id']}(onAction: (String, String) -> Unit) {{
 }}
 '''
             self.files[f'{base}/ui/screens/Screen_{s["id"]}.kt']=code
-        navigation='\n'.join(f'composable({quote(s["id"])}) {{ Screen_{s["id"]}(onAction = {{ action, target -> if (action == "back") navController.popBackStack() else if (action == "navigate") navController.navigate(target) }}) }}' for s in self.doc['screens'])
+        handler='if (action == "back") navController.popBackStack() else if (action == "navigate" || action == "replace" || action.startsWith("popUpTo:")) navController.navigate(target) { launchSingleTop = true; if (action == "replace") popUpTo(navController.currentDestination?.route ?: target) { inclusive = true }; if (action.startsWith("popUpTo:")) popUpTo(action.substringAfter(":")) } else if (action == "url") context.startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(target))) else if (action == "custom") android.widget.Toast.makeText(context, "Ação: " + target, android.widget.Toast.LENGTH_SHORT).show()'
+        navigation='\n'.join(f'composable({quote(s["id"])}) {{ Screen_{s["id"]}(onAction = {{ action, target -> '+handler+' }) }' for s in self.doc['screens'])
         self.files[f'{base}/navigation/AppNavigation.kt']=f'''package {self.ns}.navigation
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.*
 import {self.ns}.ui.screens.*
 @Composable fun AppNavigation() {{
+ val context = androidx.compose.ui.platform.LocalContext.current
  val navController = rememberNavController()
  NavHost(navController, startDestination = {quote(self.doc['start_screen'])}) {{
  {navigation}

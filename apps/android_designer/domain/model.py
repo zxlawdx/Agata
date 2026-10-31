@@ -176,9 +176,8 @@ def validate(document):
             raise ValueError('Peso requer Row/Column sem scroll: '+n['id']+' ('+n['name']+'), weight='+str(layout['weight'])+', pai='+(parent['type'] if parent else 'raiz'))
         if not isinstance(events,dict) or set(events)-{'onClick'}:raise ValueError('Evento não suportado.')
         if events:
-            event=events['onClick']
-            if not isinstance(event,dict) or event.get('action') not in {'navigate','back'}:raise ValueError('Ação inválida.')
-            if event['action']=='navigate' and event.get('target') not in screen_ids:raise ValueError('Screen de destino inexistente.')
+            from .events import validate_event
+            validate_event(events['onClick'],screen_ids)
         children=n.get('children')
         if not isinstance(children,list) or children and not spec['container']:raise ValueError('Este componente não aceita filhos.')
         for c in children:node(c,depth+1,n)
@@ -199,4 +198,8 @@ def validate(document):
     for path,content in files.items():
         if not re.fullmatch(r'(compose|xml)/app/src/main/(java/[a-zA-Z0-9_/]+\.kt|res/(layout|values)/[a-z0-9_]+\.xml)',path) or not isinstance(content,str) or len(content)>500000:
             raise ValueError('Caminho ou conteúdo de código personalizado inválido.')
+        if path.endswith('.xml'):
+            from xml.etree import ElementTree
+            try:ElementTree.fromstring(content)
+            except ElementTree.ParseError as exc:raise ValueError('XML personalizado inválido: '+path+' — '+str(exc)) from exc
     return copy.deepcopy(document)

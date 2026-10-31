@@ -95,3 +95,10 @@
 #android-designer .ad-constraint-anchor[data-constraint-source]{background:#00d2e8}
 #android-designer .ad-live-wire{position:fixed;inset:0;width:100vw;height:100vh;z-index:6000;pointer-events:none}
 #android-designer .ad-live-wire line{stroke:#008fa6;stroke-width:3;stroke-dasharray:5 3}
+#android-designer .ad-event-handle{position:absolute;z-index:1900;width:26px;height:26px;padding:0;border:2px solid #5a276c;border-radius:50%;background:#f3d5ff;color:#5a276c;cursor:crosshair;touch-action:none;font-size:21px}
+#android-designer .ad-navigation-wire line{stroke:#852b9a;stroke-dasharray:none}.ad-navigation-target{outline:5px solid #852b9a!important}.ad-destination-miniature{border:2px solid #852b9a;border-radius:7px;padding:12px;margin:6px;min-height:50px;background:#fff}
+#android-designer .ad-library,#android-designer .ad-inspector{flex:0 0 auto;max-width:40vw}
+#android-designer .ad-panel-divider{width:7px;flex:none;cursor:col-resize;border-radius:5px;background:#24242444;touch-action:none}
+#android-designer #ad-palette{height:110px;min-height:60px;max-height:300px;display:flex;flex-wrap:wrap;align-content:flex-start;resize:vertical;overflow:auto;padding:6px}
+#android-designer #ad-palette.ad-library-compact{height:65px}.ad-library-tools{display:flex;gap:6px;padding:4px;background:#ffcccf;flex:none}.ad-library-tools input{min-width:80px;flex:1}
+#ad-code-tabs{display:flex;gap:3px;overflow:auto;flex:none}.ad-code-compare{width:min(1100px,95vw);background:#fff9ef;border:3px solid #242424;border-radius:12px}.ad-code-compare>div{display:flex;gap:12px}.ad-code-compare label{flex:1}.ad-code-compare textarea{width:100%;height:60vh;font:12px monospace}.ad-code-compare button{margin:8px}

@@ -15,6 +15,9 @@ AGP='8.13.2';KOTLIN='2.2.20';BOM='2025.10.01';NAVIGATION='2.9.5';GRADLE='8.13'
 def generate(document,backend='compose'):
     document=validate(document)
     if backend not in {'compose','xml'}:raise ValueError('Exportador Android desconhecido.')
+    for s in document['screens']:
+        for n in walk(s['root']):
+            if n['events'].get('onClick',{}).get('broken'):raise ValueError('Corrija o destino quebrado em '+n['name']+' antes de exportar.')
     files=(ComposeGenerator if backend=='compose' else XmlGenerator)(document).generate()
     namespace=document['namespace']
     plugins=f'id("com.android.application") version "{AGP}" apply false\nid("org.jetbrains.kotlin.android") version "{KOTLIN}" apply false\n'

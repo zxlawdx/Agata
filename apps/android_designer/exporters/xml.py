@@ -139,6 +139,10 @@ class XmlGenerator(ComposeGenerator):
                 e=n['events'].get('onClick')
                 if e:
                     action='goBack()' if e['action']=='back' else f'openScreen({quote(e["target"])}, true)'
+                    if e['action']=='navigate' and e.get('policy')=='replace':action='if (history.isNotEmpty()) history.removeAt(history.lastIndex); '+action
+                    if e['action']=='navigate' and e.get('policy')=='popUpTo':action=f'while (history.size > 1 && history.last() != {quote(e["popUpTo"])}) history.removeAt(history.lastIndex); '+action
+                    if e['action']=='url':action=f'startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse({quote(e["target"])})))'
+                    if e['action']=='custom':action=f'android.widget.Toast.makeText(this, {quote("Ação: "+e["target"])}, android.widget.Toast.LENGTH_SHORT).show()'
                     bindings.append(f'findViewById<android.view.View>(R.id.{n["id"]})?.setOnClickListener {{ {action} }}')
                 if n['type']=='TextField' and n['props']['error']:
                     bindings.append(f'findViewById<com.google.android.material.textfield.TextInputLayout>(R.id.{n["id"]}).error = {quote(n["props"]["error"])}')
