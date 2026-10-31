@@ -28,7 +28,7 @@ window.AgataUIRenderer=(()=>{
    input.readOnly=!preview;input.oninput=()=>{if(options.state)options.state[n.id]=input.value;};
    for(const c of n.children.filter(c=>c.role!=='trailing'))row.append(render(c,options));row.append(input);
    if(n.type==='SearchBar'){
-    const clear=el('button','','×');clear.type='button';clear.setAttribute('aria-label','Limpar pesquisa');clear.onclick=event=>{if(preview){event.stopPropagation();input.value='';if(options.state)options.state[n.id]='';}};row.append(clear);
+    const clear=el('button','','×');clear.type='button';clear.disabled=!p.enabled||!preview;clear.setAttribute('aria-label','Limpar pesquisa');clear.onclick=event=>{if(preview){event.stopPropagation();input.value='';if(options.state)options.state[n.id]='';}};row.append(clear);
    }
    for(const c of n.children.filter(c=>c.role==='trailing'))row.append(render(c,options));e.append(row);
    if(p.error||p.helper)e.append(el('small',p.error?'ui-field-error':'',p.error||p.helper));
@@ -40,7 +40,7 @@ window.AgataUIRenderer=(()=>{
   }else for(const child of n.children)e.append(render(child,options));
   if(n.type==='Box'){e.style.display='grid';e.style.placeItems={start:'start',center:'center',end:'end'}[l.alignment];for(const child of e.children)child.style.gridArea='1 / 1';}
   if(['Button','NavigationItem','FloatingButton'].includes(n.type)){
-   e.setAttribute('role','button');e.setAttribute('aria-disabled',String(!p.enabled));e.tabIndex=preview?0:-1;
+   e.setAttribute('role','button');e.setAttribute('aria-disabled',String(!p.enabled));e.tabIndex=preview&&p.enabled!==false?0:-1;
    e.dataset.variant=p.variant||'filled';if(!p.enabled)e.style.opacity='.45';
    if(p.selected)e.classList.add('ui-item-selected');
   }
@@ -48,7 +48,7 @@ window.AgataUIRenderer=(()=>{
    if(!preview){event.preventDefault();event.stopPropagation();options.select?.(n.id,event.ctrlKey||event.metaKey);}
    else if(n.events.onClick&&p.enabled!==false){event.stopPropagation();options.action?.(n.events.onClick);}
   });
-  e.addEventListener('keydown',event=>{if(preview&&['Enter',' '].includes(event.key)&&n.events.onClick){event.preventDefault();options.action?.(n.events.onClick);}});
+  e.addEventListener('keydown',event=>{if(preview&&p.enabled!==false&&['Enter',' '].includes(event.key)&&n.events.onClick){event.preventDefault();options.action?.(n.events.onClick);}});
   if(!preview&&n.type==='TextLabel')e.ondblclick=event=>{event.stopPropagation();options.editText?.(n);};
   return e;
  }

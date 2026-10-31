@@ -21,6 +21,11 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
  let doc=await page.evaluate(async()=> (await pywebview.api.get_interface(fixtureId)).document);
  const first=doc.screens[0],dashboard=doc.screens[1],button=first.root.children.find(n=>n.type==='Button');
  assert.equal(button.children.find(n=>n.type==='TextLabel').props.text,'Entrar agora');assert.equal(first.root.children.find(n=>n.type==='TopBar').children[0].props.icon,'back');
+ // Disabled buttons must reject mouse and keyboard navigation alike.
+ await page.locator(`[data-tree-node="${button.id}"]`).click();await page.locator('[data-property="enabled"]').uncheck();
+ await page.locator('[data-mode="preview"]').click();await page.locator('#ad-preview-screen .ui-Button').click({force:true});await page.locator('#ad-preview-screen .ui-Button').press('Enter');
+ assert.equal(await page.locator('#ad-preview-name').textContent(),'Tela Inicial');
+ await page.locator('[data-mode="design"]').click();await page.locator('[data-property="enabled"]').check();
  // A connector drag creates a semantic onClick and a selectable path, not a drawing.
  await page.locator(`[data-tree-node="${button.id}"]`).click();
  const from=await page.locator('#ad-connect').boundingBox();const to=await page.locator(`[data-frame-id="${dashboard.id}"] .ad-frame-title`).boundingBox();

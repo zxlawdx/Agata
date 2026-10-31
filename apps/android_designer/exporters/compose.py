@@ -43,7 +43,9 @@ class ComposeGenerator:
         return s
 
     def action(self,n):
-        e=n['events'].get('onClick',{});return f'onAction({quote(e.get("action",""))}, {quote(e.get("target",""))})'
+        e=n['events'].get('onClick',{})
+        result=f'onAction({quote(e.get("action",""))}, {quote(e.get("target",""))})'
+        return f'if (false) {{ {result} }}' if n['type']=='FloatingButton' and not n['props']['enabled'] else result
 
     def emit(self,n,omit=()):
         if n['id'] in omit:return ''
