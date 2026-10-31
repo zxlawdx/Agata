@@ -123,6 +123,14 @@ class AgataBridge(BaseBridge):
         from apps.workspace.services.project_import.export import imported_export
         return imported_export(project_repository(),project_id,backend,activate)
 
+    def template_gallery_catalog(self):
+        from apps.template_registry.preview import gallery_catalog
+        return gallery_catalog()
+
+    def template_gallery_preview(self, template_id: str, platform: str):
+        from apps.template_registry.preview import preview
+        return preview(template_id, platform)
+
     def web_catalog(self):
         from apps.web_studio.services.projects import WebProjectService
         return WebProjectService(project_repository()).catalog()
