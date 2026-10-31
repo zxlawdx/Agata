@@ -55,3 +55,21 @@ um desenho antigo em um aplicativo Android; a migração preserva o desenho e ac
 Somente na máquina de desenvolvimento, para reconstruir CodeMirror: `npm ci --prefix scripts/code-editor`
 e, na raiz do repositório, `node scripts/code-editor/build.cjs`. Atualize NOTICE/licenças/checksum
 após mudanças nas dependências. O aplicativo usa o bundle já commitado.
+
+## Arraste e responsividade (IR v2)
+
+Arraste um item da biblioteca horizontal até uma Screen ou use o handle do componente
+selecionado/da árvore. O marcador mostra a ordem; o realce mostra o contêiner. Escape cancela.
+Ctrl/Cmd+clique seleciona múltiplos; Ctrl/Cmd+C/V/D copia/cola/duplica, Ctrl/Cmd+G agrupa,
+Alt+setas reordena, Ctrl/Cmd+Z desfaz. Os ícones na árvore ocultam/bloqueiam; duplo clique renomeia.
+
+No Inspector, escolha Auto ou Livre em uma Box. Livre habilita x/y, âncoras e resize;
+Auto usa ordem, gap, padding e alinhamento. Fixed/Wrap/Fill, pesos e limites alteram o modelo.
+Escolha o escopo Base/Compact/Medium/Expanded/Landscape antes de editar uma regra responsiva;
+remover override restaura a base. Alterações de tablet não substituem as de celular.
+
+No Preview, escolha dispositivo, gire, informe dimensões ou arraste o canto da área.
+Aumente a fonte para testar texto longo. Os avisos são medições reais do DOM.
+Os botões de painéis e suas bordas ajustam o espaço; preferências são salvas com o projeto.
+Use `npm run test:responsive-ui` para reproduzir os cenários. Veja
+[arquitetura e limitações](DRAG_DROP_RESPONSIVE_ARCHITECTURE.md) antes de comparar Preview e Android.

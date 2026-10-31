@@ -65,3 +65,8 @@ jobs:
         env:
           AGATA_UI_SCRIPT: tests/android_ui.cjs
         run: node tests/run_ui.cjs
+
+      - name: Exercise pointer drag and responsive layouts
+        env:
+          AGATA_UI_SCRIPT: tests/responsive_ui.cjs
+        run: node tests/run_ui.cjs

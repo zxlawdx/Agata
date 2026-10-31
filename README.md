@@ -94,3 +94,9 @@ node --test tests/*.test.cjs
 ```
 
 O GitHub Actions realiza os testes automatizados, mas eles não substituem a verificação manual da interface na WebView Linux e com mesa digitalizadora.
+
+## Layout Android responsivo
+
+O editor Android possui drag-and-drop da biblioteca/árvore/canvas, histórico atômico,
+Auto Layout, Box livre e regras por classe de janela no IR v2. Consulte o
+[guia](docs/ANDROID_GUIDE.md) e a [arquitetura, pesquisa e limites](docs/DRAG_DROP_RESPONSIVE_ARCHITECTURE.md).

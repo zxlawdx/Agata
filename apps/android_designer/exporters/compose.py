@@ -1,7 +1,7 @@
 """Compose generator over validated semantic nodes, never Fabric objects."""
 import json
 from xml.sax.saxutils import escape
-from apps.android_designer.domain.model import walk
+from apps.android_designer.domain.model import walk, resolve_screen
 
 PATHS={
 'menu':'M3,6 L21,6 M3,12 L21,12 M3,18 L21,18',
@@ -30,6 +30,10 @@ class ComposeGenerator:
 
     def modifier(self,n):
         l=n['layout'];s='Modifier'
+        if l['margin']:s+=f".padding({l['margin']}.dp)"
+        if l['minWidth'] or l['maxWidth']<4096:s+=f".widthIn(min = {l['minWidth']}.dp, max = {l['maxWidth']}.dp)"
+        if l['minHeight'] or l['maxHeight']<4096:s+=f".heightIn(min = {l['minHeight']}.dp, max = {l['maxHeight']}.dp)"
+        if l['aspectRatio']:s+=f".aspectRatio({float(l['aspectRatio'])}f)"
         for k in ('width','height'):
             value=l[k]
             if value=='fill':s+='.'+('fillMaxWidth()' if k=='width' else 'fillMaxHeight()')
@@ -48,21 +52,46 @@ class ComposeGenerator:
         return f'if (false) {{ {result} }}' if n['type']=='FloatingButton' and not n['props']['enabled'] else result
 
     def emit(self,n,omit=()):
-        if n['id'] in omit:return ''
-        kind=n['type'];p=n['props'];m=self.modifier(n);var='v_'+n['id']
+        if n['id'] in omit or not n['layout']['visible']:return ''
+        if n['type']=='Surface':
+            return self.emit({**n,'type':'Card','props':{**n['props'],'variant':'filled','elevation':0}},omit)
+        if n['type']=='ScrollContainer':return self.emit({**n,'type':'Column'},omit)
+        if n['type']=='IconButton':return self.emit({**n,'type':'Button'},omit)
+        kind=n['type'];p=n['props'];m=self.modifier({**n,'layout':{**n['layout'],'padding':0}}) if kind in {'Card','Button'} else self.modifier(n);var='v_'+n['id']
         children=lambda nodes=None:'\n'.join(self.emit(c,omit) for c in (n['children'] if nodes is None else nodes))
+        if kind=='Divider':return f'HorizontalDivider(modifier = {m})'
+        if kind=='Grid':
+            columns=n['layout']['columns'];rows=[]
+            for i in range(0,len(n['children']),columns):
+                cells=['Box(Modifier.weight(1f)) { '+self.emit(c,omit)+' }' for c in n['children'][i:i+columns]]
+                cells+=['Spacer(Modifier.weight(1f))']*(columns-len(cells))
+                rows.append(f"Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy({n['layout']['gap']}.dp)) {{ "+'\n'.join(cells)+' }')
+            return f"Column({m}, verticalArrangement = Arrangement.spacedBy({n['layout']['gap']}.dp)) {{ "+'\n'.join(rows)+' }'
         if kind=='TextLabel':
-            return f'Text(text = {self.string(n,"text")}, color = Color(0xFF{p["color"][1:]}), fontSize = {p["fontSize"]}.sp, fontWeight = FontWeight.{"Bold" if p["bold"] else "Normal"}, textAlign = TextAlign.{dict(start="Start",center="Center",end="End")[p["align"]]}, modifier = {m})'
+            return f'Text(text = {self.string(n,"text")}, color = Color(0xFF{p["color"][1:]}), fontSize = {p["fontSize"]}.sp, maxLines = {p["maxLines"] if p["maxLines"] else 2147483647}, overflow = TextOverflow.{"Ellipsis" if p["overflow"]=="ellipsis" else "Clip"}, fontWeight = FontWeight.{"Bold" if p["bold"] else "Normal"}, textAlign = TextAlign.{dict(start="Start",center="Center",end="End")[p["align"]]}, modifier = {m})'
         if kind=='Icon':
             if p['icon']=='none':return ''
             return f'Icon(painterResource(R.drawable.agata_{p["icon"]}), contentDescription = {self.string(n,"description")}, tint = Color(0xFF{p["color"][1:]}), modifier = {m}.size(24.dp))'
         if kind in {'Row','Column','Box'}:
+            if kind=='Box' and n['layout']['mode']=='free':
+                alignments={'start':'Start','end':'End','center':'CenterHorizontally','fill':'Start'};verticals={'top':'Top','bottom':'Bottom','center':'CenterVertically','fill':'Top'}
+                output=[]
+                for child in n['children']:
+                    l=child['layout'];alignment={('start','top'):'TopStart',('center','top'):'TopCenter',('end','top'):'TopEnd',('start','center'):'CenterStart',('center','center'):'Center',('end','center'):'CenterEnd',('start','bottom'):'BottomStart',('center','bottom'):'BottomCenter',('end','bottom'):'BottomEnd'}.get((l['anchorX'],l['anchorY']),'TopStart')
+                    x=-l['x'] if l['anchorX']=='end' else l['x'];y=-l['y'] if l['anchorY']=='bottom' else l['y']
+                    wrapper=f'Box(Modifier.align(Alignment.{alignment}).offset({x}.dp, {y}.dp)'
+                    if l['anchorX']=='fill':wrapper+='.fillMaxWidth()'
+                    if l['anchorY']=='fill':wrapper+='.fillMaxHeight()'
+                    output.append(wrapper+') { '+self.emit(child,omit)+' }')
+                return f'Box(modifier = {m}) {{ '+ '\n'.join(output)+' }'
             if kind=='Box':args=f'contentAlignment = Alignment.{dict(start="TopStart",center="Center",end="BottomEnd")[n["layout"]["alignment"]]}'
             else:
                 orientation='horizontal' if kind=='Row' else 'vertical';cross='vertical' if kind=='Row' else 'horizontal'
                 align=({'start':'Top','center':'CenterVertically','end':'Bottom'} if kind=='Row' else {'start':'Start','center':'CenterHorizontally','end':'End'})[n['layout']['alignment']]
                 arrange={'start':f'spacedBy({n["layout"]["gap"]}.dp)','center':'Center','end':('End' if kind=='Row' else 'Bottom'),'spaceBetween':'SpaceBetween'}[n['layout']['arrangement']]
                 args=f'{orientation}Arrangement = Arrangement.{arrange}, {cross}Alignment = Alignment.{align}'
+            if kind=='Row' and n['layout']['wrap']:
+                return f'FlowRow(modifier = {m}, horizontalArrangement = Arrangement.spacedBy({n["layout"]["gap"]}.dp), verticalArrangement = Arrangement.spacedBy({n["layout"]["gap"]}.dp)) {{\n{children()}\n}}'
             return f'{kind}(modifier = {m}, {args}) {{\n{children()}\n}}'
         if kind in {'Button','FloatingButton','NavigationItem'}:
             if kind=='NavigationItem':
@@ -71,8 +100,15 @@ class ComposeGenerator:
             elif kind=='FloatingButton':fun='FloatingActionButton'
             else:fun={'filled':'Button','outlined':'OutlinedButton','text':'TextButton','tonal':'FilledTonalButton','elevated':'Button'}[p['variant']]
             enabled='' if kind=='FloatingButton' else f', enabled = {str(p["enabled"]).lower()}'
-            extras=f', shape = RoundedCornerShape({p["radius"]}.dp), colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF{p["background"][1:]}))' if kind=='Button' else ''
-            return f'{fun}(onClick = {{ {self.action(n)} }}, modifier = {m}{enabled}{extras}) {{\n{children()}\n}}'
+            extras=''
+            if kind=='Button':
+                color=f'Color(0xFF{p["background"][1:]})'
+                colors={'filled':f'buttonColors(containerColor = {color})','tonal':f'filledTonalButtonColors(containerColor = {color})','text':f'textButtonColors(contentColor = {color})','outlined':f'outlinedButtonColors(contentColor = {color})','elevated':f'buttonColors(containerColor = {color})'}[p['variant']]
+                extras=f', contentPadding = PaddingValues({n["layout"]["padding"]}.dp), shape = RoundedCornerShape({p["radius"]}.dp), colors = ButtonDefaults.{colors}'
+                if p['variant']=='outlined':extras+=f', border = BorderStroke(1.dp, {color})'
+
+            content=('\nSpacer(Modifier.width('+str(n['layout']['gap'])+'.dp))\n').join(filter(None,(self.emit(c,omit) for c in n['children'])))
+            return f'{fun}(onClick = {{ {self.action(n)} }}, modifier = {m}{enabled}{extras}) {{\n{content}\n}}'
         if kind=='Card':
             fun={'filled':'Card','outlined':'OutlinedCard','elevated':'ElevatedCard','text':'Card','tonal':'Card'}[p['variant']]
             return f'{fun}(modifier = {m}, shape = RoundedCornerShape({p["radius"]}.dp), colors = CardDefaults.cardColors(containerColor = Color(0xFF{p["background"][1:]})), elevation = CardDefaults.cardElevation(defaultElevation = {p["elevation"]}.dp)) {{ Column(Modifier.padding({n["layout"]["padding"]}.dp), verticalArrangement = Arrangement.spacedBy({n["layout"]["gap"]}.dp)) {{\n{children()}\n}} }}'
@@ -123,6 +159,16 @@ class ComposeGenerator:
             drawers=[c for c in s['root']['children'] if c['type']=='Sidebar']
             if len(drawers)>1:raise ValueError('Use no máximo uma Sidebar por Screen.')
             content=self.emit(s['root'],[d['id'] for d in drawers])
+            if any(n['layout']['responsive'] for n in walk(s['root'])):
+                branches=[]
+                for label,width in [('expanded',900),('medium',700),('compact',390)]:
+                    for landscape in [True,False]:
+                        height=300 if landscape else 1400
+                        variant=resolve_screen(s,width,height)
+                        condition=('maxWidth >= 840.dp' if label=='expanded' else 'maxWidth >= 600.dp' if label=='medium' else 'true')+(' && maxWidth > maxHeight' if landscape else '')
+                        branches.append(condition+' -> { '+self.emit(variant['root'],[d['id'] for d in drawers])+' }')
+                content='BoxWithConstraints(Modifier.fillMaxSize()) { when { '+ '\n'.join(branches)+' } }'
+
             if drawers:
                 drawer=drawers[0];body='\n'.join(self.emit(c) for c in drawer['children'])
                 content='val drawerState = rememberDrawerState(DrawerValue.Closed)\n'+f'ModalNavigationDrawer(drawerState = drawerState, drawerContent = {{ ModalDrawerSheet {{ {body} }} }}) {{ Column {{ val scope = rememberCoroutineScope(); TextButton(onClick = {{ scope.launch {{ drawerState.open() }} }}) {{ Text("Menu") }}; {content} }} }}'
@@ -140,6 +186,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -148,7 +195,7 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import {self.ns}.R
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun Screen_{s['id']}(onAction: (String, String) -> Unit) {{
 {chr(10).join(declarations)}

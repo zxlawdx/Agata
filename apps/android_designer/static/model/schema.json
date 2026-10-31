@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/zxlawdx/Agata/ui-model-v1",
-  "title": "Agata semantic Android document v1",
+  "$id": "https://github.com/zxlawdx/Agata/ui-model-v2",
+  "title": "Agata semantic Android document v2",
   "type": "object",
   "required": [
     "version",
@@ -14,7 +14,7 @@
   ],
   "properties": {
     "version": {
-      "const": 1
+      "const": 2
     },
     "namespace": {
       "type": "string",
@@ -123,6 +123,12 @@
                     },
                     "align": {
                       "type": "string"
+                    },
+                    "maxLines": {
+                      "type": "number"
+                    },
+                    "overflow": {
+                      "type": "string"
                     }
                   },
                   "required": [
@@ -130,7 +136,9 @@
                     "color",
                     "fontSize",
                     "bold",
-                    "align"
+                    "align",
+                    "maxLines",
+                    "overflow"
                   ],
                   "additionalProperties": false
                 },
@@ -144,7 +152,23 @@
                     "alignment",
                     "arrangement",
                     "scroll",
-                    "weight"
+                    "weight",
+                    "mode",
+                    "x",
+                    "y",
+                    "minWidth",
+                    "maxWidth",
+                    "minHeight",
+                    "maxHeight",
+                    "aspectRatio",
+                    "margin",
+                    "anchorX",
+                    "anchorY",
+                    "columns",
+                    "wrap",
+                    "visible",
+                    "locked",
+                    "responsive"
                   ]
                 }
               }
@@ -184,7 +208,23 @@
                     "alignment",
                     "arrangement",
                     "scroll",
-                    "weight"
+                    "weight",
+                    "mode",
+                    "x",
+                    "y",
+                    "minWidth",
+                    "maxWidth",
+                    "minHeight",
+                    "maxHeight",
+                    "aspectRatio",
+                    "margin",
+                    "anchorX",
+                    "anchorY",
+                    "columns",
+                    "wrap",
+                    "visible",
+                    "locked",
+                    "responsive"
                   ]
                 }
               }
@@ -228,7 +268,23 @@
                     "alignment",
                     "arrangement",
                     "scroll",
-                    "weight"
+                    "weight",
+                    "mode",
+                    "x",
+                    "y",
+                    "minWidth",
+                    "maxWidth",
+                    "minHeight",
+                    "maxHeight",
+                    "aspectRatio",
+                    "margin",
+                    "anchorX",
+                    "anchorY",
+                    "columns",
+                    "wrap",
+                    "visible",
+                    "locked",
+                    "responsive"
                   ]
                 }
               }
@@ -272,7 +328,23 @@
                     "alignment",
                     "arrangement",
                     "scroll",
-                    "weight"
+                    "weight",
+                    "mode",
+                    "x",
+                    "y",
+                    "minWidth",
+                    "maxWidth",
+                    "minHeight",
+                    "maxHeight",
+                    "aspectRatio",
+                    "margin",
+                    "anchorX",
+                    "anchorY",
+                    "columns",
+                    "wrap",
+                    "visible",
+                    "locked",
+                    "responsive"
                   ]
                 }
               }
@@ -308,7 +380,23 @@
                     "alignment",
                     "arrangement",
                     "scroll",
-                    "weight"
+                    "weight",
+                    "mode",
+                    "x",
+                    "y",
+                    "minWidth",
+                    "maxWidth",
+                    "minHeight",
+                    "maxHeight",
+                    "aspectRatio",
+                    "margin",
+                    "anchorX",
+                    "anchorY",
+                    "columns",
+                    "wrap",
+                    "visible",
+                    "locked",
+                    "responsive"
                   ]
                 }
               }
@@ -340,7 +428,23 @@
                     "alignment",
                     "arrangement",
                     "scroll",
-                    "weight"
+                    "weight",
+                    "mode",
+                    "x",
+                    "y",
+                    "minWidth",
+                    "maxWidth",
+                    "minHeight",
+                    "maxHeight",
+                    "aspectRatio",
+                    "margin",
+                    "anchorX",
+                    "anchorY",
+                    "columns",
+                    "wrap",
+                    "visible",
+                    "locked",
+                    "responsive"
                   ]
                 }
               }
@@ -372,7 +476,23 @@
                     "alignment",
                     "arrangement",
                     "scroll",
-                    "weight"
+                    "weight",
+                    "mode",
+                    "x",
+                    "y",
+                    "minWidth",
+                    "maxWidth",
+                    "minHeight",
+                    "maxHeight",
+                    "aspectRatio",
+                    "margin",
+                    "anchorX",
+                    "anchorY",
+                    "columns",
+                    "wrap",
+                    "visible",
+                    "locked",
+                    "responsive"
                   ]
                 }
               }
@@ -408,7 +528,23 @@
                     "alignment",
                     "arrangement",
                     "scroll",
-                    "weight"
+                    "weight",
+                    "mode",
+                    "x",
+                    "y",
+                    "minWidth",
+                    "maxWidth",
+                    "minHeight",
+                    "maxHeight",
+                    "aspectRatio",
+                    "margin",
+                    "anchorX",
+                    "anchorY",
+                    "columns",
+                    "wrap",
+                    "visible",
+                    "locked",
+                    "responsive"
                   ]
                 }
               }
@@ -468,7 +604,23 @@
                     "alignment",
                     "arrangement",
                     "scroll",
-                    "weight"
+                    "weight",
+                    "mode",
+                    "x",
+                    "y",
+                    "minWidth",
+                    "maxWidth",
+                    "minHeight",
+                    "maxHeight",
+                    "aspectRatio",
+                    "margin",
+                    "anchorX",
+                    "anchorY",
+                    "columns",
+                    "wrap",
+                    "visible",
+                    "locked",
+                    "responsive"
                   ]
                 }
               }
@@ -508,7 +660,23 @@
                     "alignment",
                     "arrangement",
                     "scroll",
-                    "weight"
+                    "weight",
+                    "mode",
+                    "x",
+                    "y",
+                    "minWidth",
+                    "maxWidth",
+                    "minHeight",
+                    "maxHeight",
+                    "aspectRatio",
+                    "margin",
+                    "anchorX",
+                    "anchorY",
+                    "columns",
+                    "wrap",
+                    "visible",
+                    "locked",
+                    "responsive"
                   ]
                 }
               }
@@ -534,7 +702,23 @@
                     "alignment",
                     "arrangement",
                     "scroll",
-                    "weight"
+                    "weight",
+                    "mode",
+                    "x",
+                    "y",
+                    "minWidth",
+                    "maxWidth",
+                    "minHeight",
+                    "maxHeight",
+                    "aspectRatio",
+                    "margin",
+                    "anchorX",
+                    "anchorY",
+                    "columns",
+                    "wrap",
+                    "visible",
+                    "locked",
+                    "responsive"
                   ]
                 }
               }
@@ -560,7 +744,23 @@
                     "alignment",
                     "arrangement",
                     "scroll",
-                    "weight"
+                    "weight",
+                    "mode",
+                    "x",
+                    "y",
+                    "minWidth",
+                    "maxWidth",
+                    "minHeight",
+                    "maxHeight",
+                    "aspectRatio",
+                    "margin",
+                    "anchorX",
+                    "anchorY",
+                    "columns",
+                    "wrap",
+                    "visible",
+                    "locked",
+                    "responsive"
                   ]
                 }
               }
@@ -586,7 +786,23 @@
                     "alignment",
                     "arrangement",
                     "scroll",
-                    "weight"
+                    "weight",
+                    "mode",
+                    "x",
+                    "y",
+                    "minWidth",
+                    "maxWidth",
+                    "minHeight",
+                    "maxHeight",
+                    "aspectRatio",
+                    "margin",
+                    "anchorX",
+                    "anchorY",
+                    "columns",
+                    "wrap",
+                    "visible",
+                    "locked",
+                    "responsive"
                   ]
                 }
               }
@@ -612,7 +828,23 @@
                     "alignment",
                     "arrangement",
                     "scroll",
-                    "weight"
+                    "weight",
+                    "mode",
+                    "x",
+                    "y",
+                    "minWidth",
+                    "maxWidth",
+                    "minHeight",
+                    "maxHeight",
+                    "aspectRatio",
+                    "margin",
+                    "anchorX",
+                    "anchorY",
+                    "columns",
+                    "wrap",
+                    "visible",
+                    "locked",
+                    "responsive"
                   ]
                 }
               }
@@ -648,7 +880,23 @@
                     "alignment",
                     "arrangement",
                     "scroll",
-                    "weight"
+                    "weight",
+                    "mode",
+                    "x",
+                    "y",
+                    "minWidth",
+                    "maxWidth",
+                    "minHeight",
+                    "maxHeight",
+                    "aspectRatio",
+                    "margin",
+                    "anchorX",
+                    "anchorY",
+                    "columns",
+                    "wrap",
+                    "visible",
+                    "locked",
+                    "responsive"
                   ]
                 }
               }
@@ -684,7 +932,23 @@
                     "alignment",
                     "arrangement",
                     "scroll",
-                    "weight"
+                    "weight",
+                    "mode",
+                    "x",
+                    "y",
+                    "minWidth",
+                    "maxWidth",
+                    "minHeight",
+                    "maxHeight",
+                    "aspectRatio",
+                    "margin",
+                    "anchorX",
+                    "anchorY",
+                    "columns",
+                    "wrap",
+                    "visible",
+                    "locked",
+                    "responsive"
                   ]
                 }
               }
@@ -720,7 +984,23 @@
                     "alignment",
                     "arrangement",
                     "scroll",
-                    "weight"
+                    "weight",
+                    "mode",
+                    "x",
+                    "y",
+                    "minWidth",
+                    "maxWidth",
+                    "minHeight",
+                    "maxHeight",
+                    "aspectRatio",
+                    "margin",
+                    "anchorX",
+                    "anchorY",
+                    "columns",
+                    "wrap",
+                    "visible",
+                    "locked",
+                    "responsive"
                   ]
                 }
               }
@@ -764,7 +1044,23 @@
                     "alignment",
                     "arrangement",
                     "scroll",
-                    "weight"
+                    "weight",
+                    "mode",
+                    "x",
+                    "y",
+                    "minWidth",
+                    "maxWidth",
+                    "minHeight",
+                    "maxHeight",
+                    "aspectRatio",
+                    "margin",
+                    "anchorX",
+                    "anchorY",
+                    "columns",
+                    "wrap",
+                    "visible",
+                    "locked",
+                    "responsive"
                   ]
                 }
               }
@@ -800,7 +1096,261 @@
                     "alignment",
                     "arrangement",
                     "scroll",
-                    "weight"
+                    "weight",
+                    "mode",
+                    "x",
+                    "y",
+                    "minWidth",
+                    "maxWidth",
+                    "minHeight",
+                    "maxHeight",
+                    "aspectRatio",
+                    "margin",
+                    "anchorX",
+                    "anchorY",
+                    "columns",
+                    "wrap",
+                    "visible",
+                    "locked",
+                    "responsive"
+                  ]
+                }
+              }
+            },
+            {
+              "properties": {
+                "type": {
+                  "const": "Grid"
+                },
+                "props": {
+                  "type": "object",
+                  "properties": {},
+                  "required": [],
+                  "additionalProperties": false
+                },
+                "layout": {
+                  "type": "object",
+                  "required": [
+                    "width",
+                    "height",
+                    "padding",
+                    "gap",
+                    "alignment",
+                    "arrangement",
+                    "scroll",
+                    "weight",
+                    "mode",
+                    "x",
+                    "y",
+                    "minWidth",
+                    "maxWidth",
+                    "minHeight",
+                    "maxHeight",
+                    "aspectRatio",
+                    "margin",
+                    "anchorX",
+                    "anchorY",
+                    "columns",
+                    "wrap",
+                    "visible",
+                    "locked",
+                    "responsive"
+                  ]
+                }
+              }
+            },
+            {
+              "properties": {
+                "type": {
+                  "const": "Surface"
+                },
+                "props": {
+                  "type": "object",
+                  "properties": {
+                    "background": {
+                      "type": "string"
+                    },
+                    "radius": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "background",
+                    "radius"
+                  ],
+                  "additionalProperties": false
+                },
+                "layout": {
+                  "type": "object",
+                  "required": [
+                    "width",
+                    "height",
+                    "padding",
+                    "gap",
+                    "alignment",
+                    "arrangement",
+                    "scroll",
+                    "weight",
+                    "mode",
+                    "x",
+                    "y",
+                    "minWidth",
+                    "maxWidth",
+                    "minHeight",
+                    "maxHeight",
+                    "aspectRatio",
+                    "margin",
+                    "anchorX",
+                    "anchorY",
+                    "columns",
+                    "wrap",
+                    "visible",
+                    "locked",
+                    "responsive"
+                  ]
+                }
+              }
+            },
+            {
+              "properties": {
+                "type": {
+                  "const": "ScrollContainer"
+                },
+                "props": {
+                  "type": "object",
+                  "properties": {},
+                  "required": [],
+                  "additionalProperties": false
+                },
+                "layout": {
+                  "type": "object",
+                  "required": [
+                    "width",
+                    "height",
+                    "padding",
+                    "gap",
+                    "alignment",
+                    "arrangement",
+                    "scroll",
+                    "weight",
+                    "mode",
+                    "x",
+                    "y",
+                    "minWidth",
+                    "maxWidth",
+                    "minHeight",
+                    "maxHeight",
+                    "aspectRatio",
+                    "margin",
+                    "anchorX",
+                    "anchorY",
+                    "columns",
+                    "wrap",
+                    "visible",
+                    "locked",
+                    "responsive"
+                  ]
+                }
+              }
+            },
+            {
+              "properties": {
+                "type": {
+                  "const": "Divider"
+                },
+                "props": {
+                  "type": "object",
+                  "properties": {},
+                  "required": [],
+                  "additionalProperties": false
+                },
+                "layout": {
+                  "type": "object",
+                  "required": [
+                    "width",
+                    "height",
+                    "padding",
+                    "gap",
+                    "alignment",
+                    "arrangement",
+                    "scroll",
+                    "weight",
+                    "mode",
+                    "x",
+                    "y",
+                    "minWidth",
+                    "maxWidth",
+                    "minHeight",
+                    "maxHeight",
+                    "aspectRatio",
+                    "margin",
+                    "anchorX",
+                    "anchorY",
+                    "columns",
+                    "wrap",
+                    "visible",
+                    "locked",
+                    "responsive"
+                  ]
+                }
+              }
+            },
+            {
+              "properties": {
+                "type": {
+                  "const": "IconButton"
+                },
+                "props": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean"
+                    },
+                    "variant": {
+                      "type": "string"
+                    },
+                    "background": {
+                      "type": "string"
+                    },
+                    "radius": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "enabled",
+                    "variant",
+                    "background",
+                    "radius"
+                  ],
+                  "additionalProperties": false
+                },
+                "layout": {
+                  "type": "object",
+                  "required": [
+                    "width",
+                    "height",
+                    "padding",
+                    "gap",
+                    "alignment",
+                    "arrangement",
+                    "scroll",
+                    "weight",
+                    "mode",
+                    "x",
+                    "y",
+                    "minWidth",
+                    "maxWidth",
+                    "minHeight",
+                    "maxHeight",
+                    "aspectRatio",
+                    "margin",
+                    "anchorX",
+                    "anchorY",
+                    "columns",
+                    "wrap",
+                    "visible",
+                    "locked",
+                    "responsive"
                   ]
                 }
               }
