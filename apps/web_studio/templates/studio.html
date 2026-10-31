@@ -3,6 +3,7 @@
 <link rel="stylesheet" href="{{ static('web_studio/studio.css') }}" />
 <section
   id="web-studio"
+  data-project-state="loading"
   data-project-id="{{ project_id }}"
   data-assets="{{ static('web_studio/studio.css') }}"
 >
@@ -57,6 +58,21 @@
       aria-label="Intervalo autosave em segundos"
     />
   </nav>
+  <section id="ws-welcome" class="ws-welcome" aria-labelledby="ws-welcome-title" hidden>
+    <div class="ws-welcome-panel">
+      <span class="ws-welcome-mark" aria-hidden="true">✿</span>
+      <small>AGATA · WEB STUDIO</small>
+      <h2 id="ws-welcome-title">Sua próxima ideia começa aqui!</h2>
+      <p id="ws-welcome-message">Crie um projeto Web ou importe seus arquivos HTML, CSS e JavaScript para editar.</p>
+      <p id="ws-welcome-template" role="status">Selecione um modelo acima e clique em Criar.</p>
+      <div class="ws-welcome-actions">
+        <button type="button" data-action="create">✦ Usar modelo selecionado</button>
+        <button type="button" data-action="import">↓ Importar projeto Web</button>
+        <button type="button" data-action="home">Voltar ao Workspace</button>
+      </div>
+      <p class="ws-welcome-note">O modelo só se torna editável após a criação do projeto. Nenhum arquivo é criado ao selecioná-lo.</p>
+    </div>
+  </section>
   <div class="ws-layout">
     <aside class="ws-left">
       <h3>Project Explorer</h3>
@@ -281,7 +297,18 @@
       root.inert = false;
     } catch (e) {
       root.inert = false;
-      root.querySelector("#ws-status").textContent = e.message;
+      root.dataset.projectState = "error";
+      root.querySelector(".ws-layout").hidden = true;
+      const welcome = root.querySelector("#ws-welcome");
+      welcome.hidden = false;
+      root.querySelector("#ws-welcome-title").textContent = "O Web Studio não pôde iniciar";
+      root.querySelector("#ws-welcome-message").textContent = e.message || String(e);
+      root.querySelector("#ws-welcome-template").textContent = "Verifique a instalação e tente abrir novamente.";
+      for (const action of welcome.querySelectorAll("[data-action]")) {
+        action.hidden = action.dataset.action !== "home";
+      }
+      welcome.querySelector('[data-action="home"]').addEventListener('click', () => window.Vela.navigate('/home'));
+      root.querySelector("#ws-status").textContent = e.message || String(e);
       console.error(e);
     }
   })();
