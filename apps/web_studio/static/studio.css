@@ -1,13 +1,27 @@
 #web-studio {
   --ws-left: 245px;
   --ws-right: 290px;
+  --ws-bg: #fff9ef;
+  --ws-panel: #e9f8f9;
+  --ws-surface: #ffffff;
+  --ws-elevated: #ffebef;
+  --ws-control: #ffffff;
+  --ws-hover: #ffe28a;
+  --ws-selected: #96e6ec;
+  --ws-border: #242424;
+  --ws-ink: #242424;
+  --ws-muted: #475467;
+  --ws-accent: #268fc4;
+  --ws-focus: #268fc4;
+  --ws-radius: 12px;
+  position: relative;
   display: flex;
   flex-direction: column;
   height: 100vh;
   overflow: hidden;
-  background: #131722;
-  color: #e6eaf1;
-  font: 13px system-ui;
+  background: var(--ws-bg);
+  color: var(--ws-ink);
+  font: 13px 'Trebuchet MS', system-ui, sans-serif;
 }
 #web-studio * {
   box-sizing: border-box;
@@ -18,9 +32,9 @@
 #web-studio textarea {
   font: inherit;
   color: inherit;
-  background: #252c3a;
-  border: 1px solid #424e64;
-  border-radius: 5px;
+  background: var(--ws-control);
+  border: 1px solid var(--ws-border);
+  border-radius: 8px;
   padding: 6px;
   min-width: 0;
 }
@@ -28,10 +42,10 @@
   cursor: pointer;
 }
 #web-studio button:hover {
-  background: #36435b;
+  background: var(--ws-hover);
 }
 #web-studio :focus-visible {
-  outline: 2px solid #98b7ff;
+  outline: 2px solid var(--ws-focus);
   outline-offset: 2px;
 }
 #web-studio header,
@@ -40,7 +54,7 @@
   gap: 7px;
   align-items: center;
   padding: 8px;
-  border-bottom: 1px solid #343b4b;
+  border-bottom: 1px solid var(--ws-border);
   flex-wrap: wrap;
 }
 #web-studio header strong {
@@ -51,7 +65,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  color: #b3c9f1;
+  color: var(--ws-muted);
 }
 .ws-layout {
   display: grid;
@@ -66,13 +80,13 @@
   resize: horizontal;
   min-width: 180px;
   max-width: 500px;
-  background: #1b202c;
+  background: var(--ws-panel);
 }
 .ws-right {
-  border-left: 1px solid #343b4b;
+  border-left: 1px solid var(--ws-border);
 }
 .ws-left {
-  border-right: 1px solid #343b4b;
+  border-right: 1px solid var(--ws-border);
 }
 .ws-center {
   min-width: 0;
@@ -100,7 +114,7 @@
 }
 #ws-files button[aria-current],
 #ws-tree button[aria-selected="true"] {
-  background: #344463;
+  background: var(--ws-selected);
 }
 #ws-search-files,
 #ws-search-blocks {
@@ -137,7 +151,7 @@
 #ws-code {
   display: flex;
   flex-direction: column;
-  border-left: 1px solid #343b4b;
+  border-left: 1px solid var(--ws-border);
 }
 #ws-monaco {
   flex: 1;
@@ -153,10 +167,10 @@
   border-radius: 0;
 }
 #ws-tabs button[aria-selected="true"] {
-  border-bottom: 2px solid #a5bfff;
+  border-bottom: 2px solid var(--ws-accent);
 }
 #ws-runtime {
-  background: #303847;
+  background: var(--ws-elevated);
   padding: 15px;
 }
 #ws-preview {
@@ -188,7 +202,7 @@
   grid-template-columns: 0 minmax(0, 1fr) 0;
 }
 .ws-right details {
-  border-top: 1px solid #394356;
+  border-top: 1px solid var(--ws-border);
   padding: 8px 0;
 }
 .ws-right summary {
@@ -213,7 +227,7 @@
   overflow: auto;
 }
 #web-studio footer {
-  border-top: 1px solid #343b4b;
+  border-top: 1px solid var(--ws-border);
   padding: 4px 10px;
   max-height: 150px;
   overflow: auto;
@@ -227,9 +241,9 @@
   width: 75px;
 }
 #ws-dialog {
-  background: #1b202c;
-  color: #eee;
-  border: 1px solid #60708d;
+  background: var(--ws-panel);
+  color: var(--ws-ink);
+  border: 1px solid var(--ws-border);
   border-radius: 12px;
   padding: 24px;
   max-width: 500px;
@@ -338,3 +352,45 @@
 }
 
 @media(max-width:900px){#web-studio button,#web-studio input,#web-studio select{min-height:44px}}
+
+/* Palette is local to the Agata IDE; preview website styles are independent. */
+#web-studio[data-ide-theme="dark"] {
+  --ws-bg:#141b27;--ws-panel:#1d2b3a;--ws-surface:#26384a;
+  --ws-elevated:#273448;--ws-control:#29384a;--ws-hover:#365872;
+  --ws-selected:#205f74;--ws-border:#5a8796;--ws-ink:#f5f0e8;
+  --ws-muted:#becfd6;--ws-accent:#96e6ec;--ws-focus:#ffe28a;
+}
+@media (prefers-color-scheme:dark) {
+  #web-studio[data-ide-theme="system"] {
+    --ws-bg:#141b27;--ws-panel:#1d2b3a;--ws-surface:#26384a;
+    --ws-elevated:#273448;--ws-control:#29384a;--ws-hover:#365872;
+    --ws-selected:#205f74;--ws-border:#5a8796;--ws-ink:#f5f0e8;
+    --ws-muted:#becfd6;--ws-accent:#96e6ec;--ws-focus:#ffe28a;
+  }
+}
+#web-studio [hidden]{display:none!important}
+#web-studio header{background:var(--ws-panel)}
+#web-studio nav{background:var(--ws-bg)}
+#web-studio :is(.ws-left,.ws-right){background:var(--ws-panel)}
+#web-studio :is(button,input,select,textarea){border-color:var(--ws-border)}
+#web-studio button[aria-pressed="true"],#web-studio button[aria-selected="true"]{
+  background:var(--ws-selected);font-weight:750;box-shadow:inset 0 -3px 0 var(--ws-accent);
+}
+#web-studio .ws-theme-label{display:flex;align-items:center;gap:6px;white-space:nowrap;font-size:12px}
+#web-studio .ws-theme-label select{min-width:92px}
+#web-studio .ws-welcome{flex:1;min-height:0;overflow:auto;display:grid;place-items:center;padding:clamp(15px,4vw,42px);background:radial-gradient(circle at 15% 18%,#96e6ecaa,transparent 42%),radial-gradient(circle at 85% 76%,#ffccd0ae,transparent 36%),var(--ws-bg)}
+#web-studio .ws-welcome-panel{width:min(610px,100%);padding:clamp(24px,4vw,45px);background:var(--ws-surface);border:2px solid var(--ws-border);border-radius:26px;box-shadow:8px 10px 0 #24242424}
+#web-studio .ws-welcome-mark{display:inline-grid;place-items:center;width:56px;height:56px;background:#ffe28a;color:#242424;border:2px solid #242424;border-radius:50%;font-size:32px}
+#web-studio .ws-welcome-panel small{display:block;margin-top:12px;letter-spacing:.15em;font-weight:850}
+#web-studio .ws-welcome-panel h2{margin:8px 0;font-size:clamp(24px,4vw,32px);line-height:1.2}
+#web-studio .ws-welcome-panel p{line-height:1.6}
+#web-studio .ws-welcome-actions{display:flex;gap:12px;flex-wrap:wrap;margin:20px 0}
+#web-studio .ws-welcome-actions button{padding:12px 16px;border:2px solid var(--ws-border);border-radius:11px;font-weight:750}
+#web-studio .ws-welcome-actions button:first-child{background:#ffe28a;color:#242424}
+#web-studio .ws-welcome-note{font-size:12px;color:var(--ws-muted)}
+#web-studio :is(.ws-file-actions,.ws-selection-tools,.ws-code-tools){background:var(--ws-bg)}
+#web-studio #ws-dialog{background:var(--ws-surface);color:var(--ws-ink)}
+@media (max-width:750px){
+  #web-studio .ws-theme-label{font-size:0}
+  #web-studio .ws-welcome-actions button{width:100%}
+}
