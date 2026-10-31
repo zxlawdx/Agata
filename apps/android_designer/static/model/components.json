@@ -98,7 +98,7 @@
       {
         "type": "TextLabel",
         "props": {
-          "text": "Bot\u00e3o"
+          "text": "Botão"
         },
         "role": "label"
       }
@@ -145,7 +145,7 @@
       {
         "type": "TextLabel",
         "props": {
-          "text": "T\u00edtulo do cart\u00e3o",
+          "text": "Título do cartão",
           "bold": true,
           "fontSize": 20
         },
@@ -154,7 +154,7 @@
       {
         "type": "TextLabel",
         "props": {
-          "text": "Descri\u00e7\u00e3o do cart\u00e3o"
+          "text": "Descrição do cartão"
         },
         "role": "description"
       }
@@ -207,7 +207,7 @@
       {
         "type": "TextLabel",
         "props": {
-          "text": "Minha aplica\u00e7\u00e3o",
+          "text": "Minha aplicação",
           "bold": true
         },
         "role": "title"
@@ -252,7 +252,7 @@
       {
         "type": "TextLabel",
         "props": {
-          "text": "Minha aplica\u00e7\u00e3o",
+          "text": "Minha aplicação",
           "bold": true
         },
         "role": "header"
@@ -356,14 +356,14 @@
         "type": "Icon",
         "props": {
           "icon": "home",
-          "description": "In\u00edcio"
+          "description": "Início"
         },
         "role": "icon"
       },
       {
         "type": "TextLabel",
         "props": {
-          "text": "In\u00edcio"
+          "text": "Início"
         },
         "role": "label"
       }
@@ -1267,7 +1267,7 @@
       ],
       "series": [
         {
-          "name": "S\u00e9rie 1",
+          "name": "Série 1",
           "color": "#167CB8",
           "values": [
             12,
@@ -1451,7 +1451,7 @@
       {
         "type": "TextLabel",
         "props": {
-          "text": "Bot\u00e3o"
+          "text": "Botão"
         },
         "role": "label"
       }
@@ -1634,6 +1634,401 @@
       "width": "fill",
       "height": "wrap",
       "padding": 0,
+      "gap": 8,
+      "alignment": "start",
+      "arrangement": "start",
+      "scroll": "none",
+      "weight": 0,
+      "mode": "auto",
+      "x": 0,
+      "y": 0,
+      "minWidth": 0,
+      "maxWidth": 4096,
+      "minHeight": 0,
+      "maxHeight": 4096,
+      "aspectRatio": 0,
+      "margin": 0,
+      "anchorX": "start",
+      "anchorY": "top",
+      "columns": 2,
+      "wrap": false,
+      "visible": true,
+      "locked": false,
+      "responsive": {},
+      "constraints": {},
+      "horizontalBias": 0.5,
+      "verticalBias": 0.5
+    }
+  },
+  "ListView": {
+    "properties": {},
+    "children": [
+      {
+        "type": "TextLabel",
+        "props": {
+          "text": "Item 1"
+        },
+        "role": "item"
+      },
+      {
+        "type": "TextLabel",
+        "props": {
+          "text": "Item 2"
+        },
+        "role": "item"
+      },
+      {
+        "type": "TextLabel",
+        "props": {
+          "text": "Item 3"
+        },
+        "role": "item"
+      }
+    ],
+    "container": true,
+    "layout": {
+      "width": "fill",
+      "height": 280,
+      "padding": 8,
+      "gap": 8,
+      "alignment": "start",
+      "arrangement": "start",
+      "scroll": "none",
+      "weight": 0,
+      "mode": "auto",
+      "x": 0,
+      "y": 0,
+      "minWidth": 0,
+      "maxWidth": 4096,
+      "minHeight": 0,
+      "maxHeight": 4096,
+      "aspectRatio": 0,
+      "margin": 0,
+      "anchorX": "start",
+      "anchorY": "top",
+      "columns": 2,
+      "wrap": false,
+      "visible": true,
+      "locked": false,
+      "responsive": {},
+      "constraints": {},
+      "horizontalBias": 0.5,
+      "verticalBias": 0.5
+    }
+  },
+  "RecyclerView": {
+    "properties": {
+      "orientation": "vertical",
+      "layoutManager": "linear"
+    },
+    "children": [
+      {
+        "type": "TextLabel",
+        "props": {
+          "text": "Item 1"
+        },
+        "role": "item"
+      },
+      {
+        "type": "TextLabel",
+        "props": {
+          "text": "Item 2"
+        },
+        "role": "item"
+      },
+      {
+        "type": "TextLabel",
+        "props": {
+          "text": "Item 3"
+        },
+        "role": "item"
+      }
+    ],
+    "container": true,
+    "layout": {
+      "width": "fill",
+      "height": 280,
+      "padding": 8,
+      "gap": 8,
+      "alignment": "start",
+      "arrangement": "start",
+      "scroll": "none",
+      "weight": 0,
+      "mode": "auto",
+      "x": 0,
+      "y": 0,
+      "minWidth": 0,
+      "maxWidth": 4096,
+      "minHeight": 0,
+      "maxHeight": 4096,
+      "aspectRatio": 0,
+      "margin": 0,
+      "anchorX": "start",
+      "anchorY": "top",
+      "columns": 2,
+      "wrap": false,
+      "visible": true,
+      "locked": false,
+      "responsive": {},
+      "constraints": {},
+      "horizontalBias": 0.5,
+      "verticalBias": 0.5
+    }
+  },
+  "GridView": {
+    "properties": {},
+    "children": [
+      {
+        "type": "TextLabel",
+        "props": {
+          "text": "Item 1"
+        },
+        "role": "item"
+      },
+      {
+        "type": "TextLabel",
+        "props": {
+          "text": "Item 2"
+        },
+        "role": "item"
+      },
+      {
+        "type": "TextLabel",
+        "props": {
+          "text": "Item 3"
+        },
+        "role": "item"
+      }
+    ],
+    "container": true,
+    "layout": {
+      "width": "fill",
+      "height": 280,
+      "padding": 8,
+      "gap": 8,
+      "alignment": "start",
+      "arrangement": "start",
+      "scroll": "none",
+      "weight": 0,
+      "mode": "auto",
+      "x": 0,
+      "y": 0,
+      "minWidth": 0,
+      "maxWidth": 4096,
+      "minHeight": 0,
+      "maxHeight": 4096,
+      "aspectRatio": 0,
+      "margin": 0,
+      "anchorX": "start",
+      "anchorY": "top",
+      "columns": 2,
+      "wrap": false,
+      "visible": true,
+      "locked": false,
+      "responsive": {},
+      "constraints": {},
+      "horizontalBias": 0.5,
+      "verticalBias": 0.5
+    }
+  },
+  "LazyColumn": {
+    "properties": {},
+    "children": [
+      {
+        "type": "TextLabel",
+        "props": {
+          "text": "Item 1"
+        },
+        "role": "item"
+      },
+      {
+        "type": "TextLabel",
+        "props": {
+          "text": "Item 2"
+        },
+        "role": "item"
+      },
+      {
+        "type": "TextLabel",
+        "props": {
+          "text": "Item 3"
+        },
+        "role": "item"
+      }
+    ],
+    "container": true,
+    "layout": {
+      "width": "fill",
+      "height": 280,
+      "padding": 8,
+      "gap": 8,
+      "alignment": "start",
+      "arrangement": "start",
+      "scroll": "none",
+      "weight": 0,
+      "mode": "auto",
+      "x": 0,
+      "y": 0,
+      "minWidth": 0,
+      "maxWidth": 4096,
+      "minHeight": 0,
+      "maxHeight": 4096,
+      "aspectRatio": 0,
+      "margin": 0,
+      "anchorX": "start",
+      "anchorY": "top",
+      "columns": 2,
+      "wrap": false,
+      "visible": true,
+      "locked": false,
+      "responsive": {},
+      "constraints": {},
+      "horizontalBias": 0.5,
+      "verticalBias": 0.5
+    }
+  },
+  "LazyRow": {
+    "properties": {},
+    "children": [
+      {
+        "type": "TextLabel",
+        "props": {
+          "text": "Item 1"
+        },
+        "role": "item"
+      },
+      {
+        "type": "TextLabel",
+        "props": {
+          "text": "Item 2"
+        },
+        "role": "item"
+      },
+      {
+        "type": "TextLabel",
+        "props": {
+          "text": "Item 3"
+        },
+        "role": "item"
+      }
+    ],
+    "container": true,
+    "layout": {
+      "width": "fill",
+      "height": 280,
+      "padding": 8,
+      "gap": 8,
+      "alignment": "start",
+      "arrangement": "start",
+      "scroll": "none",
+      "weight": 0,
+      "mode": "auto",
+      "x": 0,
+      "y": 0,
+      "minWidth": 0,
+      "maxWidth": 4096,
+      "minHeight": 0,
+      "maxHeight": 4096,
+      "aspectRatio": 0,
+      "margin": 0,
+      "anchorX": "start",
+      "anchorY": "top",
+      "columns": 2,
+      "wrap": false,
+      "visible": true,
+      "locked": false,
+      "responsive": {},
+      "constraints": {},
+      "horizontalBias": 0.5,
+      "verticalBias": 0.5
+    }
+  },
+  "LazyVerticalGrid": {
+    "properties": {},
+    "children": [
+      {
+        "type": "TextLabel",
+        "props": {
+          "text": "Item 1"
+        },
+        "role": "item"
+      },
+      {
+        "type": "TextLabel",
+        "props": {
+          "text": "Item 2"
+        },
+        "role": "item"
+      },
+      {
+        "type": "TextLabel",
+        "props": {
+          "text": "Item 3"
+        },
+        "role": "item"
+      }
+    ],
+    "container": true,
+    "layout": {
+      "width": "fill",
+      "height": 280,
+      "padding": 8,
+      "gap": 8,
+      "alignment": "start",
+      "arrangement": "start",
+      "scroll": "none",
+      "weight": 0,
+      "mode": "auto",
+      "x": 0,
+      "y": 0,
+      "minWidth": 0,
+      "maxWidth": 4096,
+      "minHeight": 0,
+      "maxHeight": 4096,
+      "aspectRatio": 0,
+      "margin": 0,
+      "anchorX": "start",
+      "anchorY": "top",
+      "columns": 2,
+      "wrap": false,
+      "visible": true,
+      "locked": false,
+      "responsive": {},
+      "constraints": {},
+      "horizontalBias": 0.5,
+      "verticalBias": 0.5
+    }
+  },
+  "LazyStaggeredGrid": {
+    "properties": {},
+    "children": [
+      {
+        "type": "TextLabel",
+        "props": {
+          "text": "Item 1"
+        },
+        "role": "item"
+      },
+      {
+        "type": "TextLabel",
+        "props": {
+          "text": "Item 2"
+        },
+        "role": "item"
+      },
+      {
+        "type": "TextLabel",
+        "props": {
+          "text": "Item 3"
+        },
+        "role": "item"
+      }
+    ],
+    "container": true,
+    "layout": {
+      "width": "fill",
+      "height": 280,
+      "padding": 8,
       "gap": 8,
       "alignment": "start",
       "arrangement": "start",

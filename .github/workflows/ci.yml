@@ -85,3 +85,13 @@ jobs:
         env:
           AGATA_UI_SCRIPT: tests/undo_ui.cjs
         run: node tests/run_ui.cjs
+
+      - name: Exercise real project import and empty Android workspace
+        env:
+          AGATA_UI_SCRIPT: tests/project_import_ui.cjs
+        run: node tests/run_ui.cjs
+
+      - name: Exercise editable lists and native exports
+        env:
+          AGATA_UI_SCRIPT: tests/lists_ui.cjs
+        run: node tests/run_ui.cjs

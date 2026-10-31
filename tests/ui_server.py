@@ -44,9 +44,16 @@ bridge.export_artwork=export_artwork
 def export_android(project_id,backend):
     from apps.android_designer.services.documents import InterfaceService
     from apps.android_designer.exporters.project import export_project
+    if repository.get(project_id).get('source_import'):
+        from apps.workspace.services.project_import.export import imported_export
+        return imported_export(repository,project_id,backend,root=Path(fixture_root.name)/'Exports')
     return export_project(InterfaceService(repository).get(project_id)['document'],backend,Path(fixture_root.name)/'Exports')
 bridge.export_android=export_android
-allowed = {'list_projects', 'create_project', 'get_project', 'save_sketch', 'export_artwork', 'get_interface', 'save_interface', 'generate_android', 'validate_interface', 'export_android'}
+def export_imported_android(project_id,backend,activate=False):
+    from apps.workspace.services.project_import.export import imported_export
+    return imported_export(repository,project_id,backend,activate,Path(fixture_root.name)/'Exports')
+bridge.export_imported_android=export_imported_android
+allowed = {'list_projects', 'create_project', 'get_project', 'save_sketch', 'export_artwork', 'get_interface', 'save_interface', 'generate_android', 'validate_interface', 'export_android','project_action','open_existing_project','inspect_project_import','upload_project_import','upload_project_sources','confirm_project_import','cancel_project_import','project_source','save_project_source','reanalyze_project','export_imported_android','choose_project_path'}
 
 @server.app.post('/fixture/api/<method>')
 def call(method):

@@ -1,0 +1,13 @@
+# Conexões de layout: pesquisa e correção
+
+Foram consultados o [guia oficial de ConstraintLayout](https://developer.android.com/develop/ui/views/layout/constraint-layout), a implementação aberta histórica do [ConstraintModel do Android Studio/AOSP](https://android.googlesource.com/platform/tools/adt/idea/+/59711f1abdebfa074375fc4e8cce2675ca27f576/designer/src/com/android/tools/idea/uibuilder/handlers/constraint/ConstraintModel.java) e discussões de usuários sobre [missing constraints](https://stackoverflow.com/questions/47866062/why-android-studio-show-error-of-missing-constraints-in-constraintlayout) e [handles ausentes](https://stackoverflow.com/questions/55923122/constraintlayout-handles-not-showing-android-studio).
+
+O AOSP histórico foi usado para entender a separação entre modelo, interação e candidatos de encaixe; não representa necessariamente o Android Studio atual. Não foi copiado código Java. Relatos de fórum serviram para identificar problemas de uso; a semântica implementada vem das fontes oficiais.
+
+Antes: apenas um acerto exato no botão-alvo conectava; qualquer alvo era destacado, até incompatíveis; clicar na linha a apagava; botões secundários também iniciavam conexão; multisseleção duplicava handles que podiam bloquear o início do gesto.
+
+Agora: âncoras circulares nos eixos corretos, preenchidas quando conectadas, snapping ao alvo válido mais próximo em até 24 pixels de viewport, independente de zoom; helpers expõem somente o eixo aplicável. Um gesto começa após 3 pixels. Linhas usam curvas por eixo, margens ficam visíveis; clicar seleciona e Delete/Backspace remove. Ctrl/Cmd+clique na âncora remove explicitamente. Esc, pointercancel, blur e destino inválido mantêm o link anterior. Nenhum desses cancelamentos entra no histórico. Conexão válida e remoção são transações individuais.
+
+Pontos e curvas acompanham zoom e bounds reais; start/end respeitam direção RTL e a borda de conteúdo do pai inclui padding. Âncoras compartilhadas são desenhadas uma vez por contêiner e todas as origens selecionadas continuam arrastáveis. Modo Constraints oculta as setas de navegação para evitar sobreposição de duas semânticas.
+
+Limites declarados: baseline usa a mesma estimativa de fonte do Preview; não usa o renderer nativo do Android Studio. O solver continua aceitando grafos acíclicos; chains recíprocas e solver completo do Android não foram implementados. Não há inferência automática de constraints, spring rendering completo ou paridade integral com o Layout Editor. A margem de uma nova conexão é zero, ajustável no Inspector; não é inferida de um deslocamento livre.

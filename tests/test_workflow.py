@@ -10,7 +10,7 @@ class WorkflowTests(unittest.TestCase):
     def test_every_template_has_navigation_and_exports_parsable_native_source(self):
         parser=tree_sitter.Parser(tree_sitter.Language(tree_sitter_kotlin.language()))
         for key in TEMPLATES:
-            d=template_document(key);self.assertGreaterEqual(len(d['screens']),2)
+            d=template_document(key);self.assertGreaterEqual(len(d['screens']),1 if key in {'empty-activity','material3-starter'} else 2)
             for backend in ['compose','xml']:
                 files=generate(d,backend)
                 for path,content in files.items():

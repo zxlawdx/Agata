@@ -9,7 +9,7 @@ for(const id of ["agata-create","agata-create-dialog","agata-create-form","agata
  assert.ok(html.includes('id="'+id+'"'),id+" ausente do template");
  assert.ok(js.includes('"'+id+'"'),id+" ausente da lógica");
 }
-assert.match(js,/create_project/);assert.match(js,/list_projects/);assert.match(js,/navigate\("\/sketch"/);
+assert.match(js,/create_project/);assert.match(js,/list_projects/);assert.match(js,/item.interface_document/);assert.ok(js.includes('"/android":"/sketch"'));
 });
 test("navegação para funcionalidades em desenvolvimento não finge estar pronta",()=>{
  assert.match(html,/Fluxo de App[^<]*<span class="agata-soon">em breve/);

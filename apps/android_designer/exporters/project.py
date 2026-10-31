@@ -14,12 +14,18 @@ AGP='8.13.2';KOTLIN='2.2.20';BOM='2025.10.01';NAVIGATION='2.9.5';GRADLE='8.13'
 
 def generate(document,backend='compose'):
     document=validate(document)
+    if not document['screens']:raise ValueError('Crie uma primeira Screen antes de gerar o aplicativo.')
     if backend not in {'compose','xml'}:raise ValueError('Exportador Android desconhecido.')
     for s in document['screens']:
         for n in walk(s['root']):
             if n['events'].get('onClick',{}).get('broken'):raise ValueError('Corrija o destino quebrado em '+n['name']+' antes de exportar.')
     files=(ComposeGenerator if backend=='compose' else XmlGenerator)(document).generate()
     namespace=document['namespace']
+    settings=document.get('android_settings',{})
+    min_sdk=int(settings.get('min_sdk',24));target_sdk=int(settings.get('target_sdk',36))
+    if not 24<=min_sdk<=target_sdk<=36:raise ValueError('SDKs incompatíveis com o exportador (24–36).')
+    orientation=settings.get('orientation','unspecified')
+    if orientation not in {'unspecified','portrait','landscape'}:raise ValueError('Orientação inválida.')
     plugins=f'id("com.android.application") version "{AGP}" apply false\nid("org.jetbrains.kotlin.android") version "{KOTLIN}" apply false\n'
     app_plugins='id("com.android.application")\nid("org.jetbrains.kotlin.android")\n'
     deps=['androidx.core:core-ktx:1.17.0']
@@ -28,6 +34,7 @@ def generate(document,backend='compose'):
         app_plugins+='id("org.jetbrains.kotlin.plugin.compose")\n'
         deps+=['androidx.constraintlayout:constraintlayout-compose:1.1.2','androidx.activity:activity-compose:1.11.0','androidx.compose.ui:ui','androidx.compose.foundation:foundation','androidx.compose.material3:material3',f'androidx.navigation:navigation-compose:{NAVIGATION}']
     else:deps+=['androidx.constraintlayout:constraintlayout:2.2.2','androidx.appcompat:appcompat:1.7.1','com.google.android.material:material:1.13.0']
+    if backend=='xml' and any(n['type'] in {'ListView','GridView','RecyclerView','LazyColumn','LazyRow','LazyVerticalGrid','LazyStaggeredGrid'} for s in document['screens'] for n in walk(s['root'])):deps+=['androidx.recyclerview:recyclerview:1.4.0']
     dependencies=(f'implementation(platform("androidx.compose:compose-bom:{BOM}"))\n' if backend=='compose' else '')+'\n'.join(f'implementation("{d}")' for d in deps)
     files['settings.gradle.kts']='''pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }
 dependencyResolutionManagement { repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS); repositories { google(); mavenCentral() } }
@@ -40,15 +47,16 @@ include(":app")
 android {{
  namespace = "{namespace}"
  compileSdk = 36
- defaultConfig {{ applicationId = "{namespace}"; minSdk = 24; targetSdk = 36; versionCode = 1; versionName = "1.0" }}
+ defaultConfig {{ applicationId = "{namespace}"; minSdk = {min_sdk}; targetSdk = {target_sdk}; versionCode = 1; versionName = "1.0" }}
  compileOptions {{ sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaVersion.VERSION_17 }}
  kotlinOptions {{ jvmTarget = "17" }}
  {'buildFeatures { compose = true }' if backend=='compose' else ''}
 }}
 dependencies {{ {dependencies} }}
 '''
+    orientation_attr=f' android:screenOrientation="{orientation}"' if 'orientation' in settings else ''
     theme='@android:style/Theme.Material.Light.NoActionBar' if backend=='compose' else '@style/Theme.Agata'
-    files['app/src/main/AndroidManifest.xml']=f'''<manifest xmlns:android="http://schemas.android.com/apk/res/android"><application android:label="@string/app_name" android:theme="{theme}" android:supportsRtl="true"><activity android:name="{namespace}.MainActivity" android:exported="true"><intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter></activity></application></manifest>\n'''
+    files['app/src/main/AndroidManifest.xml']=f'''<manifest xmlns:android="http://schemas.android.com/apk/res/android"><application android:label="@string/app_name" android:theme="{theme}" android:supportsRtl="true"><activity android:name="{namespace}.MainActivity" android:exported="true"{orientation_attr}><intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter></activity></application></manifest>\n'''
     files['app/src/main/res/values/colors.xml']=f'<resources><color name="agata_primary">{document["theme"]["primary"]}</color></resources>\n'
     warnings=[]
     for screen in document['screens']:

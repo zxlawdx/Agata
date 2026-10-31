@@ -12,6 +12,12 @@ window.AgataLayout=(()=>{
   if(l.weight&&parent&&['Row','Column'].includes(options.parentType)){element.style.flex=`${l.weight} 1 0px`;element.style[options.parentType==='Row'?'width':'height']='0px';}
   if(node.children.length===0&&['Column','Row','Box','Grid','Card','Surface'].includes(node.type))element.style.minHeight=Math.max(l.minHeight,40)+'px';
   if(node.type==='Grid'){Object.assign(element.style,{display:'grid',gridTemplateColumns:`repeat(${l.columns},minmax(0,1fr))`,alignItems:'start'});}
+  if(['ListView','RecyclerView','GridView','LazyColumn','LazyRow','LazyVerticalGrid','LazyStaggeredGrid'].includes(node.type)){
+   const horizontal=node.type==='LazyRow'||node.type==='RecyclerView'&&node.props.orientation==='horizontal',grid=['GridView','LazyVerticalGrid','LazyStaggeredGrid'].includes(node.type)||node.type==='RecyclerView'&&node.props.layoutManager!=='linear',staggered=node.type==='LazyStaggeredGrid'||node.type==='RecyclerView'&&node.props.layoutManager==='staggered';
+   Object.assign(element.style,{display:grid?'grid':'flex',flexDirection:horizontal?'row':'column',overflow:horizontal?'auto hidden':'hidden auto',alignContent:'start',gridTemplateColumns:grid?`repeat(${l.columns},minmax(0,1fr))`:'',alignItems:'start'});
+   for(const child of element.querySelectorAll(':scope > [data-node-id]')){child.style.flexShrink='0';if(grid)child.style.width='100%';}
+   if(staggered&&!horizontal){Object.assign(element.style,{display:'block',columnCount:l.columns,columnGap:l.gap+'px'});for(const child of element.querySelectorAll(':scope > [data-node-id]'))Object.assign(child.style,{breakInside:'avoid',marginBottom:l.gap+'px'});}
+  }
   if(node.type==='Row'&&l.wrap)element.style.flexWrap='wrap';
   if(node.type==='Box'&&l.mode==='free'){
    Object.assign(element.style,{display:'block',position:'relative',minHeight:Math.max(l.minHeight,80)+'px'});
