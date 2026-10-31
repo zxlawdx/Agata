@@ -122,3 +122,25 @@
 .ad-compose-placeholder{border:1px dashed #bb7b00!important;background:repeating-linear-gradient(45deg,#fff8e8,#fff8e8 8px,#ffe6b3 8px,#ffe6b3 16px)!important;color:#573800!important;font:12px/1.4 sans-serif!important;padding:8px!important;min-height:40px!important}.ad-compose-modifier{min-width:0}.ad-compose-content{box-sizing:border-box}.ui-node[data-compose-dynamic=true]{outline:1px dashed #a76c00}.ad-field~details p{overflow-wrap:anywhere;font-size:11px}
 
 #android-designer #ad-preview-viewport{box-sizing:content-box;resize:both}
+
+/* Chrome appearance remains separate from the Android project preview theme. */
+#android-designer .ad-theme-setting{display:flex;align-items:center;gap:6px;font-size:11px;white-space:nowrap}
+#android-designer #ad-ide-theme{border:1px solid var(--ink);background:var(--cream);border-radius:8px;padding:4px 6px;min-width:82px}
+#android-designer[data-ide-theme="dark"]{
+ --ink:#f3ecdf;--cream:#182430;--cyan:#27576a;--blue:#307ea3;--pink:#573b50;--yellow:#79602c;
+ --ad-inspector-bg:#573b50;--ad-editor-bg:#233342;--ad-frame-border:#f3ecdf;
+}
+@media(prefers-color-scheme:dark){
+ #android-designer[data-ide-theme="system"]{
+  --ink:#f3ecdf;--cream:#182430;--cyan:#27576a;--blue:#307ea3;--pink:#573b50;--yellow:#79602c;
+  --ad-inspector-bg:#573b50;--ad-editor-bg:#233342;--ad-frame-border:#f3ecdf;
+ }
+}
+#android-designer .ad-inspector{background:var(--ad-inspector-bg,var(--pink))}
+#android-designer :is(#ad-code,#ad-preview){background:var(--cream)}
+#android-designer .ad-header{background:var(--cream)}
+#android-designer .ad-code-tools{background:var(--cream)}
+#android-designer .ad-field :is(input,textarea,select){background:var(--ad-editor-bg,var(--cream));color:var(--ink)}
+/* Simulated Android screen remains controlled by the project theme, not IDE theme. */
+#android-designer .ad-screen-content,#android-designer #ad-preview-screen{background:white}
+@media(max-width:900px){#android-designer .ad-theme-setting{font-size:0}}
