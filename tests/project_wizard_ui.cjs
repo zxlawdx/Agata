@@ -33,6 +33,9 @@ const {chromium} = require(process.env.PLAYWRIGHT_MODULE || "playwright");
 
   await page.evaluate(()=>window.Vela.navigate("/home"));
   await page.locator("#agata-create").waitFor();
+  assert.equal(await page.locator("#agata-ide-theme").inputValue(),"light");
+  await page.locator("#agata-ide-theme").selectOption("dark");
+  assert.equal(await page.locator("#agata-home").getAttribute("data-ide-theme"),"dark");
   await page.locator("#agata-create").click();
   await page.locator("#agata-platform").selectOption("android");
   assert.equal(await page.locator("#agata-wizard-settings").isVisible(),true);
@@ -42,6 +45,17 @@ const {chromium} = require(process.env.PLAYWRIGHT_MODULE || "playwright");
   await page.locator("#agata-template").selectOption("empty");
   await page.locator("#agata-confirm-create").click();
   await page.locator("#ad-frames .ad-frame").waitFor();
+  assert.equal(await page.locator("#ad-ide-theme").inputValue(),"dark");
+  const beforeTheme = await page.evaluate(async()=>{
+   const id=document.querySelector("#android-designer").dataset.projectId;
+   return (await window.pywebview.api.get_interface(id)).document.theme.darkMode;
+  });
+  await page.locator("#ad-ide-theme").selectOption("light");
+  const afterTheme = await page.evaluate(async()=>{
+   const id=document.querySelector("#android-designer").dataset.projectId;
+   return (await window.pywebview.api.get_interface(id)).document.theme.darkMode;
+  });
+  assert.equal(beforeTheme,afterTheme,"Tema da IDE não pode alterar o projeto Android");
   await page.getByRole("button",{name:"Agora não",exact:true}).click({timeout:1800}).catch(()=>{});
   await page.locator("#ad-example").click();
   assert.equal(await page.locator("#ad-links .ad-connection").count(),0);
