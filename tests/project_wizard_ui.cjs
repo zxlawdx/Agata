@@ -42,7 +42,7 @@ const {chromium} = require(process.env.PLAYWRIGHT_MODULE || "playwright");
   await page.locator("#agata-template").selectOption("empty");
   await page.locator("#agata-confirm-create").click();
   await page.locator("#ad-frames .ad-frame").waitFor();
-  await page.getByRole("button",{name:"Agora não",exact:true}).click().catch(()=>{});
+  await page.getByRole("button",{name:"Agora não",exact:true}).click({timeout:1800}).catch(()=>{});
   await page.locator("#ad-example").click();
   assert.equal(await page.locator("#ad-links .ad-connection").count(),0);
   assert.equal(await page.locator("#ad-connections").getAttribute("aria-pressed"),"false");
