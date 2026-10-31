@@ -7,6 +7,15 @@
  const q=id=>root.querySelector("#"+id);
  const abort=new AbortController();
  const on=(el,event,fn)=>el.addEventListener(event,fn,{signal:abort.signal});
+ const allowedThemes=new Set(["system","light","dark"]);
+ const applyIdeTheme=value=>{
+   root.dataset.ideTheme=allowedThemes.has(value)?value:"system";
+   q("agata-ide-theme").value=root.dataset.ideTheme;
+   localStorage.setItem("agata-ide-theme",root.dataset.ideTheme);
+ };
+ applyIdeTheme(localStorage.getItem("agata-ide-theme")||"system");
+ on(q("agata-ide-theme"),"change",()=>applyIdeTheme(q("agata-ide-theme").value));
+
  let section="home", pendingMode=null, projects=[], disposed=false, loadState="loading", loadError="", request=0;
  const preset={
    android:{platform:"android",width:390,height:844,mode:"sketch"},
