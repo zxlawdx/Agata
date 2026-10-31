@@ -26,7 +26,9 @@ class InterfaceService:
                 from uuid import uuid4
                 import json
                 backup=self.repository._read_path(project_id).parent/'model-history'/(uuid4().hex+'.json');backup.parent.mkdir(parents=True,exist_ok=True);backup.write_text(json.dumps(project['interface_document'],ensure_ascii=False),encoding='utf-8')
-            if 'android_settings' in clean:project['project_settings']=clean['android_settings']
+            if 'android_settings' in clean:
+                clean['android_settings'].update(namespace=clean['namespace'],theme=clean['theme']['darkMode'])
+                project['project_settings']=clean['android_settings']
             project['interface_document']=clean;project['interface_revision']=current+1
             project['updated_at']=datetime.now(timezone.utc).isoformat(timespec='seconds')
             self.repository.save(project)

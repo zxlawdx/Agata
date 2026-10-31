@@ -64,7 +64,7 @@ class ImportCoordinator:
             for p in texts:
                 if p.endswith('.kt') and p not in baseline:conflicts.append(p)
             if conflicts:warnings.append({'path':'source','message':'Arquivos Kotlin diferentes da geração original serão preservados; revise conflitos antes de substituir: '+', '.join(conflicts[:8])})
-        counts=parser.counts if parser else {'fully_editable':component_count,'partially_editable':0,'code_only':0}
+        counts=parser.counts if parser else {'fully_editable':component_count,'partially_editable':0,'code_only':len(conflicts)}
         doc['import_summary']={'kind':kind,'source_files':sorted(files),'resources':resources['paths'],'warnings':warnings,'classification':counts,'provenance':parser.provenance if parser else {},'empty':not doc['screens']}
         token=uuid4().hex;stage=self.staging/token;stage.mkdir(parents=True)
         for name,data in files.items():p=stage/'files'/safe_name(name);p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(data)

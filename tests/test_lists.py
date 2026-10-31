@@ -27,4 +27,4 @@ class ListsTests(unittest.TestCase):
   doc=new_document();node=new_node('RecyclerView');node['props']['layoutManager']='arbitrary';doc['screens'][0]['root']['children']=[node]
   with self.assertRaises(ValueError):validate(doc)
  def test_sdk_and_orientation_reach_generated_configuration(self):
-  doc=new_document();doc['android_settings']={'min_sdk':26,'target_sdk':35,'orientation':'landscape'};files=generate(doc);self.assertIn('minSdk = 26; targetSdk = 35',files['app/build.gradle.kts']);self.assertIn('screenOrientation="landscape"',files['app/src/main/AndroidManifest.xml'])
+  doc=new_document();doc['theme']['darkMode']='dark';self.assertIn('AppCompatDelegate.MODE_NIGHT_YES',generate(doc,'xml')['app/src/main/java/com/example/agata/MainActivity.kt']);doc['android_settings']={'min_sdk':26,'target_sdk':35,'orientation':'landscape'};files=generate(doc);self.assertIn('minSdk = 26; targetSdk = 35',files['app/build.gradle.kts']);self.assertIn('screenOrientation="landscape"',files['app/src/main/AndroidManifest.xml'])

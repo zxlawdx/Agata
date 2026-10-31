@@ -140,6 +140,7 @@ class XmlGenerator(ComposeGenerator):
 
     def generate(self):
         screens=self.doc['screens'];base='app/src/main/java/'+self.ns.replace('.','/')
+        night=self.doc['theme']['darkMode'];night_mode=('androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_'+('YES' if night=='dark' else 'NO')+')\n  ') if night!='system' else ''
         cases=[];binders=[];has_lists=any(n['type'] in {'ListView','RecyclerView','GridView','LazyColumn','LazyRow','LazyVerticalGrid','LazyStaggeredGrid'} for s in screens for n in walk(s['root']))
         for s in screens:
             self.qualifier='';view=self.view(s['root']);self.files[f'app/src/main/res/layout/{s["id"]}.xml']=ET.tostring(view,encoding='unicode')+'\n'
@@ -179,7 +180,7 @@ class MainActivity : AppCompatActivity() {{
  {('private class AgataItemHolder(view: android.view.View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(view)') if has_lists else ''}
  private val history = mutableListOf<String>()
  override fun onCreate(savedInstanceState: Bundle?) {{
-  super.onCreate(savedInstanceState)
+  {night_mode}super.onCreate(savedInstanceState)
   history.addAll(savedInstanceState?.getStringArrayList("routes") ?: arrayListOf({quote(self.doc['start_screen'])}))
   openScreen(history.last(), false)
  }}

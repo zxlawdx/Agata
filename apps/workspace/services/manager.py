@@ -38,7 +38,10 @@ class ProjectManager:
         p=self.repo.get(project_id)
         if action=='rename':
             if not isinstance(value,str) or not value.strip() or len(value)>80 or re.search(r'[\x00-\x1f]',value):raise ValueError('Nome inválido.')
-            p['name']=value.strip();p['updated_at']=stamp();self.repo.save(p);self.repo.register(project_id,self.repo._read_path(project_id),p['name'])
+            p['name']=value.strip()
+            if p.get('interface_document'):
+                p['interface_document']['app_name']=p['name'];p['interface_revision']=p.get('interface_revision',0)+1
+            p['updated_at']=stamp();self.repo.save(p);self.repo.register(project_id,self.repo._read_path(project_id),p['name'])
         elif action=='duplicate':
             original=p['id'];p=copy.deepcopy(p);p['id']=uuid4().hex;p['name']+=' cópia';p['created_at']=p['updated_at']=stamp();self.repo.save(p)
             for folder in ['original-source','source-edits']:
