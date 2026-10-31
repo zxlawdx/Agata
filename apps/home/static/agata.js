@@ -7,7 +7,7 @@
  const q=id=>root.querySelector("#"+id);
  const abort=new AbortController();
  const on=(el,event,fn)=>el.addEventListener(event,fn,{signal:abort.signal});
- let section="home",projects=[],disposed=false;
+ let section="home", pendingMode=null, projects=[], disposed=false, loadState="loading", loadError="", request=0;
  const preset={
    android:{platform:"android",width:390,height:844,mode:"sketch"},
    web:{platform:"web",width:1280,height:800,mode:"drawing"},
@@ -29,19 +29,23 @@
    q("agata-projects").hidden=page==="templates";
    q("agata-projects-title").textContent=page==="projects"?"Todos os projetos":"Recentes";
    q("agata-view-all").hidden=page!=="home";
-   root.querySelectorAll("[data-section]").forEach(btn=>{
-     const active=btn.dataset.section===page;
-     btn.classList.toggle("active",active);
-     if(active)btn.setAttribute("aria-current","page");else btn.removeAttribute("aria-current");
-   });
+   selectNavigation();
    render();
+ }
+ function selectNavigation(){
+   root.querySelectorAll(".agata-nav [data-section],.agata-nav [data-editor-mode]").forEach(btn=>{
+     const active=pendingMode?btn.dataset.editorMode===pendingMode:btn.dataset.section===section;
+     btn.classList.toggle("active",active);
+     btn.removeAttribute("aria-current");btn.removeAttribute("aria-pressed");
+     if(active)btn.setAttribute(pendingMode?"aria-pressed":"aria-current",pendingMode?"true":"page");
+   });
  }
  function projectCard(item){
    const b=document.createElement("button");b.type="button";
    b.className="agata-project-card";b.dataset.id=item.id;
    b.setAttribute("aria-label","Abrir projeto "+item.name);
    const preview=document.createElement("span");preview.className="agata-project-preview";
-   const mini=document.createElement("span");mini.className="agata-mini-device";mini.textContent="☺";preview.append(mini);
+   const mini=document.createElement("span");mini.className="agata-mini-device";const face=document.createElement("img");face.src=root.dataset.mascot;face.alt="";face.width=32;face.height=32;mini.append(face);preview.append(mini);
    const name=document.createElement("strong");name.className="agata-project-name";name.textContent=item.name;
    const meta=document.createElement("span");meta.className="agata-project-meta";
    const type=document.createElement("span");
@@ -54,6 +58,17 @@
  }
  function render(){
    const host=q("agata-project-list");host.replaceChildren();
+   host.setAttribute("aria-busy",String(loadState==="loading"));
+   if(loadState!=="ready"){
+     const state=document.createElement("div");state.className="agata-empty";
+     const text=document.createElement("p");text.textContent=loadState==="loading"?"Carregando projetos…":"Não foi possível carregar projetos: "+loadError;
+     state.append(text);
+     if(loadState==="error"){
+       const retry=document.createElement("button");retry.type="button";retry.textContent="Tentar novamente";
+       retry.onclick=refresh;state.append(retry);
+     }
+     host.append(state);return;
+   }
    const items=section==="home"?projects.slice(0,4):projects;
    if(!items.length){
      const empty=document.createElement("div");empty.className="agata-empty";
@@ -64,14 +79,16 @@
    items.forEach(item=>host.append(projectCard(item)));
  }
  async function refresh(){
+   const current=++request;loadState="loading";render();
    try{
      const result=await api("list_projects");
      if(!Array.isArray(result))throw Error("Lista de projetos inválida.");
-     if(disposed)return;
-     projects=result;error("");render();
-   }catch(e){if(!disposed)error(e.message);}
+     if(disposed || current!==request)return;
+     projects=result;loadState="ready";error("");render();
+   }catch(e){if(!disposed && current===request){loadState="error";loadError=e.message;render();}}
  }
- function openCreate(kind="android"){
+ function openCreate(kind="android",fromMenu=false){
+   pendingMode=fromMenu?(preset[kind]||preset.android).mode:null;selectNavigation();
    const conf=preset[kind]||preset.android;
    q("agata-create-form").reset();
    q("agata-name").value="";
@@ -103,16 +120,22 @@
  on(q("agata-create"),"click",()=>openCreate());
  on(q("agata-view-all"),"click",()=>navigate("projects"));
  on(q("agata-create-form"),"submit",create);
- on(q("agata-close-create"),"click",()=>q("agata-create-dialog").close());
- on(q("agata-cancel-create"),"click",()=>q("agata-create-dialog").close());
+ function restoreSelection(){pendingMode=null;selectNavigation();}
+ function closeCreate(){q("agata-create-dialog").close();restoreSelection();}
+ on(q("agata-create-dialog"),"close",()=>{if(!q("agata-create-dialog").open)restoreSelection();});
+ on(q("agata-create-dialog"),"cancel",restoreSelection);
+ on(q("agata-mode"),"change",()=>{if(pendingMode){pendingMode=q("agata-mode").value;selectNavigation();}});
+ on(window,"pywebviewready",()=>refresh());
+ on(q("agata-close-create"),"click",closeCreate);
+ on(q("agata-cancel-create"),"click",closeCreate);
  on(q("agata-project-list"),"click",event=>{
    const btn=event.target.closest("[data-id]");
-   if(btn)window.Vela.navigate("/sketch",{project_id:btn.dataset.id});
+   if(btn)window.Vela.navigate("/sketch",{project_id:btn.dataset.id}).catch(e=>error(e.message));
  });
  for(const btn of root.querySelectorAll("[data-section]"))
    on(btn,"click",()=>navigate(btn.dataset.section));
  for(const btn of root.querySelectorAll("[data-editor-mode]"))
-   on(btn,"click",()=>openCreate(btn.dataset.editorMode));
+   on(btn,"click",()=>openCreate(btn.dataset.editorMode,true));
  for(const btn of root.querySelectorAll("[data-preset]"))
    on(btn,"click",()=>openCreate(btn.dataset.preset));
  const previous=window.VelaPage?.beforeUnmount;

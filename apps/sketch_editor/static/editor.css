@@ -1,6 +1,6 @@
 /* Paleta Agata baseada no esboço do Lunacy. */
 #agata-sketch{--dark:#1a1c1c;--teal:#0097a7;--ice:#b2ebf2;--border:#304346;--muted:#9fb5b7;
-  width:100%;height:100vh;display:flex;flex-direction:column;min-height:0;overflow:hidden;
+  box-sizing:border-box;position:relative;width:100%;height:100%;display:flex;flex-direction:column;min-height:0;overflow:hidden;
   background:#202829;color:#f1fcfd;font:12px Inter,"Segoe UI",Arial,sans-serif;}
 #agata-sketch *,#agata-sketch *:before,#agata-sketch *:after{box-sizing:border-box}
 #agata-sketch [hidden]{display:none!important}
@@ -28,7 +28,7 @@
 #agata-sketch .ys-toolbar button.active{color:#b2ebf2;border-color:#0097a7;background:#16545d}
 #agata-sketch .ys-divider{width:1px;height:23px;margin:0 7px;background:#516367}
 #agata-sketch #ys-zoom-label{width:45px;text-align:center;color:#b2ebf2}
-#agata-sketch .ys-layout{display:grid;grid-template-columns:196px minmax(0,1fr) 254px;flex:1;min-height:0}
+#agata-sketch .ys-layout{display:grid;grid-template-columns:196px minmax(0,1fr) 254px;flex:1;min-height:0;min-width:0}
 #agata-sketch .ys-panel{background:#1a1c1c;overflow:auto;padding:18px 13px}
 #agata-sketch .ys-left{border-right:1px solid #36464a}
 #agata-sketch .ys-right{border-left:1px solid #36464a;display:flex;flex-direction:column;gap:20px}

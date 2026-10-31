@@ -1,6 +1,7 @@
 """Composition root do Agata; registra módulos no runtime nativo do Vela."""
 import sys
 
+from apps.sketch_editor.services.vendor import verify_vendor
 from config import settings
 from config.bridge import AgataBridge
 from vela.cli.collectstatic import collect_static
@@ -10,6 +11,7 @@ INSTALLED_APPS = ["apps.home", "apps.workspace", "apps.sketch_editor"]
 
 
 def run():
+    verify_vendor()
     if not getattr(sys, "frozen", False):
         report = collect_static(
             output_dir=settings.STATIC_ROOT,

@@ -22,3 +22,6 @@ API = {
 }
 DEBUG = True
 STATIC_ROOT = "staticfiles"
+
+# All runtime assets are committed; collectstatic never needs Node or Tailwind.
+ASSETS = {"tailwind": False}

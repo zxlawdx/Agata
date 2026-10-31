@@ -94,3 +94,22 @@
 #agata-sketch .ys-panel{padding:8px 6px}
 #agata-sketch .ys-form-tiles button span{display:none}
 #agata-sketch .ys-form-tiles button{justify-content:center}}
+/* Match the Vela app-root, including direct entry into the editor. */
+.vela-shell__app-root{--vela-app-overflow:hidden}
+#vela-page{height:100%;min-height:0;min-width:0}
+#agata-sketch .ys-header,#agata-sketch .ys-footer{flex-shrink:0;overflow-x:auto}
+#agata-sketch .ys-head-actions{flex-shrink:0}
+#agata-sketch .ys-layout,#agata-sketch .ys-panel,#agata-sketch .ys-workspace{min-height:0;min-width:0}
+#agata-sketch .ys-toolbar>div{flex-shrink:0}
+#agata-sketch .ys-panel-toggle{display:none}
+@media(max-width:720px){
+  #agata-sketch .ys-panel-toggle{display:block}
+  #agata-sketch .ys-layout{grid-template-columns:minmax(0,1fr);position:relative}
+  #agata-sketch .ys-panel{display:none;position:absolute;top:8px;bottom:8px;width:min(290px,85%);z-index:3;margin:0;box-shadow:4px 4px 0 #24242444}
+  #agata-sketch .ys-left{left:8px}
+  #agata-sketch .ys-right{right:8px}
+  #agata-sketch.ys-show-left .ys-left{display:block}
+  #agata-sketch.ys-show-right .ys-right{display:flex}
+  #agata-sketch .ys-workspace{grid-column:1}
+  #agata-sketch .ys-form-tiles button span{display:inline}
+}

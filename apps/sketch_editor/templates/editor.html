@@ -7,6 +7,8 @@
     <div class="ys-head-actions"><span id="ys-dirty-status" class="ys-status">Carregando...</span><button type="button" id="ys-save" class="ys-btn-primary" disabled>Salvar <kbd>Ctrl+S</kbd></button><button type="button" id="ys-home" class="ys-btn-quiet">← Início</button></div>
   </header>
   <nav class="ys-studio-nav" aria-label="Projetos e exportação">
+    <button type="button" id="ys-toggle-tools" class="ys-panel-toggle" aria-expanded="false" aria-controls="ys-tools-panel">Ferramentas</button>
+    <button type="button" id="ys-toggle-inspector" class="ys-panel-toggle" aria-expanded="false" aria-controls="ys-inspector-panel">Camadas e propriedades</button>
     <button type="button" id="ys-go-new">＋ Novo projeto</button>
     <button type="button" id="ys-go-recents">Recentes</button>
     <button type="button" id="ys-go-models">Modelos</button>
@@ -31,7 +33,7 @@
     <div class="ys-quick"><button id="ys-undo" type="button" title="Desfazer (Ctrl+Z)">↶ Desfazer</button><button id="ys-redo" type="button" title="Refazer (Ctrl+Shift+Z)">↷ Refazer</button><span class="ys-divider"></span><button id="ys-zoom-out" type="button">−</button><output id="ys-zoom-label">100%</output><button id="ys-zoom-in" type="button">＋</button><button id="ys-fit" type="button" title="Ajustar à área">Ajustar</button></div>
   </div>
   <div class="ys-layout">
-    <aside class="ys-left ys-panel">
+    <aside id="ys-tools-panel" class="ys-left ys-panel">
       <div class="ys-panel-title">SELEÇÃO DE FORMAS</div>
       <div class="ys-form-tiles">
         <button type="button" data-tool="rect">▭ <span>Retângulo</span></button>
@@ -77,7 +79,7 @@
       <div class="ys-scroll" id="ys-scroll"><div class="ys-stage" id="ys-stage"><div class="ys-canvas-wrap" id="ys-canvas-wrap"><canvas id="ys-canvas" aria-label="Prancheta de desenho"></canvas></div></div></div>
       <div id="ys-message" class="ys-message" role="status" hidden></div>
     </main>
-    <aside class="ys-right ys-panel">
+    <aside id="ys-inspector-panel" class="ys-right ys-panel">
       <section class="ys-properties">
         <div class="ys-panel-title">PROPRIEDADES</div>
         <label class="ys-field" id="ys-text-field" hidden>Texto selecionado<input type="text" id="ys-prop-text" maxlength="400" disabled placeholder="Digite o texto"></label>
@@ -127,6 +129,7 @@
           <p class="ys-hint">Dentro da edição, você move cada texto, forma e ícone. Ao concluir, tudo acompanha o componente.</p>
         </div>
       </section>
+      <details class="ys-code-panel"><summary>Visualização técnica · XML / HTML / CSS</summary><p>Geração de código de interfaces ainda indisponível. Requer um modelo estruturado de componentes e validações. A exportação atual oferece SVG, PNG e JSON do documento real.</p></details>
       <section class="ys-layers">
         <div class="ys-layers-heading"><div class="ys-panel-title">CAMADAS</div><button type="button" id="ys-add-layer" title="Adicionar camada">＋ Nova</button></div>
         <p class="ys-hint">Só a camada ativa pode ser editada. Use o olho para ocultar, o cadeado para bloquear e o alvo para isolar.</p>
@@ -166,7 +169,7 @@
       if (!root.isConnected) return;
       root.querySelector("#ys-fatal").hidden = false;
       root.querySelector("#ys-fatal-detail").textContent = err.message +
-        ". Verifique os arquivos em staticfiles/sketch_editor/. Execute npm run vendor e python manage.py collectstatic --no-tailwind --no-install antes de reiniciar.";
+        ". Verifique os arquivos em staticfiles/sketch_editor/. Restaure os recursos da distribuição e execute python manage.py collectstatic --no-tailwind --no-install antes de reiniciar.";
       root.querySelector("#ys-fatal-home").onclick = () => window.Vela?.navigate("/home");
       console.error("[Agata/sketch]", err);
     }

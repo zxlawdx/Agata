@@ -37,12 +37,10 @@ cd Agata
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install "vela-framework[qt6] @ git+https://github.com/zxlawdx/Vela-framework.git"
-npm install --ignore-scripts
-npm run vendor
 python manage.py runapp
 ```
 
-Fabric.js é copiado para os arquivos estáticos locais por `npm run vendor`. A operação da ferramenta após essa preparação não precisa de CDN.
+Fabric.js 5.3.0 já está incluído na distribuição, com licença MIT e SHA-256 verificável. A execução não utiliza Node.js, NPM, CDN ou download inicial. Veja [execução no computador da empresa](docs/EXECUTAR.md) e [auditoria e limites](docs/AUDITORIA.md).
 
 ### Se você já tinha o Yara clonado
 
@@ -53,7 +51,6 @@ git remote set-url origin https://github.com/zxlawdx/Agata.git
 git fetch origin
 git switch main
 git pull --ff-only origin main
-npm run vendor
 python manage.py runapp
 ```
 

@@ -1,0 +1,16 @@
+  <dialog id="agata-create-dialog" class="agata-dialog">
+    <form id="agata-create-form">
+      <header><div><small>COMECE UMA IDEIA</small><h2>Novo projeto ✦</h2></div><button type="button" id="agata-close-create" aria-label="Fechar">×</button></header>
+      <label>Nome do projeto<input id="agata-name" name="name" placeholder="Minha criação" maxlength="80" autocomplete="off" required></label>
+      <div class="agata-field-row">
+        <label>Ambiente<select id="agata-mode"><option value="sketch">Esboço</option><option value="drawing">Área de desenho</option><option value="svg">Vetores / SVG</option></select></label>
+        <label>Formato<select id="agata-platform"><option value="android">Android</option><option value="web">Web</option><option value="desktop">Desktop</option></select></label>
+      </div>
+      <div class="agata-field-row">
+        <label>Largura <input id="agata-width" type="number" min="240" max="4096" value="390" required></label>
+        <label>Altura <input id="agata-height" type="number" min="240" max="4096" value="844" required></label>
+      </div>
+      <p id="agata-form-error" class="agata-error" role="alert" hidden></p>
+      <footer><button type="button" id="agata-cancel-create" class="agata-btn-outline">Cancelar</button><button type="submit" id="agata-confirm-create" class="agata-btn-yellow">Criar prancheta →</button></footer>
+    </form>
+  </dialog>

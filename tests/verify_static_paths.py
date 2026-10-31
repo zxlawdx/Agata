@@ -1,6 +1,6 @@
 """Conferência de todos os caminhos static(...) usados nos templates do Agata.
 
-Rode após npm run vendor, pois Fabric é gerado a partir da dependência npm.
+Fabric e o mascote são distribuídos no repositório; não requer NPM.
 """
 import re
 import unittest

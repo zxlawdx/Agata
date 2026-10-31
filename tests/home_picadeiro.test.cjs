@@ -1,6 +1,6 @@
 // Contrato básico de controles do home Picadeiro Pop.
 const test=require("node:test"),assert=require("node:assert/strict"),fs=require("node:fs");
-const html=fs.readFileSync("apps/home/templates/home.html","utf8");
+const html=fs.readFileSync("apps/home/templates/home.html","utf8")+fs.readdirSync("apps/home/templates/components").map(f=>fs.readFileSync("apps/home/templates/components/"+f,"utf8")).join("\n");
 const js=fs.readFileSync("apps/home/static/agata.js","utf8");
 test("home tem criação e navegação ligadas",()=>{
 for(const id of ["agata-create","agata-create-dialog","agata-create-form","agata-name",
