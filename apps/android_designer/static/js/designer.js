@@ -200,7 +200,7 @@ window.AgataAndroidDesigner={async mount(root){
  });}
  function showFile(){
   ensureEditor();filePath=$('ad-file').value;customMode=!!model.value.custom_files[$('ad-backend').value+'/'+filePath];
-  codeWorkflow?.track();const isModel=$('ad-backend').value==='model';codeUpdating=true;codeEditor.setValue(isModel?(modelDraft??JSON.stringify(model.value,null,2)):(model.value.custom_files[$('ad-backend').value+'/'+filePath]??files[filePath]??''),isModel?'json':filePath.endsWith('.xml')?'xml':filePath.endsWith('.kt')||filePath.endsWith('.kts')?'kotlin':'text',isModel||customMode);codeUpdating=false;
+  codeWorkflow?.track();const isModel=$('ad-backend').value==='model';codeUpdating=true;codeEditor.setValue(isModel?(modelDraft??JSON.stringify(model.value,null,2)):(model.value.custom_files[$('ad-backend').value+'/'+filePath]??files[filePath]??''),isModel?'json':filePath.endsWith('.xml')?'xml':filePath.endsWith('.kt')||filePath.endsWith('.kts')?'kotlin':'text',isModel||customMode,$('ad-backend').value+'/'+filePath);codeUpdating=false;
   $('ad-code-note').textContent=isModel?'IR JSON: Aplicar JSON valida e sincroniza com Design.':customMode?'Código personalizado preservado. Alterações não voltam ao Design.':'Código gerado, somente leitura. Personalizar cria override explícito sem sincronização reversa.';
  }
  async function generate(){
@@ -272,9 +272,9 @@ window.AgataAndroidDesigner={async mount(root){
   transact(()=>first.root.children.push(top,card,field,button,bottom));screenId=first.id;selected=new Set([button.id]);render();fit();
  });
  on(document,'keydown',event=>{
-  if(!root.isConnected||event.target.closest('input,textarea,.cm-editor,select'))return;
+  if(!root.isConnected||event.defaultPrevented||event.target.closest?.('input,textarea,.cm-editor,select'))return;
   if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='s'){event.preventDefault();save().catch(()=>{});}
-  if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='z'){event.preventDefault();if(event.shiftKey)model.redo();else model.undo();render();}
+  if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='z'){event.preventDefault();event.stopPropagation();if(event.repeat)return;if(event.shiftKey)model.redo();else model.undo();render();}
   if(event.key==='Delete'&&mode==='design'){event.preventDefault();removeSelected();}
  });
  for(const kind of Object.keys(registry)){const b=R.el('button','ad-palette-item',kind);b.dataset.paletteKind=kind;b.title='Arraste para a Screen';$('ad-palette').append(b);}
@@ -295,7 +295,7 @@ window.AgataAndroidDesigner={async mount(root){
   on($(id),'click',()=>{panel.hidden=!panel.hidden;$(id).setAttribute('aria-expanded',String(!panel.hidden));panelPrefs[cls]=panel.hidden;localStorage.setItem('agata-editor-panels',JSON.stringify(panelPrefs));});
  }
  on(document,'keydown',event=>{
-  if(event.target.closest('input,select,textarea,.cm-editor')||mode!=='design')return;
+  if(event.target.closest?.('input,select,textarea,.cm-editor')||mode!=='design')return;
   if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='g'){event.preventDefault();$('ad-group').click();}
   if(event.altKey&&['ArrowUp','ArrowDown'].includes(event.key)){event.preventDefault();$('ad-'+(event.key==='ArrowUp'?'up':'down')).click();}
   if((event.ctrlKey||event.metaKey)&&['c','v','d'].includes(event.key.toLowerCase())){event.preventDefault();$('ad-'+{c:'copy',v:'paste',d:'duplicate'}[event.key.toLowerCase()]).click();}

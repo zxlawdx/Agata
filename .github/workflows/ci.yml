@@ -80,3 +80,8 @@ jobs:
         env:
           AGATA_UI_SCRIPT: tests/workflow_ui.cjs
         run: node tests/run_ui.cjs
+
+      - name: Verify one-step undo across sketch, Android and code editors
+        env:
+          AGATA_UI_SCRIPT: tests/undo_ui.cjs
+        run: node tests/run_ui.cjs

@@ -8,7 +8,7 @@ window.AgataUIModel=(()=>{
  }
  class Document{
   constructor(value,registry){this.value=clone(value);this.registry=registry;this.past=[];this.future=[];this.saved=JSON.stringify(value);}
-  transact(fn){const before=JSON.stringify(this.value);try{fn(this.value);this.repair();}catch(error){this.value=JSON.parse(before);throw error;}if(JSON.stringify(this.value)!==before){this.past.push(before);if(this.past.length>100)this.past.shift();this.future=[];}}
+  transact(fn){if(this.transactionDepth){fn(this.value);return;}const before=JSON.stringify(this.value);this.transactionDepth=1;try{fn(this.value);this.repair();}catch(error){this.value=JSON.parse(before);throw error;}finally{this.transactionDepth=0;}if(JSON.stringify(this.value)!==before){this.past.push(before);if(this.past.length>100)this.past.shift();this.future=[];}}
   get dirty(){return JSON.stringify(this.value)!==this.saved;}
   markSaved(){this.saved=JSON.stringify(this.value);}
   undo(){if(this.past.length){this.future.push(JSON.stringify(this.value));this.value=JSON.parse(this.past.pop());}}

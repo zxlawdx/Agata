@@ -44,3 +44,18 @@ scatter usa índice x, progress/gauge usam % inicial. Fontes e baseline podem di
 SDK ausente: sem assembleDebug/APK/emulador ou validação de WebViews Windows/Linux. Não se
 considera parsing equivalente a build. Exportação de Shape interno não cria eventos por forma
 nem referências individuais de acessibilidade; use componentes nativos para interações.
+
+## Correção adicional: Ctrl+Z por passo
+
+O relato de desfazer brusco foi reproduzido na edição de componentes Fabric: commit ignorava
+componentSession, adicionar ícone/vincular não registrava passos e undo chamava finishComponent
+antes de restaurar. Cinco ações viravam um bloco. O histórico agora inclui a sessão transitória
+apenas nos snapshots locais; cada ação registra um estado. Undo/redo restaura também o modo de
+edição, sem concluir e apagar o conjunto. Save continua reunindo o componente antes de persistir.
+Autorepeat de Z/Y é ignorado e eventos já tratados não são consumidos novamente.
+
+No IR Android, transações aninhadas agora são um único passo atômico, com rollback externo.
+CodeMirror mantém estado/histórico separado por arquivo; carregar/gerar um arquivo não entra
+como edição textual desfazível. Bundle local reconstruído e checksum atualizado, sem mudar versões/licenças.
+`tests/undo_ui.cjs` comprova cinco ações, um undo por vez, redo, repetição de tecla, troca de
+editor e isolamento do histórico entre arquivos Kotlin. Isso eleva a suíte a seis fluxos de UI.
