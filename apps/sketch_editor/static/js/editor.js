@@ -38,10 +38,13 @@
       selection: true, enableRetinaScaling: true, renderOnAddRemove: false
     });
     let zoom = 1, tool = "select", drawing = null, isolated = null;
+    let componentSession = null;
     let restoring = false, disposed = false, saving = false;
     const past = [], future = [];
     let savedSnapshot = "";
     const abort = new AbortController();
+    const collapsedLayers = new Set();
+    const E = () => window.YaraElementTree;
     const on = (element, event, callback) => element?.addEventListener(event, callback, {signal: abort.signal});
     const message = (text, error = false) => {
       const host = get("ys-message");
@@ -58,7 +61,7 @@
       const lookup = new Map(layers.map(layer => [layer.id, layer]));
       for (const object of canvas.getObjects()) {
         const target = lookup.get(object.layerId);
-        if (target) target.objects.push(object.toObject(["layerId", "componentKind"]));
+        if (target) target.objects.push(object.toObject(["layerId", "componentKind", "componentId", "componentRole", "iconKind"]));
       }
       return {active_layer_id: state.activeLayerId, layers};
     }
@@ -73,7 +76,11 @@
       get("ys-redo").disabled = !future.length;
     }
     function commit() {
-      if (restoring || disposed) return;
+      // Enquanto o usuário edita partes, o histórico guarda o conjunto ao concluir.
+      if (restoring || disposed || componentSession) {
+        if (componentSession && !restoring) { renderProps(); updateDirty(); }
+        return;
+      }
       const current = snapshot();
       if (past.at(-1) !== current) {
         past.push(current);
@@ -84,6 +91,7 @@
       updateDirty();
       renderLayers();
       renderProps();
+      renderElementTree();
     }
     function syncLayers() {
       const data = serialize();
@@ -110,6 +118,8 @@
       canvas.requestRenderAll();
       renderProps();
       get("ys-footer-layer").textContent = "Camada: " + (C().find(state)?.name || "—");
+      renderComponentControls();
+      renderElementTree();
     }
     function renderLayers() {
       const host = get("ys-layer-list");
@@ -124,6 +134,7 @@
         select.textContent = layer.name;
         select.title = "Selecionar " + layer.name;
         on(select, "click", () => {
+          finishComponent();
           state.activeLayerId = layer.id; setTool("select"); renderLayers(); applyLayerRules();
           commit();
         });
@@ -154,6 +165,7 @@
       get("ys-layer-delete").disabled = state.layers.length <= 1;
     }
     function addObject(object) {
+      if (componentSession) object.componentParentId = componentSession.id;
       if (!editable()) { message("Desbloqueie e mostre a camada ativa para desenhar.", true); return false; }
       object.layerId = state.activeLayerId;
       object.set({objectCaching: false});
@@ -191,8 +203,157 @@
       });
       get("ys-delete").disabled = !valid;
       get("ys-duplicate").disabled = !valid;
+      const input=get("ys-prop-text"), field=get("ys-text-field");
+      const isText=Boolean(valid && (object.type==="i-text" || object.type==="textbox" || object.type==="text"));
+      field.hidden=!isText;input.disabled=!isText;
+      if(isText && document.activeElement!==input)input.value=object.text||"";
+      const font=get("ys-font-size"), radius=get("ys-corner-radius");
+      font.disabled=!isText;
+      radius.disabled=!(valid && object.type==="rect");
+      font.value=isText ? String(Math.round(object.fontSize||14)) : "";
+      radius.value=valid && object.type==="rect" ? String(Math.round(object.rx||0)) : "";
+      root.querySelectorAll("[data-align]").forEach(btn=>btn.disabled=!valid);
+      const peers=valid ? canvas.getObjects().filter(candidate=>
+        candidate.layerId===object.layerId && candidate.componentParentId===object.componentParentId) : [];
+      const index=peers.indexOf(object);
+      get("ys-bring-front").disabled=!valid || index===peers.length-1;
+      get("ys-send-back").disabled=!valid || index<=0;
+      renderComponentControls();
+      renderElementTree();
       if (valid && typeof object.fill === "string" && /^#[a-f\d]{6}$/i.test(object.fill)) {
         get("ys-color").value = object.fill;
+      }
+    }
+
+
+    function renderElementTree() {
+      const host=get("ys-object-tree");
+      if(!host || !E())return;
+      host.replaceChildren();
+      const selected=canvas.getActiveObject();
+      const layers=E().describe(canvas.getObjects(),state.layers);
+      const addButton=(label,level,active,action,title)=>{
+        const button=document.createElement("button");
+        button.type="button";
+        button.className="ys-tree-row"+(active?" selected":"");
+        button.style.paddingLeft=(6+level*15)+"px";
+        button.title=title||label;
+        button.setAttribute("role","treeitem");
+        button.setAttribute("aria-level",String(level+1));
+        button.setAttribute("aria-selected",String(Boolean(active)));
+        const bullet=document.createElement("span");
+        bullet.className="ys-tree-icon";
+        bullet.textContent=level===0?"◧":level===1?"◇":"•";
+        const text=document.createElement("span");
+        text.className="ys-tree-text";
+        text.textContent=label;
+        button.append(bullet,text);
+        // Nós recriados são descartados com suas próprias listeners.
+        button.addEventListener("click",action);
+        host.appendChild(button);
+        return button;
+      };
+      for(const layer of layers){
+        const collapsed=collapsedLayers.has(layer.id);
+        const title=document.createElement("button");
+        title.type="button";title.className="ys-tree-title ys-tree-header";
+        title.textContent=(collapsed?"▸ ":"▾ ")+layer.name+
+          (layer.locked?"  🔒":"")+(layer.visible?"":"  ◌");
+        title.title="Recolher ou expandir objetos da camada";
+        title.addEventListener("click",()=>{
+          if(collapsed)collapsedLayers.delete(layer.id);
+          else collapsedLayers.add(layer.id);
+          renderElementTree();
+        });
+        host.appendChild(title);
+        if(collapsed)continue;
+        for(const node of layer.children){
+          const obj=node.object;
+          const inEdit=Boolean(componentSession && obj.componentParentId===componentSession.id);
+          const button=addButton((inEdit?"↳ ":"")+node.name,inEdit?2:1,
+            selected===obj,()=>{
+              if(state.activeLayerId!==layer.id){
+                finishComponent();
+                state.activeLayerId=layer.id;
+                setTool("select");renderLayers();
+              }
+              setTool("select");canvas.setActiveObject(obj);canvas.requestRenderAll();
+              renderProps();
+            });
+          if(obj?.type==="i-text")button.addEventListener("dblclick",()=>{
+            if(editable()){obj.enterEditing();obj.selectAll();}
+          });
+          if(!node.children.length)continue;
+          for(const [i,child] of node.children.entries()){
+            addButton(child.name,2,false,()=>{
+              if(state.activeLayerId!==layer.id){
+                finishComponent();
+                state.activeLayerId=layer.id;
+                setTool("select");renderLayers();
+              }
+              if(componentSession && componentSession.id!==obj.componentId)finishComponent();
+              if(!componentSession)enterComponent(obj);
+              if(!componentSession)return;
+              const children=canvas.getObjects().filter(part=>
+                part.componentParentId===componentSession.id);
+              const item=children[i];
+              if(item){
+                setTool("select");canvas.setActiveObject(item);canvas.requestRenderAll();renderProps();
+              }
+            },"Editar parte interna do componente");
+          }
+        }
+      }
+    }
+
+    function renderComponentControls() {
+      const selected=canvas.getActiveObject(), session=componentSession;
+      get("ys-edit-component").disabled=Boolean(session) || !Boolean(
+        selected?.type==="group" && selected.componentKind && editable());
+      get("ys-finish-component").hidden=!session;
+      get("ys-add-icon").disabled=!session || !editable();
+      get("ys-link-component").disabled=!session || !selected || selected.layerId!==session.layerId
+        || selected.componentParentId===session.id || selected.type==="activeSelection" || selected.type==="group";
+      get("ys-unlink-component").disabled=!session || !selected
+        || selected.componentParentId!==session.id;
+      get("ys-component-mode").textContent=session
+        ? "Editando as partes de "+session.kind+". Arraste cada elemento e conclua para agrupá-los."
+        : "Selecione um componente e clique em Editar partes (ou dê dois cliques).";
+    }
+    function enterComponent(object) {
+      if(componentSession || !editable() || object?.layerId!==state.activeLayerId ||
+         object?.type!=="group" || !object.componentKind)return;
+      try {
+        canvas.discardActiveObject();
+        componentSession=window.YaraComponentEditing.enter(canvas,object,F());
+        setTool("select");
+        message("Edite texto, ícones e fundo separadamente. Depois conclua a edição.");
+        renderComponentControls();
+        canvas.requestRenderAll();
+      } catch(error){alertError(error);}
+    }
+    function finishComponent(){
+      if(!componentSession)return;
+      const session=componentSession;
+      try {
+        canvas.discardActiveObject();
+        const grouped=window.YaraComponentEditing.finish(canvas,session,F());
+        componentSession=null;
+        if(grouped){canvas.setActiveObject(grouped);ensureInside(grouped);}
+        applyLayerRules();commit();
+        message("Componente reunido. Agora suas partes se movem juntas.");
+      } catch(error){componentSession=null;alertError(error);}
+    }
+    function addComponentIcon(){
+      if(!componentSession || !editable())return;
+      const first=canvas.getObjects().find(o=>o.componentParentId===componentSession.id);
+      const x=first ? clamp(first.left+15,0,width-18) : 35;
+      const y=first ? clamp(first.top+15,0,height-18) : 35;
+      const icon=COMPONENTS().icon(get("ys-icon-kind").value,{left:x,top:y,stroke:get("ys-color").value});
+      if(addObject(icon)){
+        setTool("select");canvas.setActiveObject(icon);canvas.requestRenderAll();
+        message("Ícone adicionado. Ajuste sua posição e clique em Concluir.");
+        renderProps();
       }
     }
     function fitZoom() {
@@ -262,12 +423,14 @@
       updateDirty();
     }
     async function undo() {
+      finishComponent();
       if (past.length <= 1 || restoring) return;
       future.push(past.pop());
       await restore(JSON.parse(past.at(-1)));
       updateHistoryButtons();
     }
     async function redo() {
+      finishComponent();
       if (!future.length || restoring) return;
       const next = future.pop();
       past.push(next);
@@ -275,18 +438,21 @@
       updateHistoryButtons();
     }
     async function reorderLayer(direction) {
+      finishComponent();
       syncLayers();
       if (!C().move(state, direction)) return;
       await restore({layers:state.layers, active_layer_id:state.activeLayerId});
       commit();
     }
     async function duplicateLayer() {
+      finishComponent();
       syncLayers();
       C().duplicate(state);
       await restore({layers:state.layers, active_layer_id:state.activeLayerId});
       commit();
     }
     async function deleteLayer() {
+      finishComponent();
       if (state.layers.length <= 1) return;
       if (!window.confirm("Excluir a camada e todos os objetos dela?")) return;
       syncLayers();
@@ -376,11 +542,13 @@
         if (disposed) return;
         copy.set({left:object.left+16, top:object.top+16});
         copy.componentKind=object.componentKind;
+        if(object.componentKind)copy.componentId=window.YaraComponentEditing.newId();
         if (addObject(copy)) {canvas.setActiveObject(copy);canvas.requestRenderAll();commit();}
       }, ["layerId", "componentKind"]);
     }
     async function save() {
       if (saving || restoring) return;
+      finishComponent();
       const data=serialize(), saved=JSON.stringify(data);
       saving=true;get("ys-save").disabled=true;
       get("ys-dirty-status").textContent="Salvando...";
@@ -393,6 +561,7 @@
       finally{saving=false;if(!disposed)get("ys-save").disabled=false;}
     }
     function back() {
+      finishComponent();
       if (snapshot() !== savedSnapshot &&
           !window.confirm("Existem alterações não salvas. Sair sem salvar?")) return;
       window.Vela.navigate("/home");
@@ -406,6 +575,9 @@
     canvas.on("mouse:down", onDown);
     canvas.on("mouse:move", onMove);
     canvas.on("mouse:up", onUp);
+    canvas.on("mouse:dblclick",({target})=>{
+      if(target?.componentKind && !componentSession)enterComponent(target);
+    });
     canvas.on("path:created", ({path}) => {
       path.layerId=state.activeLayerId;path.set({objectCaching:false});
       ensureInside(path);applyLayerRules();commit();
@@ -418,6 +590,31 @@
       canvas.on(event,renderProps);
     }
     on(get("ys-save"),"click",save);
+    on(get("ys-edit-component"),"click",()=>enterComponent(canvas.getActiveObject()));
+    on(get("ys-finish-component"),"click",finishComponent);
+    on(get("ys-add-icon"),"click",addComponentIcon);
+    on(get("ys-link-component"),"click",()=>{
+      if(!componentSession)return;
+      const object=canvas.getActiveObject();
+      if(window.YaraComponentEditing.link(object,componentSession)){
+        message("Elemento vinculado: acompanhará o componente.");
+        renderComponentControls();
+      } else message("Selecione um elemento solto da camada para vincular.",true);
+    });
+    on(get("ys-unlink-component"),"click",()=>{
+      if(!componentSession)return;
+      const object=canvas.getActiveObject();
+      if(window.YaraComponentEditing.unlink(object,componentSession)){
+        message("Elemento desvinculado e independente.");
+        renderComponentControls();
+      }
+    });
+    on(get("ys-prop-text"),"change",()=>{
+      const object=canvas.getActiveObject();
+      if(!object || !editable() || !("text" in object))return;
+      object.set("text",get("ys-prop-text").value);object.setCoords();
+      canvas.requestRenderAll();commit();
+    });
     on(get("ys-home"),"click",back);
     on(get("ys-fatal-home"),"click",back);
     on(get("ys-undo"),"click",() => undo().catch(alertError));
@@ -462,8 +659,42 @@
     }
     on(get("ys-delete"),"click",removeSelected);
     on(get("ys-duplicate"),"click",duplicateSelected);
+    on(get("ys-font-size"),"change",()=>{
+      const obj=canvas.getActiveObject();
+      if(!obj || !["text","i-text","textbox"].includes(obj.type) || !editable())return;
+      const value=Number(get("ys-font-size").value);
+      if(!Number.isFinite(value))return;
+      obj.set("fontSize",clamp(value,6,160));
+      obj.setCoords();ensureInside(obj);canvas.requestRenderAll();commit();
+    });
+    on(get("ys-corner-radius"),"change",()=>{
+      const obj=canvas.getActiveObject();
+      if(!obj || obj.type!=="rect" || !editable())return;
+      const value=Number(get("ys-corner-radius").value);
+      if(!Number.isFinite(value))return;
+      obj.set({rx:clamp(value,0,200),ry:clamp(value,0,200)});
+      canvas.requestRenderAll();commit();
+    });
+    for(const button of root.querySelectorAll("[data-align]")){
+      on(button,"click",()=>{
+        const obj=canvas.getActiveObject();
+        if(!obj || !editable())return;
+        if(E().align(obj,width,height,button.dataset.align)){
+          ensureInside(obj);canvas.requestRenderAll();commit();
+        }
+      });
+    }
+    for(const [id,step] of [["ys-bring-front",1],["ys-send-back",-1]]){
+      on(get(id),"click",()=>{
+        const obj=canvas.getActiveObject();
+        if(obj && editable() && E().move(canvas,obj,step)){
+          canvas.setActiveObject(obj);canvas.requestRenderAll();commit();
+        }
+      });
+    }
     on(get("ys-layer-duplicate"),"click",() => duplicateLayer().catch(alertError));
     on(get("ys-add-layer"),"click",() => {
+      finishComponent();
       try {C().add(state);setTool("select");renderLayers();commit();}
       catch(error){alertError(error);}
     });
@@ -471,6 +702,7 @@
     on(get("ys-layer-down"),"click",() => reorderLayer(-1).catch(alertError));
     on(get("ys-layer-delete"),"click",() => deleteLayer().catch(alertError));
     on(get("ys-layer-rename"),"click",() => {
+      finishComponent();
       const layer=C().find(state);if(!layer)return;
       const name=window.prompt("Nome da camada:",layer.name);
       if(name===null)return;
@@ -491,6 +723,22 @@
       if ((event.ctrlKey || event.metaKey) && key==="y") {
         event.preventDefault();redo().catch(alertError);return;
       }
+      if ((event.ctrlKey || event.metaKey) && key==="d"){
+        event.preventDefault();duplicateSelected();return;
+      }
+      if(key==="escape"){
+        event.preventDefault();
+        if(componentSession)finishComponent();
+        else{canvas.discardActiveObject();canvas.requestRenderAll();renderProps();}
+        return;
+      }
+      if(key==="f2"){
+        const obj=canvas.getActiveObject();
+        if(obj?.type==="i-text" && editable()){
+          event.preventDefault();obj.enterEditing();obj.selectAll();
+        }
+        return;
+      }
       if (key==="delete" || key==="backspace") {event.preventDefault();removeSelected();return;}
       if (event.ctrlKey || event.altKey || event.metaKey) return;
       const shortcuts={v:"select",p:"pen",e:"erase",t:"text",r:"rect",o:"ellipse",l:"line"};
@@ -508,7 +756,7 @@
     savedSnapshot=snapshot();
     past.push(savedSnapshot);
     updateHistoryButtons();updateDirty();setTool("select");setZoom(fitZoom());
-    get("ys-save").disabled=false;get("ys-message").hidden=true;
+    get("ys-save").disabled=false;get("ys-message").hidden=true;renderElementTree();
   }
   window.YaraSketchEditor={mount};
 })();
