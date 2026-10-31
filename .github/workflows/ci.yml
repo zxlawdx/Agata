@@ -24,7 +24,7 @@ jobs:
           node-version: "22"
 
       - name: Install Python runtime
-        run: python -m pip install -r requirements.txt
+        run: python -m pip install -r requirements.txt tree-sitter==0.26.0 tree-sitter-kotlin==1.1.0
 
       - name: Check Python syntax
         run: python -m compileall -q apps config manage.py tests
@@ -35,8 +35,8 @@ jobs:
       - name: Check JavaScript syntax
         run: npm run check:js
 
-      - name: Run sketch layer model tests
-        run: node --test tests/sketch_core.test.cjs
+      - name: Run JavaScript behavior tests
+        run: node --test tests/*.test.cjs
 
       - name: Verify committed Fabric offline assets
         run: python -c "from apps.sketch_editor.services.vendor import verify_vendor; verify_vendor()"
@@ -57,3 +57,11 @@ jobs:
 
       - name: Exercise rendered Vela UI and isolated Python services
         run: npm run test:ui
+
+      - name: Run semantic Android model tests
+        run: node --test tests/android_model.test.cjs
+
+      - name: Exercise Android model, Preview and source export
+        env:
+          AGATA_UI_SCRIPT: tests/android_ui.cjs
+        run: node tests/run_ui.cjs
