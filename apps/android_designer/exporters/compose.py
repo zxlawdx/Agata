@@ -24,12 +24,19 @@ class ComposeGenerator:
         from apps.android_designer.domain.constraints import layered_screen
         self.doc={**document,'screens':[layered_screen(s) for s in document['screens']]};self.ns=document['namespace'];self.strings={'app_name':document['app_name']};self.files={}
 
+    def color(self,node,key):
+        from .compose_fidelity import color
+        return color(node,key)
+
     def string(self,node,key,default=''):
         value=node['props'].get(key,default);name=node['id']+'_'+key.lower()
         self.strings[name]=value
         return f'stringResource(R.string.{name})'
 
     def modifier(self,n):
+        from .compose_fidelity import modifier as ordered_modifier
+        imported=ordered_modifier(n)
+        if imported is not None:return imported
         l=n['layout'];s='Modifier'+n.get('_constraint_modifier','')
         if n.get('_layer'):s+=f".zIndex({float(n['_layer']['order'])}f).graphicsLayer(alpha = {float(n['_layer']['opacity'])}f)"
         if l['margin']:s+=f".padding({l['margin']}.dp)"
@@ -61,6 +68,10 @@ class ComposeGenerator:
 
     def emit(self,n,omit=()):
         if n['id'] in omit or not n['layout']['visible']:return ''
+        if n.get('compose',{}).get('placeholder'):return f'Box {{ Text({quote(n["compose"]["placeholder"])}) }}'
+        if n.get('compose',{}).get('conditional',{}).get('rule'):
+            rule=n['compose']['conditional']['rule'];axis='maxWidth' if rule['axis']=='width' else 'maxHeight';branches=n['children'];left=self.emit(branches[0],omit) if branches else '';right=self.emit(branches[1],omit) if len(branches)>1 else ''
+            return f'BoxWithConstraints {{ if ({axis} {rule["operator"]} {rule["value"]}.dp) {{ {left} }} else {{ {right} }} }}'
         aliases={'Avatar':'Card','Chip':'Button','Badge':'TextLabel','ListItem':'Row','NavigationRail':'Region','TabRow':'Row'}
         if n['type'] in aliases:return self.emit({**n,'type':aliases[n['type']]},omit)
         if n['type']=='RadioButton':return f'RadioButton(selected = v_{n["id"]}, onClick = {{ v_{n["id"]} = !v_{n["id"]} }}, enabled = {str(n["props"]["enabled"]).lower()}, modifier = {self.modifier(n)})'
@@ -92,10 +103,26 @@ class ComposeGenerator:
                 rows.append(f"Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy({n['layout']['gap']}.dp)) {{ "+'\n'.join(cells)+' }')
             return f"Column({m}, verticalArrangement = Arrangement.spacedBy({n['layout']['gap']}.dp)) {{ "+'\n'.join(rows)+' }'
         if kind=='TextLabel':
-            return f'Text(text = {self.string(n,"text")}, color = Color(0xFF{p["color"][1:]}), fontSize = {p["fontSize"]}.sp, maxLines = {p["maxLines"] if p["maxLines"] else 2147483647}, overflow = TextOverflow.{"Ellipsis" if p["overflow"]=="ellipsis" else "Clip"}, fontWeight = FontWeight.{"Bold" if p["bold"] else "Normal"}, textAlign = TextAlign.{dict(start="Start",center="Center",end="End")[p["align"]]}, modifier = {m})'
+            styles=n.get('compose',{}).get('styles',{});extra=''
+            for key,unit in [('lineHeight','sp'),('letterSpacing','sp')]:
+                value=styles.get(key,{}).get('value')
+                if type(value) in (int,float):extra+=f', {key} = {value}.{unit}'
+            weight=styles.get('fontWeight',{}).get('value');weight=weight.split('.')[-1] if isinstance(weight,str) and weight.startswith('FontWeight.') else 'Bold' if p['bold'] else 'Normal'
+            for key,enum in [('fontStyle','androidx.compose.ui.text.font.FontStyle'),('textDecoration','androidx.compose.ui.text.style.TextDecoration')]:
+                value=styles.get(key,{}).get('value')
+                if isinstance(value,str) and value.startswith(key[0].upper()+key[1:]+'.'):extra+=f', {key} = {enum}.{value.split(".")[-1]}'
+            family=styles.get('fontFamily',{}).get('value')
+            if isinstance(family,dict) and isinstance(family.get('font'),str):
+                import re,base64
+                name=family['font'];source=self.doc.get('compose_project',{}).get('fonts',{}).get(name,'')
+                if re.fullmatch(r'[a-z][a-z0-9_]*',name) and source.startswith(('data:font/ttf;base64,','data:font/otf;base64,')):
+                    data=base64.b64decode(source.split(',',1)[1],validate=True);extension='otf' if source.startswith('data:font/otf') else 'ttf';self.files[f'app/src/main/res/font/{name}.{extension}']=data
+                    extra+=f', fontFamily = androidx.compose.ui.text.font.FontFamily(androidx.compose.ui.text.font.Font(R.font.{name}))'
+            if styles.get('softWrap',{}).get('value') is False:extra+=', softWrap = false'
+            return f'Text(text = {self.string(n,"text")}, color = {self.color(n,"color")}, fontSize = {p["fontSize"]}.sp, maxLines = {p["maxLines"] if p["maxLines"] else 2147483647}, overflow = TextOverflow.{"Ellipsis" if p["overflow"]=="ellipsis" else "Clip"}, fontWeight = FontWeight.{weight}, textAlign = TextAlign.{dict(start="Start",center="Center",end="End")[p["align"]]}{extra}, modifier = {m})'
         if kind=='Icon':
             if p['icon']=='none':return ''
-            return f'Icon(painterResource(R.drawable.agata_{p["icon"]}), contentDescription = {self.string(n,"description")}, tint = Color(0xFF{p["color"][1:]}), modifier = {m}.size(24.dp))'
+            return f'Icon(painterResource(R.drawable.agata_{p["icon"]}), contentDescription = {self.string(n,"description")}, tint = {self.color(n,"color")}, modifier = {m}.size(24.dp))'
         if kind in {'Row','Column','Box'}:
             if kind=='Box' and n['layout']['mode']=='free':
                 alignments={'start':'Start','end':'End','center':'CenterHorizontally','fill':'Start'};verticals={'top':'Top','bottom':'Bottom','center':'CenterVertically','fill':'Top'}
@@ -126,16 +153,22 @@ class ComposeGenerator:
             enabled='' if kind=='FloatingButton' else f', enabled = {str(p["enabled"]).lower()}'
             extras=''
             if kind=='Button':
-                color=f'Color(0xFF{p["background"][1:]})'
+                color=self.color(n,'background')
                 colors={'filled':f'buttonColors(containerColor = {color})','tonal':f'filledTonalButtonColors(containerColor = {color})','text':f'textButtonColors(contentColor = {color})','outlined':f'outlinedButtonColors(contentColor = {color})','elevated':f'buttonColors(containerColor = {color})'}[p['variant']]
-                extras=f', contentPadding = PaddingValues({n["layout"]["padding"]}.dp), shape = RoundedCornerShape({p["radius"]}.dp), colors = ButtonDefaults.{colors}'
+                padding_extra='' if n.get('compose') else f', contentPadding = PaddingValues({n["layout"]["padding"]}.dp)'
+                from .compose_fidelity import material_colors
+                imported_colors=material_colors(n,'ButtonDefaults.'+{'outlined':'outlinedButtonColors','text':'textButtonColors','tonal':'filledTonalButtonColors'}.get(p['variant'],'buttonColors'))
+                rendered_colors=imported_colors or 'ButtonDefaults.'+colors
+                extras=f'{padding_extra}, shape = RoundedCornerShape({p["radius"]}.dp), colors = {rendered_colors}'
                 if p['variant']=='outlined':extras+=f', border = BorderStroke(1.dp, {color})'
 
             content=('\nSpacer(Modifier.width('+str(n['layout']['gap'])+'.dp))\n').join(filter(None,(self.emit(c,omit) for c in n['children'])))
             return f'{fun}(onClick = {{ {self.action(n)} }}, modifier = {m}{enabled}{extras}) {{\n{content}\n}}'
         if kind=='Card':
             fun={'filled':'Card','outlined':'OutlinedCard','elevated':'ElevatedCard','text':'Card','tonal':'Card'}[p['variant']]
-            return f'{fun}(modifier = {m}, shape = RoundedCornerShape({p["radius"]}.dp), colors = CardDefaults.cardColors(containerColor = Color(0xFF{p["background"][1:]})), elevation = CardDefaults.cardElevation(defaultElevation = {p["elevation"]}.dp)) {{ Column(Modifier.padding({n["layout"]["padding"]}.dp), verticalArrangement = Arrangement.spacedBy({n["layout"]["gap"]}.dp)) {{\n{children()}\n}} }}'
+            from .compose_fidelity import material_colors
+            card_colors=material_colors(n,'CardDefaults.cardColors') or f'CardDefaults.cardColors(containerColor = {self.color(n,"background")})'
+            return f'{fun}(modifier = {m}, shape = RoundedCornerShape({p["radius"]}.dp), colors = {card_colors}, elevation = CardDefaults.cardElevation(defaultElevation = {p["elevation"]}.dp)) {{ Column(Modifier.padding({0 if n.get("compose") else n["layout"]["padding"]}.dp), verticalArrangement = Arrangement.spacedBy({n["layout"]["gap"]}.dp)) {{\n{children()}\n}} }}'
         if kind=='TopBar':
             title=[c for c in n['children'] if c['role'] in {'title','subtitle'}]
             navigation=[c for c in n['children'] if c['role']=='navigation']
@@ -148,6 +181,11 @@ class ComposeGenerator:
             trailing=next((c for c in n['children'] if c['role']=='trailing'),None)
             slots=(f', leadingIcon = {{ {self.emit(leading)} }}' if leading else '')+(f', trailingIcon = {{ {self.emit(trailing)} }}' if trailing and kind!='SearchBar' and p.get('keyboard')!='password' else '')
             if kind=='SearchBar':slots+=f', trailingIcon = {{ IconButton(onClick = {{ {var} = "" }}) {{ Icon(painterResource(R.drawable.agata_close), contentDescription = "Limpar pesquisa") }} }}'
+            from .compose_fidelity import material_colors
+            colors=material_colors(n,'TextFieldDefaults.colors' if p.get('variant')=='filled' else 'OutlinedTextFieldDefaults.colors')
+            if colors:slots+=', colors = '+colors
+            radius=n.get('compose',{}).get('styles',{}).get('radius',{}).get('value')
+            if type(radius) in (int,float):slots+=f', shape = RoundedCornerShape({radius}.dp)'
             keyboard={'text':'Text','email':'Email','number':'Number','password':'Password','phone':'Phone'}.get(p.get('keyboard'),'Text')
             fun='TextField' if p.get('variant')=='filled' else 'OutlinedTextField'
             extra=f', label = {{ Text({self.string(n,"label")}) }}, isError = {str(bool(p["error"])).lower()}, supportingText = {{ Text({self.string(n,"error" if p["error"] else "helper")}) }}' if kind=='TextField' else ''
@@ -264,6 +302,9 @@ class MainActivity : ComponentActivity() {{
 }}
 '''
         theme=self.doc['theme'];dark={'system':'isSystemInDarkTheme()','light':'false','dark':'true'}[theme['darkMode']]
+        schemes=self.doc.get('compose_project',{}).get('themes',{})
+        from .compose_fidelity import scalar
+        theme_call=lambda mode: mode+'ColorScheme('+', '.join(key+' = '+scalar(value) for key,value in schemes.get(mode,{}).items() if key!='constructor' and isinstance(value,str) and value.startswith('#') and key.isalpha())+')' if schemes.get(mode) else mode+'ColorScheme(primary = AgataPrimary)'
         self.files[f'{base}/ui/theme/Theme.kt']=f'''package {self.ns}.ui.theme
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -274,7 +315,7 @@ import androidx.compose.ui.platform.LocalContext
  val dark = {dark}
  val colors = if ({str(theme['dynamicColor']).lower()} && Build.VERSION.SDK_INT >= 31) {{
   if (dark) dynamicDarkColorScheme(LocalContext.current) else dynamicLightColorScheme(LocalContext.current)
- }} else if (dark) darkColorScheme(primary = AgataPrimary) else lightColorScheme(primary = AgataPrimary)
+ }} else if (dark) {theme_call('dark')} else {theme_call('light')}
  MaterialTheme(colorScheme = colors, typography = AgataTypography, content = content)
 }}
 '''

@@ -1,0 +1,86 @@
+[
+  {
+    "text": "Boa experiência 👋",
+    "w": 219.4375,
+    "h": 25,
+    "color": "rgb(245, 247, 247)",
+    "size": "22px"
+  },
+  {
+    "text": "● Demo",
+    "w": 54.109375,
+    "h": 15,
+    "color": "rgb(30, 215, 96)",
+    "size": "13px"
+  },
+  {
+    "text": "AGATA  /  DEMO",
+    "w": 105.4375,
+    "h": 14,
+    "color": "rgb(30, 215, 96)",
+    "size": "12px"
+  },
+  {
+    "text": "Seu próximo projeto começa aqui.",
+    "w": 512,
+    "h": 68,
+    "color": "rgb(245, 247, 247)",
+    "size": "30px"
+  },
+  {
+    "text": "Uma demonstração de interface moderna criada com Jetpack Compose.",
+    "w": 505.796875,
+    "h": 20,
+    "color": "rgb(176, 181, 185)",
+    "size": "14px"
+  },
+  {
+    "text": "Explore",
+    "w": 93.40625,
+    "h": 25,
+    "color": "rgb(245, 247, 247)",
+    "size": "22px"
+  },
+  {
+    "text": "Acesso rápido",
+    "w": 142.203125,
+    "h": 21,
+    "color": "rgb(245, 247, 247)",
+    "size": "18px"
+  },
+  {
+    "text": "Experimente os componentes de formulário e navegação.",
+    "w": 406.34375,
+    "h": 20,
+    "color": "rgb(176, 181, 185)",
+    "size": "14px"
+  },
+  {
+    "text": "Visão geral",
+    "w": 113.578125,
+    "h": 21,
+    "color": "rgb(245, 247, 247)",
+    "size": "18px"
+  },
+  {
+    "text": "Uma segunda tela com cards e métricas ilustrativas.",
+    "w": 369.390625,
+    "h": 20,
+    "color": "rgb(176, 181, 185)",
+    "size": "14px"
+  },
+  {
+    "text": "Abrir login",
+    "w": 89.515625,
+    "h": 18,
+    "color": "rgb(16, 20, 16)",
+    "size": "15px"
+  },
+  {
+    "text": "Ver dashboard",
+    "w": 115.859375,
+    "h": 19,
+    "color": "rgb(245, 247, 247)",
+    "size": "16px"
+  }
+]

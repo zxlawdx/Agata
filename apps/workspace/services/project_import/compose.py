@@ -5,7 +5,7 @@ import json,re,hashlib
 import tree_sitter,tree_sitter_kotlin
 from apps.android_designer.domain.model import new_document,new_screen,new_node,walk,validate
 
-MAPPING={**{k:k for k in ['LazyColumn','LazyRow','LazyVerticalGrid']},'LazyVerticalStaggeredGrid':'LazyStaggeredGrid','LazyStaggeredGrid':'LazyStaggeredGrid','Column':'Column','Row':'Row','Box':'Box','BoxWithConstraints':'Box','Scaffold':'Column','ConstraintLayout':'ConstraintLayout','Spacer':'Spacer','Text':'TextLabel','Button':'Button','TextButton':'Button','OutlinedButton':'Button','IconButton':'IconButton','Card':'Card','Surface':'Surface','TopAppBar':'TopBar','NavigationBar':'BottomBar','NavigationBarItem':'NavigationItem','TextField':'TextField','OutlinedTextField':'TextField','Checkbox':'Checkbox','Switch':'Switch','Slider':'Slider','Icon':'Icon','Image':'Image'}
+MAPPING={**{k:k for k in ['LazyColumn','LazyRow','LazyVerticalGrid']},'LazyVerticalStaggeredGrid':'LazyStaggeredGrid','LazyStaggeredGrid':'LazyStaggeredGrid','HorizontalDivider':'Divider','VerticalDivider':'Divider','BasicText':'TextLabel','Column':'Column','Row':'Row','Box':'Box','BoxWithConstraints':'Box','Scaffold':'Column','ConstraintLayout':'ConstraintLayout','Spacer':'Spacer','Text':'TextLabel','Button':'Button','TextButton':'Button','OutlinedButton':'Button','IconButton':'IconButton','Card':'Card','Surface':'Surface','TopAppBar':'TopBar','NavigationBar':'BottomBar','NavigationBarItem':'NavigationItem','TextField':'TextField','OutlinedTextField':'TextField','Checkbox':'Checkbox','Switch':'Switch','Slider':'Slider','Icon':'Icon','Image':'Image'}
 
 
 def stable(prefix,value):return prefix+'_'+hashlib.sha256(value.encode()).hexdigest()[:24]
@@ -16,7 +16,9 @@ def descendants(node,kind=None):
     for child in node.named_children:yield from descendants(child,kind)
 
 
-class ComposeParser:
+from .compose_fidelity import Fidelity
+
+class ComposeParser(Fidelity):
     def __init__(self,files,resources):
         self.files=files;self.resources=resources;self.warnings=[];self.provenance={};self.functions=[];self.ast={};self.source=b'';self.path='';self.counts={'fully_editable':0,'partially_editable':0,'code_only':0}
         self.parser=tree_sitter.Parser(tree_sitter.Language(tree_sitter_kotlin.language()))
@@ -36,34 +38,36 @@ class ComposeParser:
                 elif children:positional.append(children[-1])
         return name,args,positional
     def literal(self,node):
-        text=self.text(node).strip()
-        if node.type in {'string_literal','multiline_string_literal'}:
-            if '$' in text:return None
-            try:return json.loads(text)
-            except ValueError:return text[3:-3] if text.startswith('"""') else None
-        if text in {'true','false'}:return text=='true'
-        if re.fullmatch(r'-?\d+(\.\d+)?[fF]?(\.(dp|sp))?',text):return float(re.sub(r'[fF]$|\.(dp|sp)$','',text))
-        if text.startswith('R.string.'):return self.resources['strings'].get(text.split('.')[-1])
-        if node.type=='call_expression':
-            name,args,pos=self.call(node)
-            if name=='stringResource' and (pos or 'id' in args):return self.literal(pos[0] if pos else args['id'])
-            if name=='Color' and pos:
-                raw=self.text(pos[0]);match=re.fullmatch(r'0x(?:FF)?([0-9A-Fa-f]{6})',raw)
-                if match:return '#'+match[1]
-            if name=='RoundedCornerShape' and pos:return self.literal(pos[0])
-        if text.startswith('Color.'):
-            return {'White':'#FFFFFF','Black':'#000000','Red':'#FF0000','Blue':'#0000FF','Green':'#00FF00','Gray':'#808080'}.get(text.split('.')[-1])
-        if text.startswith('R.color.'):return self.resources['colors'].get(text.split('.')[-1])
+        if node is None:return None
+        if hasattr(self,'values'):return self.values.resolve(node,self.unit,self.scope,self.mode)
         return None
     def body_calls(self,node):
         # Walk structural blocks/lambdas; don't mistake value arguments/onClick for UI children.
         for c in node.named_children:
-            if c.type=='call_expression':yield c
+            if c.type in {'call_expression','if_expression'}:yield c
+            elif c.type=='property_declaration' and hasattr(self,'scope'):
+                variable=next(descendants(c,'variable_declaration'),None)
+                if variable and c.named_children[-1].type!='variable_declaration':
+                    value=c.named_children[-1];raw=self.text(value);self.scope[self.text(variable)]={'condition':raw} if re.fullmatch(r'(maxWidth|maxHeight)\s*(>=|<=|>|<|==)\s*\d+(?:\.\d+)?\.dp',raw) else {'__expression__':value,'__unit__':self.unit,'__scope__':self.scope.copy()}
             elif c.type in {'function_body','block','annotated_lambda','lambda_literal'}:yield from self.body_calls(c)
             elif c.type not in {'value_arguments','value_argument','property_declaration','assignment','function_value_parameters','identifier','modifiers'}:
                 self.warn(c,'Estrutura dinâmica não reconstruída; fonte preservada: '+c.type)
     def map_node(self,call,key):
+        self.node_budget=getattr(self,'node_budget',0)+1
+        if self.node_budget>3000:raise ValueError('Importação excede 3.000 nós visuais; reduza a expansão de componentes.')
+        if call.type=='if_expression':return self.conditional(call,key)
         name,args,pos=self.call(call)
+        if hasattr(self,'slots') and name in self.slots:
+            block,unit,scope=self.slots[name];oldunit,oldscope=self.unit,self.scope;self.use(unit);self.scope=scope
+            wrapper=new_node('Box');wrapper['id']=stable('n',self.path+key);wrapper['children']=[]
+            try:
+                for i,child in enumerate(self.body_calls(block)):
+                    mapped=self.map_node(child,key+'/slot'+str(i))
+                    if mapped:wrapper['children'].append(mapped)
+            finally:self.use(oldunit);self.scope=oldscope
+            return wrapper
+        function=self.index.resolve(name,self.unit) if hasattr(self,'index') else None
+        if function and name not in MAPPING:return self.instance(function,args,pos,call,key)
         if name in {'item','items'}:
             if name=='item':
                 wrapper=new_node('Box');wrapper['id']=stable('n',self.path+':'+key);wrapper['children']=[]
@@ -78,16 +82,19 @@ class ComposeParser:
         if theme_wrapper:
             self.warn(call,'Theme personalizado preservado na fonte; conteúdo estático reconstruído parcialmente.')
         if name not in MAPPING and not theme_wrapper:
-            self.counts['code_only']+=1;self.warn(call,'Composable/chamada preservada somente em código: '+name);return None
+            self.counts['code_only']+=1;self.warn(call,'Composable/chamada preservada somente em código: '+name)
+            n=new_node('Box');n['id']=stable('n',self.path+':'+key);n['name']=name;n['layout'].update(width='fill',height=48);n['compose']={'styles':{},'modifiers':[],'source':self.location(call),'placeholder':'Custom Composable — preview unavailable'};return n
         n=new_node('Box' if theme_wrapper else MAPPING[name]);n['id']=stable('n',self.path+':'+key);n['name']=name;n['children']=[];partial=theme_wrapper
+        if n['type'] in {'Column','Row','Box','TextLabel','Card','Surface','Button','IconButton','TextField','TopBar','BottomBar'}:n['layout'].update(padding=0,gap=0,width='wrap',height='wrap')
+        if n['type']=='TextField':n['props'].update(label='',placeholder='',helper='',error='',keyboard='text')
         self.ast[n['id']]=call
         self.provenance[n['id']]={'path':self.path,'start':call.start_byte,'end':call.end_byte,'call':name}
         props={'text':'text','color':'color','fontSize':'fontSize','label':'label','placeholder':'placeholder','value':'value','enabled':'enabled','checked':'checked','selected':'selected','backgroundColor':'background','containerColor':'background','shape':'radius'}
         if name in {'OutlinedButton','TextButton','OutlinedTextField'}:n['props']['variant']={'OutlinedButton':'outlined','TextButton':'text','OutlinedTextField':'outlined'}[name]
-        if name=='Text' and pos:args={**args,'text':pos[0]}
+        if name in {'Text','BasicText'} and pos:args={**args,'text':pos[0]}
         # Kotlin allows positional Modifier after Text's first argument.
         for value in pos:
-            if self.text(value).startswith('Modifier'):args={**args,'modifier':value}
+            if self.text(value).startswith(('Modifier','modifier')) or isinstance(self.literal(value),dict) and 'modifier_chain' in self.literal(value):args={**args,'modifier':value}
         if name in {'Image','Icon'}:
             painter=args.get('painter') or (pos[0] if pos else None)
             if painter:
@@ -104,7 +111,7 @@ class ComposeParser:
                 if isinstance(description,str):n['props']['description']=description
 
         for k,v in args.items():
-            if k in {'modifier','onClick','painter','contentDescription'}:continue
+            if k in {'modifier','onClick','painter','contentDescription','colors','shape','style','fontWeight','textAlign','verticalArrangement','horizontalArrangement','horizontalAlignment','verticalAlignment','contentAlignment','lineHeight','letterSpacing','fontFamily','fontStyle','softWrap','textDecoration','tonalElevation','shadowElevation','contentColor'}:continue
             if k=='fontWeight' and n['type']=='TextLabel' and self.text(v) in {'FontWeight.Bold','FontWeight.Normal'}:n['props']['bold']=self.text(v).endswith('Bold');continue
             target=props.get(k)
             if target and target in n['props']:
@@ -121,7 +128,8 @@ class ComposeParser:
                     if mapped:mapped['role']='title' if k=='title' else 'action' if k=='actions' else 'navigation' if k=='navigationIcon' else '';n['children'].append(mapped)
             else:partial=True;self.warn(v,'Argumento preservado sem edição visual: '+k)
         if 'modifier' in args:
-            for m in descendants(args['modifier'],'call_expression'):
+            from .compose_modifiers import ordered
+            for m in ordered(args['modifier'],self.call):
                 method,ma,mp=self.call(m);value=self.literal(mp[0]) if mp else None
                 if method in {'fillMaxWidth','fillMaxHeight','fillMaxSize'}:
                     if method!='fillMaxHeight':n['layout']['width']='fill'
@@ -134,14 +142,13 @@ class ComposeParser:
                         val=self.literal(arg)
                         if isinstance(val,(int,float)) and val>=0:n['layout'][axis]=val
                     partial=True;self.warn(m,'Offset preservado; não altera semântica Auto Layout.')
-                elif method not in {'Modifier','constrainAs','linkTo'}:partial=True;self.warn(m,'Modifier não reconstruído: '+method)
+                elif method not in {'widthIn','heightIn','verticalScroll','horizontalScroll','Modifier','constrainAs','linkTo','background','border','clip','alpha','zIndex','align','matchParentSize'}:partial=True;self.warn(m,'Modifier não reconstruído: '+method)
         if 'onClick' in args:
-            for action in descendants(args['onClick'],'call_expression'):
-                an,aa,ap=self.call(action);values=[self.literal(x) for x in ap]
-                if an=='onAction' and len(values)==2 and values[0] in {'navigate','replace','back'} and isinstance(values[1],str):n['events']={'onClick':{'action':'back'} if values[0]=='back' else {'action':'navigate','target':values[1],**({'policy':'replace'} if values[0]=='replace' else {})}};break
-                if an=='navigate' and len(values)==1 and isinstance(values[0],str):n['events']={'onClick':{'action':'navigate','target':values[0]}};break
-            else:
-                if self.text(args['onClick']).strip() not in {'{}','{ }'}:partial=True;self.warn(args['onClick'],'Ação onClick não reconstruída; original preservado.')
+            event=self.action_value(args['onClick'])
+            if event:n['events']={'onClick':event}
+            elif self.text(args['onClick']).strip() not in {'{}','{ }'}:partial=True;self.warn(args['onClick'],'Callback dinâmico preservado no fonte.')
+        previous_themes=self.values.themes;previous_scope=self.scope.copy();content_color=self.style(n,name,args)
+        if content_color:self.scope['LocalContentColor.current']=content_color
         lambdas=[c for c in call.named_children if c.type in {'annotated_lambda','lambda_literal'}]
         for block in lambdas:
             for i,child in enumerate(self.body_calls(block)):
@@ -153,10 +160,12 @@ class ComposeParser:
             if texts:n['props']['label']=json.loads(texts[0])
         if n['children'] and not n['type'] in {'Column','Row','Box','ConstraintLayout','Button','IconButton','Card','Surface','TopBar','BottomBar','NavigationItem','LazyColumn','LazyRow','LazyVerticalGrid','LazyStaggeredGrid'}:
             partial=True;n['children']=[]
+        if n['type']=='Row' and any(c['layout']['weight'] for c in n['children']):n['layout']['width']='fill'
         if name=='ConstraintLayout':self.constraints(n,call)
         if name in {'Scaffold','BoxWithConstraints','ConstraintLayout'}:partial=True;self.warn(call,'Container reconhecido; slots/regras dinâmicas ou DSL de constraints exigem revisão.')
         self.counts['partially_editable' if partial else 'fully_editable']+=1;n['import_compatibility']='Partially Editable' if partial else 'Fully Editable'
-        return n
+        self.scope=previous_scope;self.values.themes=previous_themes
+        return self.finish(n)
     def constraints(self,parent,call):
         """Static refs, guidelines and constrainAs only; no external ConstraintSets/chains."""
         refs={'parent':'parent'};pending=[]
@@ -212,55 +221,4 @@ class ComposeParser:
             self.warn(call,'Constraints incompatíveis preservadas somente em código: '+str(exc))
 
     def parse(self):
-        doc=new_document();doc['screens']=[];doc['start_screen']='';doc['import_empty']=True;namespace=None
-        for path,source in sorted(self.files.items()):
-            if not path.endswith('.kt'):continue
-            self.path=path;self.source=source.encode();tree=self.parser.parse(self.source)
-            if tree.root_node.has_error:self.warn(tree.root_node,'Kotlin com erros de parsing; arquivo Code Only.');self.counts['code_only']+=1;continue
-            package=next(descendants(tree.root_node,'package_header'),None)
-            if package and namespace is None:namespace=self.text(package).removeprefix('package ').strip()
-            for function in descendants(tree.root_node,'function_declaration'):
-                modifiers=next((c for c in function.named_children if c.type=='modifiers'),None)
-                if modifiers is None or 'Composable' not in [self.text(n).split('.')[-1] for n in descendants(modifiers,'user_type')]:continue
-                name=next((self.text(c) for c in function.named_children if c.type=='identifier'),None)
-                if not name or name.endswith('Preview'):continue
-                body=next((c for c in function.named_children if c.type=='function_body'),None)
-                if not body:continue
-                nodes=[]
-                for i,call in enumerate(self.body_calls(body)):
-                    mapped=self.map_node(call,name+'/'+str(i))
-                    if mapped:nodes.append(mapped)
-                if not nodes:continue
-                s=new_screen(name,80+len(doc['screens'])*480,80);s['id']=name[7:] if name.startswith('Screen_s_') else stable('s',path+name)
-                if len(nodes)==1 and nodes[0]['type'] in {'Column','Row','Box','ConstraintLayout'}:s['root']=nodes[0]
-                else:s['root']['id']=stable('n',path+name+'/root');s['root']['children']=nodes
-                doc['screens'].append(s);self.functions.append({'name':name,'path':path,'screen':s['id']})
-            # A valid empty Android Studio setContent/Scaffold is still an editable Screen.
-            for call in descendants(tree.root_node,'call_expression'):
-                name,_,_=self.call(call)
-                if name!='setContent':continue
-                nodes=[]
-                for block in call.named_children:
-                    if block.type not in {'annotated_lambda','lambda_literal'}:continue
-                    for i,child in enumerate(self.body_calls(block)):
-                        mapped=self.map_node(child,'ActivityContent/'+str(i))
-                        if mapped:nodes.append(mapped)
-                if nodes:
-                    s=new_screen('Activity Content',80+len(doc['screens'])*480,80);s['id']=stable('s',path+'/setContent');s['root']['id']=stable('n',path+'/setContent/root');s['root']['children']=nodes;doc['screens'].append(s)
-        ids={s['id'] for s in doc['screens']};aliases={x['name'].lower():x['screen'] for x in self.functions}
-        for s in doc['screens']:
-            def normalize(n,parent=None):
-                if n['layout']['weight'] and (not parent or parent['type'] not in {'Row','Column'}):n['layout']['weight']=0;self.warnings.append({'path':'model','message':'Peso incompatível mantido somente na fonte.'})
-                for axis in ('width','height'):
-                    if isinstance(n['layout'][axis],(int,float)):n['layout'][axis]=max(n['layout']['min'+axis.title()],min(4096,n['layout'][axis]))
-                e=n['events'].get('onClick')
-                if e and e['action']=='navigate':
-                    e['target']=aliases.get(e['target'].lower(),e['target'])
-                    if e['target'] not in ids:e['broken']=True
-                for c in n['children']:normalize(c,n)
-            normalize(s['root'])
-        if namespace:
-            from apps.android_designer.domain.model import NAMESPACE,KEYWORDS
-            if NAMESPACE.fullmatch(namespace) and not any(p in KEYWORDS for p in namespace.split('.')):doc['namespace']=namespace
-        if doc['screens']:doc['start_screen']=doc['screens'][0]['id'];doc.pop('import_empty',None)
-        return validate(doc)
+        return self.parse_project()

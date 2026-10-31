@@ -1,0 +1,128 @@
+[
+  {
+    "text": "● agata",
+    "w": 106.546875,
+    "h": 28,
+    "color": "rgb(30, 215, 96)",
+    "size": "24px"
+  },
+  {
+    "text": "← Voltar",
+    "w": 65.09375,
+    "h": 19,
+    "color": "rgb(245, 247, 247)",
+    "size": "16px"
+  },
+  {
+    "text": "AGATA  /  DEMO",
+    "w": 105.4375,
+    "h": 14,
+    "color": "rgb(30, 215, 96)",
+    "size": "12px"
+  },
+  {
+    "text": "Seu dashboard",
+    "w": 253.296875,
+    "h": 34,
+    "color": "rgb(245, 247, 247)",
+    "size": "30px"
+  },
+  {
+    "text": "Um painel demonstrativo com informações fictícias e visual imersivo.",
+    "w": 487.109375,
+    "h": 20,
+    "color": "rgb(176, 181, 185)",
+    "size": "14px"
+  },
+  {
+    "text": "Visão geral",
+    "w": 138.8125,
+    "h": 25,
+    "color": "rgb(245, 247, 247)",
+    "size": "22px"
+  },
+  {
+    "text": "Projetos",
+    "w": 52.0625,
+    "h": 15,
+    "color": "rgb(176, 181, 185)",
+    "size": "13px"
+  },
+  {
+    "text": "12",
+    "w": 50.109375,
+    "h": 41,
+    "color": "rgb(30, 215, 96)",
+    "size": "36px"
+  },
+  {
+    "text": "Dados ilustrativos",
+    "w": 98.890625,
+    "h": 13,
+    "color": "rgb(176, 181, 185)",
+    "size": "11px"
+  },
+  {
+    "text": "Telas",
+    "w": 32.09375,
+    "h": 15,
+    "color": "rgb(176, 181, 185)",
+    "size": "13px"
+  },
+  {
+    "text": "36",
+    "w": 50.109375,
+    "h": 41,
+    "color": "rgb(30, 215, 96)",
+    "size": "36px"
+  },
+  {
+    "text": "Dados ilustrativos",
+    "w": 98.890625,
+    "h": 13,
+    "color": "rgb(176, 181, 185)",
+    "size": "11px"
+  },
+  {
+    "text": "Componentes",
+    "w": 90.25,
+    "h": 15,
+    "color": "rgb(176, 181, 185)",
+    "size": "13px"
+  },
+  {
+    "text": "128",
+    "w": 75.15625,
+    "h": 41,
+    "color": "rgb(30, 215, 96)",
+    "size": "36px"
+  },
+  {
+    "text": "Dados ilustrativos",
+    "w": 98.890625,
+    "h": 13,
+    "color": "rgb(176, 181, 185)",
+    "size": "11px"
+  },
+  {
+    "text": "Sua biblioteca",
+    "w": 144.46875,
+    "h": 21,
+    "color": "rgb(245, 247, 247)",
+    "size": "18px"
+  },
+  {
+    "text": "Aqui você poderia exibir componentes, layouts favoritos e projetos recentes.",
+    "w": 516,
+    "h": 40,
+    "color": "rgb(176, 181, 185)",
+    "size": "14px"
+  },
+  {
+    "text": "Voltar ao início",
+    "w": 127.109375,
+    "h": 18,
+    "color": "rgb(16, 20, 16)",
+    "size": "15px"
+  }
+]

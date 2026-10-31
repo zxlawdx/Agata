@@ -16,7 +16,10 @@ def imported_export(repo,project_id,backend,activate=False,root=None):
     project=repo.get(project_id);doc=project['interface_document'];meta=project['source_import'];base=repo._read_path(project_id).parent
     originals={p:(base/'original-source'/safe_name(p)).read_bytes() for p in meta['files']}
     sources={p:(base/'source-edits'/p).read_bytes() if (base/'source-edits'/p).is_file() else content for p,content in originals.items()}
+    from .source_patch import patch_sources
+    sources,patch_conflicts=patch_sources(doc,sources)
     generated=generate(doc,backend);warnings=[];conflicts=[]
+    if patch_conflicts:warnings.append({'message':'Edições visuais sem patch seguro da fonte: '+', '.join(patch_conflicts)+'. Revise a Activity gerada e os originais.'})
     if meta['framework']!=backend or not any(p.endswith(('build.gradle','build.gradle.kts')) for p in sources):
         output=dict(generated);warnings.append({'message':'Backend alternativo: projeto Agata separado; originais preservados em agata-original.'})
     elif meta['kind'] in {'agata','agata-project'}:

@@ -1,0 +1,44 @@
+[
+  {
+    "text": "← Voltar",
+    "w": 65.09375,
+    "h": 19,
+    "color": "rgb(176, 181, 185)",
+    "size": "16px"
+  },
+  {
+    "text": "● agata",
+    "w": 133.171875,
+    "h": 35,
+    "color": "rgb(30, 215, 96)",
+    "size": "30px"
+  },
+  {
+    "text": "Entre no seu espaço",
+    "w": 342,
+    "h": 70,
+    "color": "rgb(245, 247, 247)",
+    "size": "31px"
+  },
+  {
+    "text": "Uma tela de login criada para testar o seu editor visual.",
+    "w": 342,
+    "h": 32,
+    "color": "rgb(176, 181, 185)",
+    "size": "14px"
+  },
+  {
+    "text": "Entrar na demonstração",
+    "w": 204.734375,
+    "h": 18,
+    "color": "rgb(16, 20, 16)",
+    "size": "15px"
+  },
+  {
+    "text": "Demonstração visual: o botão não realiza autenticação real.",
+    "w": 342,
+    "h": 28,
+    "color": "rgb(176, 181, 185)",
+    "size": "12px"
+  }
+]
