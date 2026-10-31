@@ -104,3 +104,4 @@
 #ad-code-tabs{display:flex;gap:3px;overflow:auto;flex:none}.ad-code-compare{width:min(1100px,95vw);background:#fff9ef;border:3px solid #242424;border-radius:12px}.ad-code-compare>div{display:flex;gap:12px}.ad-code-compare label{flex:1}.ad-code-compare textarea{width:100%;height:60vh;font:12px monospace}.ad-code-compare button{margin:8px}
 #android-designer .ad-paint-hover{outline:4px solid #f6b200!important;cursor:crosshair}#android-designer #ad-chart-data input{width:90px}#android-designer .ui-Shape>svg,#android-designer .ui-Chart>svg,#android-designer .ui-DrawingCanvas>svg{display:block;overflow:hidden;flex:none}
 .ad-destination-miniature{height:130px;overflow:hidden}.ad-destination-miniature>div{pointer-events:none}
+#android-designer .ad-workspace-tools,#android-designer .ad-code-tools{flex-wrap:wrap;white-space:normal;max-height:150px;overflow:auto;align-content:flex-start}
