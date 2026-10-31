@@ -48,12 +48,8 @@
     const collapsedLayers = new Set();
     const E = () => window.AgataElementTree;
     const on = (element, event, callback) => element?.addEventListener(event, callback, {signal: abort.signal});
-    const message = (text, error = false) => {
-      const host = get("ys-message");
-      host.textContent = text;
-      host.style.borderColor = error ? "#e5a29c" : "#5baab1";
-      host.hidden = !text;
-    };
+    const notifications=window.AgataNotifications.create(get("ys-message"));
+    const message = (text,error=false) => notifications.show(text,{error});
     const alertError = error => message(escapeError(error), true);
 
     function serialize() {
@@ -810,7 +806,7 @@
     const page=window.VelaPage || {};
     const previous=page.beforeUnmount;
     page.beforeUnmount=async function() {
-      disposed=true;abort.abort();canvas.dispose();
+      disposed=true;abort.abort();notifications.dispose();canvas.dispose();
       if (typeof previous==="function") await previous.call(this);
     };
     window.VelaPage=page;
