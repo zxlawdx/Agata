@@ -64,7 +64,7 @@ class ComposeGenerator:
         aliases={'Avatar':'Card','Chip':'Button','Badge':'TextLabel','ListItem':'Row','NavigationRail':'Region','TabRow':'Row'}
         if n['type'] in aliases:return self.emit({**n,'type':aliases[n['type']]},omit)
         if n['type']=='RadioButton':return f'RadioButton(selected = v_{n["id"]}, onClick = {{ v_{n["id"]} = !v_{n["id"]} }}, enabled = {str(n["props"]["enabled"]).lower()}, modifier = {self.modifier(n)})'
-        if n['type']=='ProgressIndicator':return f'LinearProgressIndicator(progress = {{ {float(n["props"]["value"])}f }}, modifier = {self.modifier(n)})'
+        if n['type']=='ProgressIndicator':return f'LinearProgressIndicator(progress = {{ {float(n["props"]["value"])}f }}, modifier = {self.modifier(n)}, color = Color(0xFF{n["props"]["color"][1:]}))'
         if n['type'] in {'Shape','DrawingCanvas','Chart'}:
             from .graphics import native_graphic
             view=native_graphic(self,n)

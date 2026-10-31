@@ -15,8 +15,8 @@ def native_graphic(generator,node):
     lines=[]
     def path(data,color,stroke=0,opacity=1):
         lines.append(f'p.color = android.graphics.Color.parseColor({q(color)}); p.alpha = {round(opacity*255)}; p.style = android.graphics.Paint.Style.{"STROKE" if stroke else "FILL"}; p.strokeWidth = {f(stroke)}; androidx.core.graphics.PathParser.createPathFromPathData({q(data)})?.let {{ canvas.drawPath(it, p) }}')
-    def text(value,x,y,size=12,color='#242424'):
-        lines.append(f'p.color = android.graphics.Color.parseColor({q(color)}); p.alpha=255; p.style=android.graphics.Paint.Style.FILL; p.textSize={f(size)} * resources.configuration.fontScale; canvas.drawText({q(value)}, {f(x)}, {f(y)}, p)')
+    def text(value,x,y,size=12,color='#242424',opacity=1):
+        lines.append(f'p.color = android.graphics.Color.parseColor({q(color)}); p.alpha={round(opacity*255)}; p.style=android.graphics.Paint.Style.FILL; p.textSize={f(size)} * resources.configuration.fontScale; canvas.drawText({q(value)}, {f(x)}, {f(y)}, p)')
     def shape(n,sw,sh):
         p=n['props'];kind=p['kind'];lines.append(f'canvas.save(); canvas.rotate({f(p["rotation"])}, {f(sw/2)}, {f(sh/2)})')
         if kind=='ellipse':
@@ -27,7 +27,7 @@ def native_graphic(generator,node):
             d=f'M {r} 1 L {sw-r} 1 Q {sw-1} 1 {sw-1} {r} L {sw-1} {sh-r} Q {sw-1} {sh-1} {sw-r} {sh-1} L {r} {sh-1} Q 1 {sh-1} 1 {sh-r} L 1 {r} Q 1 1 {r} 1 Z'
         elif kind in {'line','arrow'}:d=f'M 2 {sh/2} L {sw-2} {sh/2}'+(f' M {sw-15} {sh/2-10} L {sw-2} {sh/2} L {sw-15} {sh/2+10}' if kind=='arrow' else '')
         elif kind in {'path','pencil'}:d=' '.join(' '.join(str(x) for x in c) for c in p['path'])
-        elif kind=='text':text(p['text'],4,sh/2,20,p['fill']);d=''
+        elif kind=='text':text(p['text'],4,sh/2,20,p['fill'],p['opacity']);d=''
         else:
             count=3 if kind=='triangle' else 10 if kind=='star' else 6
             pts=[(sw/2+math.cos(i*2*math.pi/count-math.pi/2)*sw*(.22 if kind=='star' and i%2 else .48),sh/2+math.sin(i*2*math.pi/count-math.pi/2)*sh*(.22 if kind=='star' and i%2 else .48)) for i in range(count)]
