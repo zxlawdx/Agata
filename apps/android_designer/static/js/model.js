@@ -67,6 +67,10 @@ window.AgataUIModel=(()=>{
     for(const helper of n.children.filter(c=>c.type==='Barrier')){helper.props.references=helper.props.references.split(/\s+/).filter(id=>n.children.some(c=>c.id===id)).join(' ');if(!helper.props.references)throw Error('Barrier sem alvos. Remova a Barrier junto com os componentes referenciados.');}
    });}
   }
+  convertConstraint(id,rectangles={}){const c=this.find(id);if(!c||this.locked(id)||!['Column','Row','Box','Grid','Region'].includes(c.node.type))throw Error('Selecione um contêiner genérico para converter.');
+   this.transact(()=>{const n=c.node;n.type='ConstraintLayout';n.props=clone(this.registry.ConstraintLayout.properties);n.layout.mode='constraint';for(const child of n.children){const r=rectangles[child.id];child.layout.weight=0;child.layout.constraints={};if(r){Object.assign(child.layout,{x:Math.max(0,Math.round(r.x)),y:Math.max(0,Math.round(r.y)),width:Math.max(1,Math.round(r.width)),height:Math.max(1,Math.round(r.height))});}}});
+  }
+  updateEvent(id,event){const c=this.find(id);if(!c||this.locked(id))throw Error('Componente bloqueado.');if(event?.action==='navigate'&&!this.value.screens.some(s=>s.id===event.target))throw Error('Destino inexistente.');this.transact(()=>{if(event)c.node.events.onClick=clone(event);else delete c.node.events.onClick;});}
   setConstraint(id,anchor,link){const found=this.find(id);if(!found?.parent||found.parent.type!=='ConstraintLayout'||this.locked(id))throw Error('Selecione filho desbloqueado de ConstraintLayout.');
    this.transact(()=>{if(link)found.node.layout.constraints[anchor]=clone(link);else delete found.node.layout.constraints[anchor];window.AgataConstraints.validate(found.parent);});
   }

@@ -173,7 +173,7 @@ def validate(document):
         if n['type']=='TextLabel':
             if type(props['maxLines']) is not int or not 0<=props['maxLines']<=1000 or props['overflow'] not in {'clip','ellipsis'}:raise ValueError('Regra de texto inválida.')
         if layout['weight'] and (parent is None or parent['type'] not in {'Row','Column'} or parent['layout']['scroll']!='none'):
-            raise ValueError('Peso requer Row/Column sem scroll.')
+            raise ValueError('Peso requer Row/Column sem scroll: '+n['id']+' ('+n['name']+'), weight='+str(layout['weight'])+', pai='+(parent['type'] if parent else 'raiz'))
         if not isinstance(events,dict) or set(events)-{'onClick'}:raise ValueError('Evento não suportado.')
         if events:
             event=events['onClick']
