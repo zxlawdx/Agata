@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -20,15 +21,16 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import com.example.agata.R
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun Screen_s_screen_1(onAction: (String, String) -> Unit) {
 
 Column(modifier = Modifier.fillMaxWidth().padding(24.dp), verticalArrangement = Arrangement.spacedBy(16.dp), horizontalAlignment = Alignment.Start) {
-Text(text = stringResource(R.string.n_component_22_text), color = Color(0xFF242424), fontSize = 24.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Start, modifier = Modifier)
-Button(onClick = { onAction("back", "") }, modifier = Modifier.fillMaxWidth(), enabled = true, shape = RoundedCornerShape(12.dp), colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF53AFF2))) {
+Text(text = stringResource(R.string.n_component_22_text), color = Color(0xFF242424), fontSize = 24.sp, maxLines = 2147483647, overflow = TextOverflow.Clip, fontWeight = FontWeight.Bold, textAlign = TextAlign.Start, modifier = Modifier)
+Button(onClick = { onAction("back", "") }, modifier = Modifier.heightIn(min = 48.dp, max = 4096.dp).fillMaxWidth(), enabled = true, contentPadding = PaddingValues(0.dp), shape = RoundedCornerShape(12.dp), colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF53AFF2))) {
 Icon(painterResource(R.drawable.agata_plus), contentDescription = stringResource(R.string.n_component_24_description), tint = Color(0xFF242424), modifier = Modifier.size(24.dp))
-Text(text = stringResource(R.string.n_component_25_text), color = Color(0xFF242424), fontSize = 16.sp, fontWeight = FontWeight.Normal, textAlign = TextAlign.Start, modifier = Modifier)
+Spacer(Modifier.width(8.dp))
+Text(text = stringResource(R.string.n_component_25_text), color = Color(0xFF242424), fontSize = 16.sp, maxLines = 2147483647, overflow = TextOverflow.Clip, fontWeight = FontWeight.Normal, textAlign = TextAlign.Start, modifier = Modifier)
 }
 }
 }

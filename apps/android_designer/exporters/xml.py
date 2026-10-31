@@ -1,6 +1,6 @@
 """Native Android XML + Kotlin Activity navigation; independent of Compose output."""
 from xml.etree import ElementTree as ET
-from apps.android_designer.domain.model import walk
+from apps.android_designer.domain.model import walk, resolve_screen
 from apps.android_designer.exporters.compose import ComposeGenerator, PATHS, resource_text, quote
 
 A='http://schemas.android.com/apk/res/android';APP='http://schemas.android.com/apk/res-auto'
@@ -9,8 +9,11 @@ ET.register_namespace('android',A);ET.register_namespace('app',APP)
 
 class XmlGenerator(ComposeGenerator):
     def view(self,n,parent_type=None):
+        if n['type']=='Surface':return self.view({**n,'type':'Card','props':{**n['props'],'variant':'filled','elevation':0}},parent_type)
+        if n['type']=='ScrollContainer':return self.view({**n,'type':'Column'},parent_type)
+        if n['type']=='IconButton':return self.view({**n,'type':'Button'},parent_type)
         kind=n['type'];p=n['props'];layout=n['layout']
-        tag={'Column':'LinearLayout','Row':'LinearLayout','Box':'FrameLayout','TopBar':'LinearLayout',
+        tag={'Grid':'GridLayout','Divider':'View','Column':'LinearLayout','Row':'LinearLayout','Box':'FrameLayout','TopBar':'LinearLayout',
              'Sidebar':'LinearLayout','BottomBar':'LinearLayout','NavigationItem':'com.google.android.material.button.MaterialButton',
              'TextLabel':'TextView','Icon':'ImageView','Button':'com.google.android.material.button.MaterialButton',
              'FloatingButton':'com.google.android.material.floatingactionbutton.FloatingActionButton',
@@ -20,6 +23,13 @@ class XmlGenerator(ComposeGenerator):
         v=ET.Element(tag,{f'{{{A}}}id':'@+id/'+n['id'],f'{{{A}}}layout_width':size('width'),f'{{{A}}}layout_height':size('height')})
         def attr(k,val):v.set('{'+A+'}'+k,str(val))
         def app(k,val):v.set('{'+APP+'}'+k,str(val))
+        if not layout['visible']:attr('visibility','gone')
+        if kind=='Grid':attr('columnCount',layout['columns'])
+        if kind=='Divider':attr('background','#CCCCCC')
+        if layout['margin']:attr('layout_margin',f'{layout["margin"]}dp')
+        if layout['minWidth']:attr('minWidth',f'{layout["minWidth"]}dp')
+        if layout['minHeight']:attr('minHeight',f'{layout["minHeight"]}dp')
+        if parent_type=='Grid':attr('layout_width','0dp');attr('layout_columnWeight',1)
         if layout['padding']:attr('padding',f'{layout["padding"]}dp')
         if parent_type=='BottomBar':attr('layout_width','0dp');attr('layout_weight',1)
         if layout['weight']:attr('layout_weight',layout['weight']);attr('layout_'+('width' if parent_type=='Row' else 'height'),'0dp')
@@ -28,6 +38,8 @@ class XmlGenerator(ComposeGenerator):
             attr('orientation','horizontal' if kind in {'Row','TopBar','BottomBar'} else 'vertical')
             attr('gravity',{'start':'start','center':'center','end':'end'}[layout['alignment']])
         if kind=='TextLabel':
+            if p['maxLines']:attr('maxLines',p['maxLines'])
+            if p['overflow']=='ellipsis':attr('ellipsize','end')
             self.string(n,'text');attr('text','@string/'+n['id']+'_text');attr('textColor',p['color']);attr('textSize',f'{p["fontSize"]}sp');attr('textStyle','bold' if p['bold'] else 'normal');attr('gravity',p['align'])
         if kind=='Icon':
             if p['icon']!='none':attr('src','@drawable/agata_'+p['icon'])
@@ -40,6 +52,7 @@ class XmlGenerator(ComposeGenerator):
                 child=labels[0];self.string(child,'text');attr('text','@string/'+child['id']+'_text');attr('textColor',child['props']['color'])
             if icons:app('srcCompat' if kind=='FloatingButton' else 'icon','@drawable/agata_'+icons[0]['props']['icon'])
             if kind=='Button':
+                app('iconPadding',f'{layout["gap"]}dp')
                 app('cornerRadius',f'{p["radius"]}dp');app('backgroundTint',p['background'])
                 if p['variant'] in {'outlined','text'}:app('backgroundTint','@android:color/transparent')
                 if p['variant']=='outlined':app('strokeWidth','1dp');app('strokeColor',p['background'])
@@ -64,10 +77,44 @@ class XmlGenerator(ComposeGenerator):
         elif kind=='Card':
             app('cardCornerRadius',f'{p["radius"]}dp');app('cardElevation',f'{p["elevation"]}dp');app('cardBackgroundColor',p['background'])
             inner=ET.SubElement(v,'LinearLayout',{f'{{{A}}}orientation':'vertical',f'{{{A}}}layout_width':'match_parent',f'{{{A}}}layout_height':'wrap_content'})
-            for c in n['children']:inner.append(self.view(c,kind))
+            for i,c in enumerate(n['children']):
+                child=self.view(c,kind)
+                if i:child.set('{'+A+'}layout_marginTop',f"{layout['gap']}dp")
+                inner.append(child)
         else:
             if p.get('background'):attr('background',p['background'])
-            for c in n['children']:v.append(self.view(c,kind))
+            for i,c in enumerate(n['children']):
+                child=self.view(c,kind)
+                if i and kind in {'Column','Row','TopBar','Sidebar','BottomBar'}:child.set('{'+A+'}layout_marginStart' if kind in {'Row','TopBar','BottomBar'} else '{'+A+'}layout_marginTop',f"{layout['gap']}dp")
+                if kind=='Box' and layout['mode']=='free':
+                    l=c['layout']
+                    if (l['anchorX']=='center' and l['x']) or (l['anchorY']=='center' and l['y']):raise ValueError('XML: centro com deslocamento livre não é suportado; use âncora start/top.')
+                    gravity={'start':'start','end':'end','center':'center_horizontal','fill':'start'}[l['anchorX']]+'|'+{'top':'top','bottom':'bottom','center':'center_vertical','fill':'top'}[l['anchorY']]
+                    child.set('{'+A+'}layout_gravity',gravity)
+                    child.set('{'+A+'}layout_marginStart' if l['anchorX']!='end' else '{'+A+'}layout_marginEnd',f"{l['x']}dp")
+                    child.set('{'+A+'}layout_marginTop' if l['anchorY']!='bottom' else '{'+A+'}layout_marginBottom',f"{l['y']}dp")
+                    if l['anchorX']=='fill':child.set('{'+A+'}layout_width','match_parent')
+                    if l['anchorY']=='fill':child.set('{'+A+'}layout_height','match_parent')
+                v.append(child)
+        if layout['maxWidth']<4096 or layout['maxHeight']<4096 or layout['aspectRatio']:
+            wrapper=ET.Element('androidx.constraintlayout.widget.ConstraintLayout',{f'{{{A}}}layout_width':size('width'),f'{{{A}}}layout_height':size('height')})
+            for key in ['layout_weight','layout_columnWeight']:
+                value=v.attrib.pop('{'+A+'}'+key,None)
+                if value is not None:wrapper.set('{'+A+'}'+key,value)
+            if layout['weight']:wrapper.set('{'+A+'}layout_'+('width' if parent_type=='Row' else 'height'),'0dp')
+            if parent_type=='Grid':wrapper.set('{'+A+'}layout_width','0dp')
+            for axis in ['Width','Height']:
+                k=axis.lower();bounded=layout['max'+axis]<4096
+                if bounded:
+                    v.set('{'+A+'}layout_'+k,'0dp')
+                    v.set('{'+APP+'}layout_constraint'+axis+'_min',f"{layout['min'+axis]}dp")
+                    v.set('{'+APP+'}layout_constraint'+axis+'_max',f"{layout['max'+axis]}dp")
+                else:v.set('{'+A+'}layout_'+k,size(k))
+            for name in ['Start_toStartOf','End_toEndOf','Top_toTopOf','Bottom_toBottomOf']:v.set('{'+APP+'}layout_constraint'+name,'parent')
+            v.set('{'+APP+'}layout_constraintHorizontal_bias','0');v.set('{'+APP+'}layout_constraintVertical_bias','0')
+            if layout['aspectRatio']:
+                v.set('{'+A+'}layout_height','0dp');v.set('{'+APP+'}layout_constraintDimensionRatio',str(layout['aspectRatio']))
+            wrapper.append(v);v=wrapper
         if layout['scroll']!='none':
             wrapper=ET.Element('ScrollView' if layout['scroll']=='vertical' else 'HorizontalScrollView',{f'{{{A}}}layout_width':size('width'),f'{{{A}}}layout_height':size('height')})
             wrapper.append(v);return wrapper
@@ -78,6 +125,10 @@ class XmlGenerator(ComposeGenerator):
         cases=[]
         for s in screens:
             view=self.view(s['root']);self.files[f'app/src/main/res/layout/{s["id"]}.xml']=ET.tostring(view,encoding='unicode')+'\n'
+            if any(n['layout']['responsive'] for n in walk(s['root'])):
+                for qualifier,width,height in [('w600dp',700,1400),('w840dp',900,1400),('land',390,300),('w600dp-land',700,300),('w840dp-land',900,300)]:
+                    variant=resolve_screen(s,width,height)
+                    self.files[f'app/src/main/res/layout-{qualifier}/{s["id"]}.xml']=ET.tostring(self.view(variant['root']),encoding='unicode')+'\n'
             bindings=[]
             for n in walk(s['root']):
                 e=n['events'].get('onClick')

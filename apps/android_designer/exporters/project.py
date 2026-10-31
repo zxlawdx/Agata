@@ -5,7 +5,7 @@ from pathlib import Path
 from uuid import uuid4
 from zipfile import ZipFile, ZipInfo, ZIP_DEFLATED
 from hashlib import sha256
-from apps.android_designer.domain.model import validate
+from apps.android_designer.domain.model import validate, walk
 from apps.android_designer.exporters.compose import ComposeGenerator
 from apps.android_designer.exporters.xml import XmlGenerator
 
@@ -24,7 +24,7 @@ def generate(document,backend='compose'):
         plugins+=f'id("org.jetbrains.kotlin.plugin.compose") version "{KOTLIN}" apply false\n'
         app_plugins+='id("org.jetbrains.kotlin.plugin.compose")\n'
         deps+=['androidx.activity:activity-compose:1.11.0','androidx.compose.ui:ui','androidx.compose.foundation:foundation','androidx.compose.material3:material3',f'androidx.navigation:navigation-compose:{NAVIGATION}']
-    else:deps+=['androidx.appcompat:appcompat:1.7.1','com.google.android.material:material:1.13.0']
+    else:deps+=['androidx.constraintlayout:constraintlayout:2.2.1','androidx.appcompat:appcompat:1.7.1','com.google.android.material:material:1.13.0']
     dependencies=(f'implementation(platform("androidx.compose:compose-bom:{BOM}"))\n' if backend=='compose' else '')+'\n'.join(f'implementation("{d}")' for d in deps)
     files['settings.gradle.kts']='''pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }
 dependencyResolutionManagement { repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS); repositories { google(); mavenCentral() } }
@@ -47,6 +47,12 @@ dependencies {{ {dependencies} }}
     theme='@android:style/Theme.Material.Light.NoActionBar' if backend=='compose' else '@style/Theme.Agata'
     files['app/src/main/AndroidManifest.xml']=f'''<manifest xmlns:android="http://schemas.android.com/apk/res/android"><application android:label="@string/app_name" android:theme="{theme}" android:supportsRtl="true"><activity android:name="{namespace}.MainActivity" android:exported="true"><intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter></activity></application></manifest>\n'''
     files['app/src/main/res/values/colors.xml']=f'<resources><color name="agata_primary">{document["theme"]["primary"]}</color></resources>\n'
+    warnings=[]
+    if backend=='xml':
+        for screen in document['screens']:
+            for node in walk(screen['root']):
+                if node['type']=='Row' and node['layout']['wrap']:warnings.append({'node':node['id'],'message':'XML: Row com quebra de linha usa LinearLayout sem wrap. Use Grid para uma grade nativa.'})
+    files['agata-export-diagnostics.json']=json.dumps({'warnings':warnings,'android_build_verified':False},ensure_ascii=False,indent=2)+'\n'
     files['agata-model.json']=json.dumps(document,ensure_ascii=False,indent=2)+'\n'
     wrapper=Path(__file__).resolve().parents[1]/'resources/gradle'
     metadata=json.loads((wrapper/'metadata.json').read_text())
@@ -84,4 +90,4 @@ def export_project(document,backend,root=None):
             entry.compress_type=ZIP_DEFLATED
             entry.external_attr=(0o100755 if path=='gradlew' else 0o100644)<<16
             archive.writestr(entry,content)
-    return {'ok':True,'path':str(target),'backend':backend,'file_count':len(files),'android_build_verified':False}
+    return {'ok':True,'path':str(target),'backend':backend,'file_count':len(files),'android_build_verified':False,'warnings':json.loads(files['agata-export-diagnostics.json'])['warnings']}

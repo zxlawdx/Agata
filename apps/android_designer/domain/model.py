@@ -6,7 +6,7 @@ import re
 from pathlib import Path
 from uuid import uuid4
 
-VERSION = 1
+VERSION = 2
 REGISTRY = json.loads((Path(__file__).resolve().parents[1]/'static/model/components.json').read_text())
 ICONS = {'none','menu','back','home','search','close','settings','plus'}
 ID = re.compile(r'^[a-z][a-z0-9_]{0,63}$')
@@ -42,8 +42,35 @@ def walk(node):
         yield from walk(child)
 
 
+def migrate(document):
+    document=copy.deepcopy(document)
+    if isinstance(document,dict) and document.get('version')==1:
+        for screen in document.get('screens',[]):
+            for n in walk(screen['root']):
+                defaults=REGISTRY.get(n['type'],{}).get('layout',{})
+                n['layout']={**copy.deepcopy(defaults),**n['layout']}
+                if n['type']=='TextLabel':n['props']={'maxLines':0,'overflow':'clip',**n['props']}
+        document['version']=VERSION
+    return document
+
+
+def resolve_layout(layout,width,height):
+    result=copy.deepcopy(layout)
+    group='compact' if width<600 else 'medium' if width<840 else 'expanded'
+    result.update(layout['responsive'].get(group,{}))
+    if width>height:result.update(layout['responsive'].get('landscape',{}))
+    return result
+
+
+def resolve_screen(screen,width,height):
+    result=copy.deepcopy(screen)
+    for n in walk(result['root']):n['layout']=resolve_layout(n['layout'],width,height)
+    return result
+
+
 def validate(document):
     """Reject unsupported semantics rather than silently discarding them in exports."""
+    document=migrate(document)
     if not isinstance(document,dict) or document.get('version')!=VERSION:
         raise ValueError('Versão de modelo Android não suportada.')
     if len(json.dumps(document,allow_nan=False).encode())>8_000_000:
@@ -103,6 +130,33 @@ def validate(document):
         for key in ('padding','gap','weight'):
             if not number(layout[key],0,1000):raise ValueError('Layout numérico inválido.')
         if layout['alignment'] not in {'start','center','end'} or layout['arrangement'] not in {'start','center','end','spaceBetween'} or layout['scroll'] not in {'none','vertical','horizontal'}:raise ValueError('Regra de layout inválida.')
+        for key in ('x','y','minWidth','maxWidth','minHeight','maxHeight','margin'):
+            if not number(layout[key],0,4096):raise ValueError('Restrição numérica inválida: '+key)
+        for minimum,maximum in [('minWidth','maxWidth'),('minHeight','maxHeight')]:
+            if layout[minimum]>layout[maximum]:raise ValueError('Limites de tamanho conflitantes.')
+        for axis in ('width','height'):
+            title=axis.title()
+            if number(layout[axis],1,4096) and not layout['min'+title]<=layout[axis]<=layout['max'+title]:raise ValueError('Tamanho fixo incompatível com os limites.')
+        if not number(layout['aspectRatio'],0,100):raise ValueError('Aspect ratio inválido.')
+        if layout['aspectRatio'] and (layout['minWidth']>layout['maxHeight']*layout['aspectRatio'] or layout['minHeight']*layout['aspectRatio']>layout['maxWidth']):raise ValueError('Aspect ratio incompatível com os limites.')
+        if type(layout['columns']) is not int or not 1<=layout['columns']<=12:raise ValueError('Use 1–12 colunas.')
+        if layout['mode'] not in {'auto','free'} or layout['mode']=='free' and n['type']!='Box':raise ValueError('Posicionamento livre requer Box.')
+        if layout['anchorX'] not in {'start','center','end','fill'} or layout['anchorY'] not in {'top','center','bottom','fill'}:raise ValueError('Âncora inválida.')
+        for key in ('wrap','visible','locked'):
+            if type(layout[key]) is not bool:raise ValueError('Estado de layout inválido.')
+        overrides=layout['responsive']
+        if not isinstance(overrides,dict) or set(overrides)-{'compact','medium','expanded','landscape'}:raise ValueError('Classe de janela inválida.')
+        for rule in overrides.values():
+            if not isinstance(rule,dict) or set(rule)-{'width','height','minWidth','maxWidth','minHeight','maxHeight','padding','gap','weight','columns','alignment','arrangement','visible','wrap'}:raise ValueError('Override responsivo inválido.')
+            resolved={**layout,**rule,'responsive':{}}
+            if any(not number(resolved[k],0,4096) for k in ('minWidth','maxWidth','minHeight','maxHeight','padding','gap','weight')):raise ValueError('Restrição responsiva inválida.')
+            if resolved['minWidth']>resolved['maxWidth'] or resolved['minHeight']>resolved['maxHeight']:raise ValueError('Limites responsivos conflitantes.')
+            for axis in ('width','height'):
+                if resolved[axis] not in ('fill','wrap') and not number(resolved[axis],1,4096):raise ValueError('Dimensão responsiva inválida.')
+            if type(resolved['visible']) is not bool or type(resolved['wrap']) is not bool or type(resolved['columns']) is not int or not 1<=resolved['columns']<=12:raise ValueError('Override de estado inválido.')
+            if resolved['alignment'] not in {'start','center','end'} or resolved['arrangement'] not in {'start','center','end','spaceBetween'}:raise ValueError('Alinhamento responsivo inválido.')
+        if n['type']=='TextLabel':
+            if type(props['maxLines']) is not int or not 0<=props['maxLines']<=1000 or props['overflow'] not in {'clip','ellipsis'}:raise ValueError('Regra de texto inválida.')
         if layout['weight'] and (parent is None or parent['type'] not in {'Row','Column'} or parent['layout']['scroll']!='none'):
             raise ValueError('Peso requer Row/Column sem scroll.')
         if not isinstance(events,dict) or set(events)-{'onClick'}:raise ValueError('Evento não suportado.')

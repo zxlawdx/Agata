@@ -7,7 +7,8 @@
     "vendor": "node scripts/vendor-fabric.cjs",
     "check:js": "node scripts/check-js.cjs",
     "test:ui": "node tests/run_ui.cjs",
-    "test:android-ui": "node tests/run_ui.cjs tests/android_ui.cjs"
+    "test:android-ui": "node tests/run_ui.cjs tests/android_ui.cjs",
+    "test:responsive-ui": "node tests/run_ui.cjs tests/responsive_ui.cjs"
   },
   "devDependencies": {
     "playwright": "1.56.1"

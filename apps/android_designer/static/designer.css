@@ -61,3 +61,30 @@
 #android-designer .ad-library>label{display:block;margin:6px 0}
 #android-designer .ui-BottomBar>.ui-NavigationItem{width:auto!important;flex:1 1 0;min-width:0}
 #android-designer .ui-Sidebar>.ui-NavigationItem{width:100%!important}
+#ad-palette{display:flex;gap:5px;overflow:auto;padding:6px;background:var(--pink);flex:none;max-height:46px}
+#android-designer .ad-palette-item{flex:none;touch-action:none;cursor:grab}
+#android-designer .ad-drag-handle{position:absolute;top:0;left:0;z-index:4;opacity:0;pointer-events:none;cursor:grab;touch-action:none;background:var(--yellow);color:var(--ink);font:14px Arial;line-height:18px;width:18px;height:18px}
+#android-designer .ui-selected>.ad-drag-handle{opacity:1;pointer-events:auto}
+#android-designer .ad-resize-handle{position:absolute;right:-3px;bottom:-3px;width:12px;height:12px;background:var(--yellow);border:2px solid var(--ink);z-index:5;cursor:nwse-resize;touch-action:none}
+#android-designer .ad-drop-target{outline:3px dashed #d45300!important;outline-offset:-3px}
+#android-designer .ad-drag-ghost{position:fixed;z-index:10001;background:var(--yellow);padding:10px;border:2px solid var(--ink);border-radius:8px;box-shadow:3px 3px 0 #24242444}
+#android-designer .ad-drag-ghost[data-valid=false]{background:#ffaaaa}
+#android-designer .ad-drop-marker{position:fixed;z-index:10000;background:#de5a00;border:1px solid white}
+#android-designer .ad-tree-row{display:flex;gap:2px;align-items:center;margin-bottom:4px}
+#android-designer #ad-tree .ad-tree-row button{margin:0;width:auto;min-width:0;padding:5px 3px}
+#android-designer #ad-tree .ad-tree-row [data-tree-node]{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;touch-action:none}
+#android-designer .ad-tree-toggle,#android-designer .ad-tree-flag{flex:none;font-size:11px}
+#android-designer .ad-inspector-section{border-top:1px solid #24242455;padding-top:8px;margin-top:8px}
+#android-designer .ad-inspector-section summary{font-weight:bold;cursor:pointer;margin-bottom:10px}
+#ad-preview-viewport{margin:20px auto;min-width:240px;min-height:240px;max-width:none;max-height:none;resize:both;overflow:auto;flex:none;border:3px solid var(--ink);background:white}
+#android-designer #ad-preview-screen{margin:0;border:0;max-width:none}
+#ad-preview-width,#ad-preview-height{width:75px}
+#ad-layout-diagnostics{font-size:12px;color:#8d3100;max-height:140px;overflow:auto;flex:none}
+#android-designer .ad-library,#android-designer .ad-inspector{flex-grow:0;flex-shrink:0;flex-basis:auto}
+#android-designer .ui-node[data-locked=true]>.ad-drag-handle{cursor:not-allowed}
+@media(max-width:1000px){#android-designer .ad-library{width:180px}#android-designer .ad-inspector{width:220px}}
+@media(max-width:720px){#android-designer .ad-library,#android-designer .ad-inspector{width:180px}}
+#android-designer .ad-drag-handle::before{content:'⠿'}
+#android-designer .ad-context-menu{position:fixed;z-index:10002;display:flex;flex-direction:column;gap:3px;background:var(--cream);border:2px solid var(--ink);border-radius:8px;padding:6px;box-shadow:4px 4px 0 #24242455}
+#android-designer .ui-IconButton{align-items:center!important;justify-content:center!important;border:1px solid #24242433;cursor:pointer}
+#android-designer .ui-IconButton[data-variant=text]{background:transparent!important;border:0}
