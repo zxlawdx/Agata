@@ -15,7 +15,7 @@ Revisão da branch `feat/studio-2026` do PR #13 contra os relatos de usuários e
 | Android / Constraints | Overlay de navegação e controles de constraint parcialmente dependentes | Ausência de estado comum de visibilidade | Exclusão visual mútua; dados semânticos continuam no modelo; Flow Map independe da visibilidade | `tests/project_wizard_ui.cjs` |
 | New Project / Web | Seleção Web coexistia com Empty Activity — Compose | Template Android fixo e chamada `create_project` indiferente à plataforma | Template dinâmico por plataforma; `create_web_project` e navegação `/web` para Web; campos Android ocultos em Web | `tests/project_wizard_ui.cjs` |
 | Web / sem projeto | Explorer/biblioteca/canvas vazios, controles desabilitados sem onboarding | `studio.js` desabilitava controles, mas mantinha layout da IDE exposto | Estado `empty`, tela de boas-vindas, criação/importação; estado `error` visível para falhas no carregamento inicial | `tests/project_wizard_ui.cjs`, `tests/native_shell_ui.cjs` |
-| Web / Identidade | Editor com paleta escura fixa distinta do Agata | CSS sem tokens de tema | Tokens visuais creme/turquesa/rosa e seleção Sistema/Claro/Escuro **apenas para interface Web Studio** | `tests/project_wizard_ui.cjs` |
+| Web / Identidade | Editor com paleta escura fixa distinta do Agata | CSS sem tokens de tema | Tokens visuais creme/turquesa/rosa e seleção Sistema/Claro/Escuro para Home, Android IDE e Web IDE; preferência persistida independente dos temas dos projetos | `tests/project_wizard_ui.cjs` |
 
 ## Semântica dos estados
 
@@ -28,9 +28,9 @@ Revisão da branch `feat/studio-2026` do PR #13 contra os relatos de usuários e
 
 ## Escopo comprovado vs. pendente
 
-**Implementado em código nesta revisão:** estados iniciais Web, roteamento do wizard, filtro de templates, toggle de conexões e theme selector Web IDE. Os arquivos foram gravados na branch do PR; as correções são hipóteses implementadas até serem confirmadas por testes de navegador e uso nativo.
+**Implementado em código nesta revisão:** estados iniciais Web, roteamento do wizard, filtro de templates, toggle de conexões e theme selector independente para Home, Web e Android IDE. Os arquivos foram gravados na branch do PR; as correções são hipóteses implementadas até serem confirmadas por testes de navegador e uso nativo.
 
-**Ainda não implementado neste incremento:** catálogo visual com thumbnails reais para todos os templates, auditoria e incorporação de repositórios externos, redesign completo compartilhado dos editores Android/SVG/Sketch, engine nativo equivalente ao ConstraintLayout Android, sincronização perfeita de código arbitrário, todos os elementos avançados da biblioteca, revisão IHC exaustiva e validação de Android SDK. Os oito templates Web e seis estilos Android permanecem a base original documentada em `STUDIO_2026.md`; não foram importados nesta revisão templates de terceiros.
+**Ainda não implementado neste incremento:** ajuste completo do tema dos módulos SVG/Sketch e modais da shell Vela, catálogo visual com thumbnails reais para todos os templates, auditoria e incorporação de repositórios externos, redesign completo compartilhado dos editores Android/SVG/Sketch, engine nativo equivalente ao ConstraintLayout Android, sincronização perfeita de código arbitrário, todos os elementos avançados da biblioteca, revisão IHC exaustiva e validação de Android SDK. Os oito templates Web e seis estilos Android permanecem a base original documentada em `STUDIO_2026.md`; não foram importados nesta revisão templates de terceiros.
 
 ## Checklist de validação
 
