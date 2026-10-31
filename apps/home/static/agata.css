@@ -2,24 +2,24 @@
 #agata-home{--cream:#FFF9EF;--paper:#fff;--cyan:#96E6EC;--blue:#53AFF2;--pink:#FFCCCF;
   --mint:#B9EFC1;--yellow:#FFE28A;--lilac:#BCACF5;--ink:#242424;
   font:14px "Comic Sans MS","Trebuchet MS",system-ui,sans-serif;color:var(--ink);
-  background:#fff;min-height:100vh;width:100%;padding:clamp(8px,2.3vw,30px)}
+  background:#fff;height:100%;min-height:0;min-width:0;width:100%;padding:8px;box-sizing:border-box}
 #agata-home *,#agata-home *::before,#agata-home *::after{box-sizing:border-box}
 #agata-home [hidden]{display:none!important}
 #agata-home button,#agata-home input,#agata-home select{font:inherit}
 #agata-home button{cursor:pointer;color:var(--ink)}
 #agata-home button:disabled{cursor:not-allowed;opacity:.55}
 #agata-home :is(button,input,select):focus-visible{outline:3px solid var(--blue);outline-offset:3px}
-#agata-home .agata-shell{max-width:1430px;min-height:calc(100vh - 60px);margin:auto;
+#agata-home .agata-shell{height:100%;min-height:0;min-width:0;width:100%;margin:0;
   display:grid;grid-template-columns:220px minmax(0,1fr);gap:14px;
   padding:10px;background:var(--cream);border:2px solid var(--ink);border-radius:25px}
 #agata-home .agata-sidebar{background:var(--cyan);border-radius:18px;padding:22px 11px;
-  display:flex;flex-direction:column;gap:25px;min-width:0}
+  display:flex;flex-direction:column;gap:25px;min-width:0;min-height:0}
 #agata-home .agata-logo{display:flex;align-items:center;gap:7px;font-size:23px;font-weight:800;
   padding:0 12px}
 #agata-home .agata-logo small{font-size:10px;letter-spacing:2px;margin-left:auto}
 #agata-home .agata-logo-star{background:var(--yellow);border:2px solid var(--ink);
   border-radius:50%;font-size:20px;width:35px;height:35px;text-align:center}
-#agata-home .agata-nav{display:flex;flex-direction:column;gap:7px}
+#agata-home .agata-nav{display:flex;flex-direction:column;gap:7px;min-height:0;overflow:auto}
 #agata-home .agata-nav button{border:2px solid transparent;background:transparent;
   border-radius:11px;text-align:left;padding:11px 12px;transition:background .13s}
 #agata-home .agata-nav button:hover:not(:disabled){background:#ffffff80}
@@ -28,24 +28,22 @@
 #agata-home .agata-soon{font-size:9px;margin-left:4px}
 #agata-home .agata-side-bottom{margin-top:auto;display:flex;gap:11px;align-items:center;
   font-size:11px;padding:10px 8px}
-#agata-home .agata-side-bubble{border:2px solid var(--ink);border-radius:50%;
-  background:var(--yellow);font-size:24px;width:37px;height:37px;text-align:center}
+#agata-home .agata-side-bubble{width:37px;height:37px;flex:none}
+#agata-home .agata-smile img,#agata-home .agata-side-bubble img{display:block;width:100%;height:100%}
 #agata-home .agata-main{background:var(--paper);border:2px solid var(--ink);
   border-radius:22px;min-width:0;padding:clamp(17px,3vw,45px);display:flex;
-  flex-direction:column;gap:22px}
+  flex-direction:column;gap:22px;min-height:0;overflow:auto}
 #agata-home .agata-welcome{background:var(--yellow);border:2px solid var(--ink);
   border-radius:25px;min-height:190px;padding:26px;display:flex;align-items:center;
   gap:22px;position:relative}
-#agata-home .agata-smile{flex:0 0 auto;font-family:Arial,sans-serif;font-size:53px;text-align:center;
-  line-height:72px;width:78px;height:78px;border:2px solid var(--ink);border-radius:50%;
-  background:#ffe48b}
+#agata-home .agata-smile{flex:0 0 auto;width:78px;height:78px}
 #agata-home .agata-welcome h1{font-size:clamp(22px,2.4vw,33px);line-height:1.24;margin:6px 0 9px}
 #agata-home .agata-welcome p{margin:0;max-width:450px}
 #agata-home .agata-welcome small,#agata-home .agata-heading small,
 #agata-home .agata-dialog small{font-size:10px;font-weight:800;letter-spacing:1.1px}
 #agata-home .agata-create-hero{margin-left:auto;align-self:flex-end;border:2px solid var(--ink);
   border-radius:11px;padding:10px 12px;background:var(--cream);white-space:nowrap;font-weight:700}
-#agata-home .agata-heading{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-bottom:14px}
+#agata-home .agata-heading{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-bottom:14px;flex-wrap:wrap}
 #agata-home .agata-heading h2{font-size:23px;margin:3px 0}
 #agata-home .agata-heading>button{border:2px solid var(--ink);border-radius:10px;
   background:var(--cream);padding:8px 13px}
@@ -95,11 +93,18 @@
 #agata-home .agata-dialog footer{display:flex;gap:10px;justify-content:flex-end;margin-top:8px}
 #agata-home .agata-dialog footer button{padding:10px 14px;border:2px solid var(--ink);border-radius:10px}
 #agata-home .agata-btn-outline{background:white}#agata-home .agata-btn-yellow{background:var(--yellow);font-weight:800}
-@media(max-width:900px){#agata-home .agata-shell{grid-template-columns:170px 1fr}
+@media(max-width:900px){#agata-home .agata-shell{grid-template-columns:170px minmax(0,1fr)}
 #agata-home .agata-welcome{flex-wrap:wrap}#agata-home .agata-create-hero{margin-left:0}}
-@media(max-width:680px){#agata-home .agata-shell{grid-template-columns:1fr}
-#agata-home .agata-sidebar{gap:10px}#agata-home .agata-nav{flex-direction:row;flex-wrap:wrap}
-#agata-home .agata-nav button{padding:7px}#agata-home .agata-side-bottom{display:none}
+@media(max-width:680px){#agata-home .agata-shell{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr)}
+#agata-home .agata-sidebar{gap:10px}#agata-home .agata-nav{flex-direction:row;flex-wrap:nowrap;max-height:100px}
+#agata-home .agata-nav button{padding:7px;flex:0 0 auto}#agata-home .agata-side-bottom{display:none}
 #agata-home .agata-project-card{grid-template-columns:66px 1fr;gap:5px}
 #agata-home .agata-project-meta{grid-column:1/-1;border-left:0;border-top:1px solid var(--ink);padding:8px 15px}
 #agata-home .agata-preset-grid{grid-template-columns:1fr}}
+/* Vela owns the viewport; only the workspace and navigation scroll. */
+.vela-shell__app-root{--vela-app-overflow:hidden}
+#vela-page{height:100%;min-height:0;min-width:0}
+#agata-home .agata-main>section{flex-shrink:0;min-width:0}
+#agata-home .agata-welcome>div{min-width:0;overflow-wrap:anywhere}
+#agata-home .agata-project-name{overflow-wrap:anywhere}
+#agata-home .agata-dialog{max-height:90vh;overflow:auto}

@@ -1,37 +1,25 @@
 <!-- Agata Picadeiro Pop: home integrada à Bridge nativa do Vela. -->
 <style>@import url("{{ static('home/agata.css') }}");</style>
-<div id="agata-home" class="agata-app" data-home-start="{{ home_start }}" data-create="{{ home_create }}">
+<div id="agata-home" class="agata-app" data-home-start="{{ home_start }}" data-create="{{ home_create }}" data-mascot="{{ static('home/img/agata-smile.svg') }}">
   <div class="agata-shell">
-    <aside class="agata-sidebar" aria-label="Navegação">
-      <div class="agata-logo"><span class="agata-logo-star">✦</span> Agata <small>STUDIO</small></div>
-      <nav class="agata-nav" aria-label="Áreas de criação">
-        <button type="button" data-section="home" class="active">Workspace</button>
-        <button type="button" data-editor-mode="svg">Editor de SVG</button>
-        <button type="button" data-editor-mode="drawing">Área de Desenho</button>
-        <button type="button" data-editor-mode="sketch">Esboço</button>
-        <button type="button" data-section="templates">Modelos de prancheta</button>
-        <button type="button" data-section="projects">Projetos recentes</button>
-        <button type="button" disabled title="O editor de fluxo ainda não está disponível">Fluxo de App <span class="agata-soon">em breve</span></button>
-      </nav>
-      <div class="agata-side-bottom"><span class="agata-side-bubble">☺</span><span>Agata v{{ app_version }}<br>Feito para criar.</span></div>
-    </aside>
+  {{ sidebar }}
 
     <main class="agata-main">
       <div id="agata-error" class="agata-error" role="alert" hidden></div>
       <section id="agata-dashboard" class="agata-dashboard">
         <header class="agata-welcome">
-          <span class="agata-smile" aria-hidden="true">☺</span>
+          <span class="agata-smile" aria-hidden="true"><img src="{{ static('home/img/agata-smile.svg') }}" width="78" height="78" alt=""></span>
           <div><small>SEU CANTINHO CRIATIVO</small><h1>Bem-vindo ao Agata,<br>sua área de criação!</h1><p>Um estúdio colorido para transformar ideias em desenhos e interfaces.</p></div>
           <button type="button" id="agata-create" class="agata-create-hero">＋ Novo projeto</button>
         </header>
       </section>
 
-      <section class="agata-projects">
+      <section id="agata-projects" class="agata-projects">
         <div class="agata-heading">
           <div><small id="agata-section-kicker">CONTINUE A CRIAR</small><h2 id="agata-projects-title">Recentes</h2></div>
           <button type="button" id="agata-view-all">Ver todos →</button>
         </div>
-        <div id="agata-project-list" class="agata-project-list" aria-live="polite"></div>
+        <div id="agata-project-list" class="agata-project-list" aria-live="polite"><p class="agata-empty">Carregando projetos…</p></div>
       </section>
 
       <section id="agata-templates" class="agata-templates" hidden>
@@ -47,21 +35,6 @@
     </main>
   </div>
 
-  <dialog id="agata-create-dialog" class="agata-dialog">
-    <form id="agata-create-form">
-      <header><div><small>COMECE UMA IDEIA</small><h2>Novo projeto ✦</h2></div><button type="button" id="agata-close-create" aria-label="Fechar">×</button></header>
-      <label>Nome do projeto<input id="agata-name" name="name" placeholder="Minha criação" maxlength="80" autocomplete="off" required></label>
-      <div class="agata-field-row">
-        <label>Ambiente<select id="agata-mode"><option value="sketch">Esboço</option><option value="drawing">Área de desenho</option><option value="svg">Vetores / SVG</option></select></label>
-        <label>Formato<select id="agata-platform"><option value="android">Android</option><option value="web">Web</option><option value="desktop">Desktop</option></select></label>
-      </div>
-      <div class="agata-field-row">
-        <label>Largura <input id="agata-width" type="number" min="240" max="4096" value="390" required></label>
-        <label>Altura <input id="agata-height" type="number" min="240" max="4096" value="844" required></label>
-      </div>
-      <p id="agata-form-error" class="agata-error" role="alert" hidden></p>
-      <footer><button type="button" id="agata-cancel-create" class="agata-btn-outline">Cancelar</button><button type="submit" id="agata-confirm-create" class="agata-btn-yellow">Criar prancheta →</button></footer>
-    </form>
-  </dialog>
+  {{ project_modal }}
 </div>
 <script src="{{ static('home/agata.js') }}"></script>

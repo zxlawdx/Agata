@@ -15,7 +15,6 @@ staticfiles/
 
 # Node assets
 node_modules/
-apps/sketch_editor/static/vendor/fabric.js
 
 # Editors
 .idea/

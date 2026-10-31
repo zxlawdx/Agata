@@ -23,6 +23,9 @@ jobs:
         with:
           node-version: "22"
 
+      - name: Install Python runtime
+        run: python -m pip install -r requirements.txt
+
       - name: Check Python syntax
         run: python -m compileall -q apps config manage.py tests
 
@@ -35,11 +38,8 @@ jobs:
       - name: Run sketch layer model tests
         run: node --test tests/sketch_core.test.cjs
 
-      - name: Verify Fabric offline asset can be produced
-        run: |
-          npm install --no-audit --no-fund --ignore-scripts
-          npm run vendor
-          test -s apps/sketch_editor/static/vendor/fabric.js
+      - name: Verify committed Fabric offline assets
+        run: python -c "from apps.sketch_editor.services.vendor import verify_vendor; verify_vendor()"
 
       - name: Validate editable component structure
         run: node --test tests/component_edit.test.cjs tests/element_tree.test.cjs tests/editor_controls.test.cjs
@@ -49,3 +49,11 @@ jobs:
 
       - name: Verify template static paths
         run: python -m unittest tests.verify_static_paths -v
+
+      - name: Install browser test tools (CI only)
+        run: |
+          npm install --ignore-scripts --no-audit --no-fund
+          npx playwright install --with-deps chromium
+
+      - name: Exercise rendered Vela UI and isolated Python services
+        run: npm run test:ui

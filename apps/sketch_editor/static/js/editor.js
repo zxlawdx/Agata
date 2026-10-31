@@ -606,6 +606,16 @@
     for (const event of ["selection:created","selection:updated","selection:cleared"]) {
       canvas.on(event,renderProps);
     }
+    for(const [id,side] of [["ys-toggle-tools","left"],["ys-toggle-inspector","right"]]){
+      on(get(id),"click",()=>{
+        const open=!root.classList.contains("ys-show-"+side);
+        for(const [other,otherSide] of [["ys-toggle-tools","left"],["ys-toggle-inspector","right"]]){
+          const active=open && side===otherSide;
+          root.classList.toggle("ys-show-"+otherSide,active);
+          get(other).setAttribute("aria-expanded",String(active));
+        }
+      });
+    }
     on(get("ys-save"),"click",save);
     on(get("ys-go-new"),"click",()=>leaveTo("home",true));
     on(get("ys-go-recents"),"click",()=>leaveTo("projects"));
