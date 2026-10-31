@@ -14,6 +14,7 @@
         </header>
       </section>
 
+      <section class="agata-manager-actions" aria-label="Gerenciar projetos"><button id="agata-import">↓ Importar projeto</button><button id="agata-open-existing">Abrir projeto existente</button><input id="agata-project-search" placeholder="Pesquisar projetos…" aria-label="Pesquisar projetos"><select id="agata-manage-project" aria-label="Projeto para gerenciar"></select><button id="agata-manage-actions">Opções do projeto</button></section>
       <section id="agata-projects" class="agata-projects">
         <div class="agata-heading">
           <div><small id="agata-section-kicker">CONTINUE A CRIAR</small><h2 id="agata-projects-title">Recentes</h2></div>
@@ -38,3 +39,4 @@
   {{ project_modal }}
 </div>
 <script src="{{ static('home/agata.js') }}"></script>
+<script src="{{ static('home/project_manager.js') }}"></script>

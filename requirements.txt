@@ -1,2 +1,5 @@
 # Instala o Vela diretamente do framework autoral.
 vela-framework @ git+https://github.com/zxlawdx/Vela-framework.git
+# AST import: parsing only, no Kotlin/Gradle execution.
+tree-sitter==0.26.0
+tree-sitter-kotlin==1.1.0

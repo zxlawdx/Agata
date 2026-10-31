@@ -55,11 +55,23 @@ class ProjectService:
         }
         template=payload.get('template','empty')
         from apps.android_designer.domain.templates import TEMPLATES,template_document
-        if template not in {'empty','android-tutorial',*TEMPLATES}:raise ValueError('Modelo de projeto inválido.')
-        if template!='empty':
+        if template not in {'empty','blank-canvas','android-tutorial',*TEMPLATES}:raise ValueError('Modelo de projeto inválido.')
+        if template=='blank-canvas':project['editor_mode']='drawing'
+        if template not in {'empty','blank-canvas'}:
             if platform!='android':raise ValueError('Template requer plataforma Android.')
             project['interface_document']=template_document(template);project['interface_revision']=0
-        self.repository.save(project)
+        if payload.get('settings') is not None and template!='blank-canvas':
+            from .settings import validate_settings
+            from apps.android_designer.domain.model import new_document
+            settings=validate_settings(payload['settings']);project['project_settings']=settings
+            document=project.setdefault('interface_document',new_document());
+            if template=='empty':document['screens'][0].update(width=width,height=height)
+            document['app_name']=name;document['namespace']=settings['namespace'];document['theme']['darkMode']=settings['theme'];document['android_settings']=settings
+        if payload.get('location'):
+            from .settings import available_location
+            self.repository.save_at(project,available_location(payload['location'])/'project.json')
+        else:self.repository.save(project)
+        if hasattr(self.repository,'register'):self.repository.register(project['id'],self.repository._read_path(project['id']),name)
         return project
 
     def get_project(self, project_id: str) -> dict:

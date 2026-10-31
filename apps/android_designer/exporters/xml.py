@@ -15,6 +15,9 @@ class XmlGenerator(ComposeGenerator):
         if n['type'] in {'Shape','DrawingCanvas','Chart'}:
             from .graphics import native_graphic
             graphic_tag=native_graphic(self,n)
+        if n['type'] in {'ListView','RecyclerView','GridView','LazyColumn','LazyRow','LazyVerticalGrid','LazyStaggeredGrid'}:
+            from .lists import xml_list
+            return xml_list(self,n)
         if n['type']=='ConstraintLayout':
             from .constraints import xml_container
             return xml_container(self,n)
@@ -137,13 +140,14 @@ class XmlGenerator(ComposeGenerator):
 
     def generate(self):
         screens=self.doc['screens'];base='app/src/main/java/'+self.ns.replace('.','/')
-        cases=[]
+        cases=[];binders=[];has_lists=any(n['type'] in {'ListView','RecyclerView','GridView','LazyColumn','LazyRow','LazyVerticalGrid','LazyStaggeredGrid'} for s in screens for n in walk(s['root']))
         for s in screens:
-            view=self.view(s['root']);self.files[f'app/src/main/res/layout/{s["id"]}.xml']=ET.tostring(view,encoding='unicode')+'\n'
+            self.qualifier='';view=self.view(s['root']);self.files[f'app/src/main/res/layout/{s["id"]}.xml']=ET.tostring(view,encoding='unicode')+'\n'
             if any(n['layout']['responsive'] for n in walk(s['root'])):
                 for qualifier,width,height in [('w600dp',700,1400),('w840dp',900,1400),('land',390,300),('w600dp-land',700,300),('w840dp-land',900,300)]:
-                    variant=resolve_screen(s,width,height)
+                    variant=resolve_screen(s,width,height);self.qualifier='-'+qualifier
                     self.files[f'app/src/main/res/layout-{qualifier}/{s["id"]}.xml']=ET.tostring(self.view(variant['root']),encoding='unicode')+'\n'
+            self.qualifier=''
             bindings=[]
             for n in walk(s['root']):
                 e=n['events'].get('onClick')
@@ -160,12 +164,19 @@ class XmlGenerator(ComposeGenerator):
                     if conditions:action='if ('+' || '.join(conditions)+') { android.widget.Toast.makeText(this, "Preencha os campos corretamente", android.widget.Toast.LENGTH_SHORT).show() } else { '+action+' }'
                     bindings.append(f'findViewById<android.view.View>(R.id.{n["id"]})?.setOnClickListener {{ {action} }}')
                 if n['type']=='TextField' and n['props']['error']:
-                    bindings.append(f'findViewById<com.google.android.material.textfield.TextInputLayout>(R.id.{n["id"]}).error = {quote(n["props"]["error"])}')
+                    bindings.append(f'findViewById<com.google.android.material.textfield.TextInputLayout>(R.id.{n["id"]})?.error = {quote(n["props"]["error"])}')
+            from .lists import xml_bindings
+            scoped='; '.join(bindings).replace('findViewById<','root.findViewById<')
+            if has_lists:
+                binders.append(f'private fun bind_{s["id"]}(root: android.view.View) {{ '+(scoped+'; ' if scoped else '')+xml_bindings(self,s['root'],'bind_'+s['id'])+' }')
+                bindings=[f'bind_{s["id"]}(window.decorView)']
             cases.append(f'{quote(s["id"])} -> {{ setContentView(R.layout.{s["id"]}); '+ '; '.join(bindings)+' }')
         self.files[f'{base}/MainActivity.kt']=f'''package {self.ns}
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 class MainActivity : AppCompatActivity() {{
+ {chr(10).join(binders)}
+ {('private class AgataItemHolder(view: android.view.View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(view)') if has_lists else ''}
  private val history = mutableListOf<String>()
  override fun onCreate(savedInstanceState: Bundle?) {{
   super.onCreate(savedInstanceState)

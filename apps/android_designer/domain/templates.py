@@ -1,7 +1,7 @@
 """Editable template gallery. Authentication is explicitly a local demonstration."""
 from .model import new_document,new_screen,new_node,validate
 from .tutorial_project import tutorial_document
-TEMPLATES={'authentication':'Autenticação Material 3','dashboard':'Dashboard','sidebar':'Sidebar / regiões','bars':'TopBar + BottomBar','profile':'Perfil','settings':'Configurações','form':'Formulário','catalog':'Catálogo','list-detail':'Lista / Detalhes','tasks':'Tarefas'}
+TEMPLATES={'empty-activity':'Empty Activity — Jetpack Compose','navigation-app':'Navigation App','material3-starter':'Material 3 Starter','authentication':'Autenticação Material 3','dashboard':'Dashboard','sidebar':'Sidebar / regiões','bars':'TopBar + BottomBar','profile':'Perfil','settings':'Configurações','form':'Formulário','catalog':'Catálogo','list-detail':'Lista / Detalhes','tasks':'Tarefas'}
 
 
 def template_document(key):
@@ -13,6 +13,13 @@ def template_document(key):
         b=new_node('Button');b['children'][-1]['props']['text']=text;b['events']={'onClick':{'action':'navigate','target':target}}
         if validation:b['events']['onClick']['validation']=validation
         return b
+    if key=='empty-activity':return validate(d)
+    if key=='navigation-app':
+        d['screens']=[new_screen(name,80+i*470,80) for i,name in enumerate(['Home','Login','Dashboard'])];d['start_screen']=d['screens'][0]['id']
+        for i,s in enumerate(d['screens']):s['root']['children']=[new_node('TopBar'),label(s['name'],26),button('Próxima tela',d['screens'][(i+1)%3]['id'])]
+        return validate(d)
+    if key=='material3-starter':
+        first['root']['children']=[new_node('TopBar'),new_node('Card'),new_node('TextField'),new_node('Button')];return validate(d)
     if key=='authentication':
         names=['Boas-vindas','Login','Cadastro','Recuperar senha','Dashboard','Perfil','Configurações'];d['screens']=[new_screen(name,80+i*470,80) for i,name in enumerate(names)];d['start_screen']=d['screens'][0]['id'];by={s['name']:s for s in d['screens']}
         for s in d['screens']:s['root']['children']=[new_node('TopBar'),label('Demonstração local — sem autenticação de servidor',12),label(s['name'],26)]

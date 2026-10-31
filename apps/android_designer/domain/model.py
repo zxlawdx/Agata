@@ -82,13 +82,16 @@ def validate(document):
         raise ValueError('Versão de modelo Android não suportada.')
     if len(json.dumps(document,allow_nan=False).encode())>8_000_000:
         raise ValueError('Modelo excede 8 MB.')
+    if 'android_settings' in document:
+        from apps.workspace.services.settings import validate_settings
+        document['android_settings']=validate_settings(document['android_settings'])
     ns=document.get('namespace','')
     if not isinstance(ns,str) or not NAMESPACE.fullmatch(ns) or any(p in KEYWORDS for p in ns.split('.')):
         raise ValueError('Namespace Android inválido.')
     if not isinstance(document.get('app_name'),str) or not 1<=len(document['app_name'])<=80:
         raise ValueError('Nome do aplicativo inválido.')
     screens=document.get('screens')
-    if not isinstance(screens,list) or not 1<=len(screens)<=40:
+    if not isinstance(screens,list) or not (0 if document.get('import_empty') is True else 1)<=len(screens)<=40:
         raise ValueError('Use entre 1 e 40 Screens.')
     ids=set();screen_ids=set()
     def number(value,low,high):
@@ -158,6 +161,7 @@ def validate(document):
             if not number(layout[bias],0,1):raise ValueError('Bias deve estar entre 0 e 1.')
         if not isinstance(layout['constraints'],dict):raise ValueError('Constraints inválidas.')
         if layout['constraints'] and (parent is None or parent['type']!='ConstraintLayout'):raise ValueError('Constraints requerem pai ConstraintLayout.')
+        if n['type']=='RecyclerView' and (props['orientation'] not in {'vertical','horizontal'} or props['layoutManager'] not in {'linear','grid','staggered'}):raise ValueError('Layout de RecyclerView inválido.')
         if n['type']=='Region' and props['orientation'] not in {'horizontal','vertical'}:raise ValueError('Orientação de região inválida.')
         if n['type']=='Guideline' and (props['orientation'] not in {'vertical','horizontal'} or not number(props['percent'],0,1)):raise ValueError('Guideline inválida.')
         if n['type']=='Barrier' and (props['direction'] not in {'start','end','top','bottom'} or not number(props['barrierMargin'],0,4096)):raise ValueError('Barrier inválida.')
@@ -197,7 +201,7 @@ def validate(document):
         for n in walk(screen['root']):
             if any(rule['field'] not in fields for rule in n['events'].get('onClick',{}).get('validation',[])):raise ValueError('Campo de validação inexistente na Screen.')
 
-    if document.get('start_screen') not in screen_ids:raise ValueError('Screen inicial inexistente.')
+    if screens and document.get('start_screen') not in screen_ids:raise ValueError('Screen inicial inexistente.')
     theme=document.get('theme',{})
     if type(theme.get('dynamicColor')) is not bool or theme.get('darkMode') not in {'system','light','dark'} or not COLOR.fullmatch(theme.get('primary','')):raise ValueError('Tema inválido.')
     viewport=document.get('viewport')

@@ -50,11 +50,11 @@
    const meta=document.createElement("span");meta.className="agata-project-meta";
    const type=document.createElement("span");
    const mode=item.editor_mode==="svg"?"SVG / Vetores":item.editor_mode==="drawing"?"Área de desenho":"Esboço";
-   type.textContent=mode+" · "+item.canvas.width+" × "+item.canvas.height;
+   type.textContent=(item.framework||mode)+" · "+item.canvas.width+" × "+item.canvas.height;
    const date=document.createElement("small");
    const at=Date.parse(item.updated_at);
    date.textContent=Number.isFinite(at)?new Date(at).toLocaleDateString("pt-BR"):"Projeto local";
-   meta.append(type,date);b.append(preview,name,meta);return b;
+   if(item.location){const path=document.createElement("small");path.textContent=item.location;meta.append(path);}if(item.unavailable){b.disabled=true;date.textContent="Indisponível — pasta movida ou removida";}meta.append(type,date);b.append(preview,name,meta);return b;
  }
  function render(){
    const host=q("agata-project-list");host.replaceChildren();
@@ -69,7 +69,7 @@
      }
      host.append(state);return;
    }
-   const items=section==="home"?projects.slice(0,4):projects;
+   const filtered=projects.filter(p=>p.name.toLowerCase().includes((q("agata-project-search")?.value||" ").trim().toLowerCase()));const items=section==="home"?filtered.slice(0,4):filtered;
    if(!items.length){
      const empty=document.createElement("div");empty.className="agata-empty";
      const strong=document.createElement("strong");strong.textContent="Seu primeiro projeto começa aqui.";
@@ -84,7 +84,7 @@
      const result=await api("list_projects");
      if(!Array.isArray(result))throw Error("Lista de projetos inválida.");
      if(disposed || current!==request)return;
-     projects=result;loadState="ready";error("");render();
+     projects=result;window.AgataProjectItems=projects;root.dispatchEvent(new CustomEvent("agata:projects-updated",{detail:projects}));loadState="ready";error("");render();
    }catch(e){if(!disposed && current===request){loadState="error";loadError=e.message;render();}}
  }
  function openCreate(kind="android",fromMenu=false){
@@ -107,13 +107,13 @@
    btn.disabled=true;q("agata-form-error").hidden=true;
    try{
      const item=await api("create_project",{template:q("agata-template").value,
-       name:q("agata-name").value.trim(),editor_mode:q("agata-mode").value,
+       name:q("agata-name").value.trim(),...(q("agata-platform").value==="android"&&q("agata-mode").value==="sketch"&&q("agata-template").value!=="blank-canvas"?{settings:window.AgataProjectSettings?.(),location:q("agata-location")?.value||undefined}:{}),editor_mode:q("agata-mode").value,
        platform:q("agata-platform").value,
        width:Number(q("agata-width").value),height:Number(q("agata-height").value)
      });
      if(!item?.id)throw Error("O serviço não retornou o ID do projeto.");
      q("agata-create-dialog").close();
-     await window.Vela.navigate(q("agata-template").value!=="empty"?"/android":"/sketch",{project_id:item.id});
+     await window.Vela.navigate((item.interface_document?"/android":"/sketch"),{project_id:item.id});
    }catch(e){q("agata-form-error").textContent=e.message;q("agata-form-error").hidden=false;}
    finally{if(!disposed)btn.disabled=false;}
  }
@@ -130,7 +130,7 @@
  on(q("agata-cancel-create"),"click",closeCreate);
  on(q("agata-project-list"),"click",event=>{
    const btn=event.target.closest("[data-id]");
-   if(btn)window.Vela.navigate("/sketch",{project_id:btn.dataset.id}).catch(e=>error(e.message));
+   if(btn){window.pywebview.api.project_action?.(btn.dataset.id,"touch").catch(e=>error(e.message));const project=projects.find(p=>p.id===btn.dataset.id);window.Vela.navigate(project?.open_editor==="android"?"/android":"/sketch",{project_id:btn.dataset.id}).catch(e=>error(e.message));}
  });
  for(const btn of root.querySelectorAll("[data-section]"))
    on(btn,"click",()=>navigate(btn.dataset.section));
@@ -142,6 +142,7 @@
  window.VelaPage={...(window.VelaPage||{}),beforeUnmount(){
    disposed=true;abort.abort();if(typeof previous==="function")previous.call(this);
  }};
+ window.AgataHomeRefresh=refresh;window.AgataHomeSearch=render;
  navigate(root.dataset.homeStart || "home");
  if(root.dataset.create==="1")openCreate();
  refresh();

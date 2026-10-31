@@ -80,6 +80,9 @@ class ComposeGenerator:
         if n['type']=='IconButton':return self.emit({**n,'type':'Button'},omit)
         kind=n['type'];p=n['props'];m=self.modifier({**n,'layout':{**n['layout'],'padding':0}}) if kind in {'Card','Button'} else self.modifier(n);var='v_'+n['id']
         children=lambda nodes=None:'\n'.join(self.emit(c,omit) for c in (n['children'] if nodes is None else nodes))
+        if kind in {'ListView','RecyclerView','GridView','LazyColumn','LazyRow','LazyVerticalGrid','LazyStaggeredGrid'}:
+            from .lists import compose_list
+            return compose_list(self,n,omit)
         if kind=='Divider':return f'HorizontalDivider(modifier = {m})'
         if kind=='Grid':
             columns=n['layout']['columns'];rows=[]
@@ -199,7 +202,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
+{('import androidx.compose.foundation.lazy.*'+chr(10)+'import androidx.compose.foundation.lazy.grid.*'+chr(10)+'import androidx.compose.foundation.lazy.staggeredgrid.*'+chr(10)) if any(n['type'] in {'ListView','RecyclerView','GridView','LazyColumn','LazyRow','LazyVerticalGrid','LazyStaggeredGrid'} for n in walk(s['root'])) else ''}import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.ui.Modifier
