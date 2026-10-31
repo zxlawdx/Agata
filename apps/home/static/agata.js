@@ -11,10 +11,10 @@
  const preset={
    android:{platform:"android",width:390,height:844,mode:"sketch"},
    web:{platform:"web",width:1280,height:800,mode:"drawing"},
-   svg:{platform:"desktop",width:512,height:512,mode:"svg"},
+   svg:{platform:"svg",width:512,height:512,mode:"svg"},
    tablet:{platform:"android",width:768,height:1024,mode:"sketch"},
-   sketch:{platform:"android",width:390,height:844,mode:"sketch"},
-   drawing:{platform:"desktop",width:1280,height:800,mode:"drawing"}
+   sketch:{platform:"sketch",width:390,height:844,mode:"sketch"},
+   drawing:{platform:"sketch",width:1280,height:800,mode:"drawing"}
  };
  async function api(name,...args){
    const fn=window.pywebview?.api?.[name];
@@ -87,13 +87,48 @@
      projects=result;window.AgataProjectItems=projects;root.dispatchEvent(new CustomEvent("agata:projects-updated",{detail:projects}));loadState="ready";error("");render();
    }catch(e){if(!disposed && current===request){loadState="error";loadError=e.message;render();}}
  }
+ const androidTemplates=[...q("agata-template").options].map(o=>({id:o.value,name:o.textContent}));
+ let webTemplates=[
+  {id:"saas-dashboard",name:"SaaS Dashboard"},
+  {id:"premium-landing",name:"Premium Landing"},
+  {id:"creative-portfolio",name:"Creative Portfolio"},
+  {id:"social-web",name:"Social Web"},
+  {id:"ecommerce",name:"E-commerce"},
+  {id:"blog-editorial",name:"Blog / Editorial"},
+  {id:"authentication-web",name:"Login & Authentication"},
+  {id:"admin-panel",name:"Admin Panel"}
+ ];
+ let requestedWebCatalog=false;
+ function syncWizard(){
+  const platform=q("agata-platform").value;
+  const options=platform==="android"?androidTemplates:platform==="web"?webTemplates:[{id:"empty",name:platform==="svg"?"Vetor em branco":"Prancheta em branco"}];
+  const current=q("agata-template").value;
+  q("agata-template").replaceChildren(...options.map(t=>new Option(t.name,t.id)));
+  q("agata-template").value=options.some(o=>o.id===current)?current:options[0].id;
+  q("agata-wizard-settings").hidden=platform!=="android";
+  q("agata-web-settings").hidden=platform!=="web";
+  q("agata-sketch-settings").hidden=platform==="android"||platform==="web";
+  q("agata-dimensions").hidden=platform==="web";
+  q("agata-mode-field").hidden=true; // Editor mode is derived from platform, not confused with export format.
+  q("agata-wizard-review").hidden=true;
+  q("agata-wizard-next").hidden=platform!=="android";
+  if(platform==="web"&&!requestedWebCatalog){
+   requestedWebCatalog=true;
+   api("web_catalog").then(result=>{
+    if(!Array.isArray(result.templates)||!result.templates.length)return;
+    webTemplates=result.templates.filter(t=>t.platform==="web").map(t=>({id:t.id,name:t.name}));
+    if(q("agata-create-dialog").open&&q("agata-platform").value==="web")syncWizard();
+   }).catch(e=>error("Catálogo Web indisponível: "+e.message));
+  }
+ }
  function openCreate(kind="android",fromMenu=false){
-   pendingMode=fromMenu?(preset[kind]||preset.android).mode:null;selectNavigation();
+   pendingMode=fromMenu?kind:null;selectNavigation();
    const conf=preset[kind]||preset.android;
    q("agata-create-form").reset();
    q("agata-name").value="";
    q("agata-mode").value=conf.mode;
    q("agata-platform").value=conf.platform;
+   syncWizard();root.dispatchEvent(new CustomEvent("agata:wizard-reset"));
    q("agata-width").value=conf.width;
    q("agata-height").value=conf.height;
    q("agata-form-error").hidden=true;
@@ -101,21 +136,35 @@
    q("agata-name").focus();
  }
  async function create(event){
-   event.preventDefault();const form=q("agata-create-form");
-   if(!form.reportValidity())return;
-   const btn=q("agata-confirm-create");
-   btn.disabled=true;q("agata-form-error").hidden=true;
-   try{
-     const item=await api("create_project",{template:q("agata-template").value,
-       name:q("agata-name").value.trim(),...(q("agata-platform").value==="android"&&q("agata-mode").value==="sketch"&&q("agata-template").value!=="blank-canvas"?{settings:window.AgataProjectSettings?.(),location:q("agata-location")?.value||undefined}:{}),editor_mode:q("agata-mode").value,
-       platform:q("agata-platform").value,
-       width:Number(q("agata-width").value),height:Number(q("agata-height").value)
-     });
-     if(!item?.id)throw Error("O serviço não retornou o ID do projeto.");
-     q("agata-create-dialog").close();
-     await window.Vela.navigate((item.interface_document?"/android":"/sketch"),{project_id:item.id});
-   }catch(e){q("agata-form-error").textContent=e.message;q("agata-form-error").hidden=false;}
-   finally{if(!disposed)btn.disabled=false;}
+  event.preventDefault();const form=q("agata-create-form");
+  if(!form.reportValidity())return;
+  const btn=q("agata-confirm-create");btn.disabled=true;q("agata-form-error").hidden=true;
+  try{
+   const name=q("agata-name").value.trim(),platform=q("agata-platform").value,template=q("agata-template").value;
+   let item,path;
+   if(platform==="web"){
+    item=await api("create_web_project",name,template);
+    path="/web";
+   }else{
+    const android=platform==="android";
+    const editorMode=android?"sketch":platform==="svg"?"svg":q("agata-mode").value;
+    const selectedTemplate=android?template:"empty";
+    item=await api("create_project",{
+     template:selectedTemplate,name,editor_mode:editorMode,
+     platform:android?"android":"desktop",
+     width:Number(q("agata-width").value),height:Number(q("agata-height").value),
+     ...(android&&selectedTemplate!=="blank-canvas"?{
+      settings:window.AgataProjectSettings?.(),
+      location:q("agata-location")?.value||undefined
+     }:{})
+    });
+    path=item.interface_document?"/android":"/sketch";
+   }
+   if(!item?.id)throw Error("O serviço não retornou o ID do projeto.");
+   q("agata-create-dialog").close();
+   await window.Vela.navigate(path,{project_id:item.id});
+  }catch(e){q("agata-form-error").textContent=e.message;q("agata-form-error").hidden=false;}
+  finally{if(!disposed)btn.disabled=false;}
  }
  on(q("agata-create"),"click",()=>openCreate());
  on(q("agata-view-all"),"click",()=>navigate("projects"));
@@ -124,7 +173,7 @@
  function closeCreate(){q("agata-create-dialog").close();restoreSelection();}
  on(q("agata-create-dialog"),"close",()=>{if(!q("agata-create-dialog").open)restoreSelection();});
  on(q("agata-create-dialog"),"cancel",restoreSelection);
- on(q("agata-mode"),"change",()=>{if(pendingMode){pendingMode=q("agata-mode").value;selectNavigation();}});
+ on(q("agata-platform"),"change",syncWizard);
  on(window,"pywebviewready",()=>refresh());
  on(q("agata-close-create"),"click",closeCreate);
  on(q("agata-cancel-create"),"click",closeCreate);
