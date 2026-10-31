@@ -59,11 +59,11 @@
       const lookup = new Map(layers.map(layer => [layer.id, layer]));
       for (const object of canvas.getObjects()) {
         const target = lookup.get(object.layerId);
-        if (target) target.objects.push(object.toObject(["layerId", "componentKind", "componentId", "componentRole", "iconKind"]));
+        if (target) target.objects.push(object.toObject(["layerId", "componentKind", "componentId", "componentRole", "iconKind", "componentParentId"]));
       }
       return {active_layer_id: state.activeLayerId, layers};
     }
-    const snapshot = () => JSON.stringify(serialize());
+    const snapshot = () => JSON.stringify({...serialize(),editing_component:componentSession?{...componentSession}:null});
     function updateDirty() {
       const changed = snapshot() !== savedSnapshot;
       get("ys-dirty-status").textContent = changed ? "● Alterações não salvas" : "✓ Salvo";
@@ -74,11 +74,7 @@
       get("ys-redo").disabled = !future.length;
     }
     function commit() {
-      // Enquanto o usuário edita partes, o histórico guarda o conjunto ao concluir.
-      if (restoring || disposed || componentSession) {
-        if (componentSession && !restoring) { renderProps(); updateDirty(); }
-        return;
-      }
+      if (restoring || disposed) return;
       const current = snapshot();
       if (past.at(-1) !== current) {
         past.push(current);
@@ -326,7 +322,7 @@
         componentSession=window.AgataComponentEditing.enter(canvas,object,F());
         setTool("select");
         message("Edite texto, ícones e fundo separadamente. Depois conclua a edição.");
-        renderComponentControls();
+        commit();renderComponentControls();
         canvas.requestRenderAll();
       } catch(error){alertError(error);}
     }
@@ -351,7 +347,7 @@
       if(addObject(icon)){
         setTool("select");canvas.setActiveObject(icon);canvas.requestRenderAll();
         message("Ícone adicionado. Ajuste sua posição e clique em Concluir.");
-        renderProps();
+        commit();renderProps();
       }
     }
     function fitZoom() {
@@ -399,6 +395,7 @@
     async function restore(data) {
       restoring = true;
       try {
+        componentSession=data.editing_component?{...data.editing_component}:null;
         canvas.discardActiveObject();
         canvas.getObjects().slice().forEach(object => canvas.remove(object));
         state.layers = data.layers.map(layer => ({
@@ -421,14 +418,12 @@
       updateDirty();
     }
     async function undo() {
-      finishComponent();
       if (past.length <= 1 || restoring) return;
       future.push(past.pop());
       await restore(JSON.parse(past.at(-1)));
       updateHistoryButtons();
     }
     async function redo() {
-      finishComponent();
       if (!future.length || restoring) return;
       const next = future.pop();
       past.push(next);
@@ -553,7 +548,7 @@
     async function save() {
       if (saving || restoring) return;
       finishComponent();
-      const data=serialize(), saved=JSON.stringify(data);
+      const data=serialize(), saved=snapshot();
       saving=true;get("ys-save").disabled=true;
       get("ys-dirty-status").textContent="Salvando...";
       try {
@@ -661,7 +656,7 @@
       const object=canvas.getActiveObject();
       if(window.AgataComponentEditing.link(object,componentSession)){
         message("Elemento vinculado: acompanhará o componente.");
-        renderComponentControls();
+        commit();renderComponentControls();
       } else message("Selecione um elemento solto da camada para vincular.",true);
     });
     on(get("ys-unlink-component"),"click",()=>{
@@ -669,7 +664,7 @@
       const object=canvas.getActiveObject();
       if(window.AgataComponentEditing.unlink(object,componentSession)){
         message("Elemento desvinculado e independente.");
-        renderComponentControls();
+        commit();renderComponentControls();
       }
     });
     on(get("ys-prop-text"),"change",()=>{
@@ -774,6 +769,7 @@
       layer.name=trimmed;renderLayers();commit();
     });
     const keydown = event => {
+      if (disposed || !root.isConnected || event.defaultPrevented) return;
       if (event.target instanceof Element && event.target.closest("input,textarea,[contenteditable]")) return;
       if (canvas.getActiveObject()?.isEditing) return;
       const key=event.key.toLowerCase();
@@ -781,10 +777,10 @@
         event.preventDefault();save();return;
       }
       if ((event.ctrlKey || event.metaKey) && key==="z") {
-        event.preventDefault();(event.shiftKey?redo():undo()).catch(alertError);return;
+        event.preventDefault();event.stopPropagation();if(!event.repeat)(event.shiftKey?redo():undo()).catch(alertError);return;
       }
       if ((event.ctrlKey || event.metaKey) && key==="y") {
-        event.preventDefault();redo().catch(alertError);return;
+        event.preventDefault();event.stopPropagation();if(!event.repeat)redo().catch(alertError);return;
       }
       if ((event.ctrlKey || event.metaKey) && key==="d"){
         event.preventDefault();duplicateSelected();return;

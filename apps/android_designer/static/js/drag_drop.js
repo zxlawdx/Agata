@@ -32,8 +32,8 @@ window.AgataDragDrop={mount(root,{model,selection,registry,commit,notify,isDesig
   return nodes.length>0&&nodes.every(n=>model.accepts(target.parent,n)&&(!n.id||(!model.contains(n.id,target.parent.id)&&!model.locked(n.id)&&model.find(n.id)?.parent)));
  }
  on(root,'pointerdown',event=>{
-  if(event.button!==0||!isDesign()||event.target.closest('input,textarea,select,.ad-frame-title,.ad-constraint-anchor,.ad-constraint-lines'))return;
-  const palette=event.target.closest('[data-palette-kind]'),resize=event.target.closest('[data-resize-node]'),handle=event.target.closest('[data-drag-node]'),node=event.target.closest('[data-node-id]');
+  if(event.button!==0||!isDesign()||event.target.closest?.('input,textarea,select,.ad-frame-title,.ad-constraint-anchor,.ad-constraint-lines'))return;
+  const palette=event.target.closest?.('[data-palette-kind]'),resize=event.target.closest?.('[data-resize-node]'),handle=event.target.closest?.('[data-drag-node]'),node=event.target.closest?.('[data-node-id]');
   const id=resize?.dataset.resizeNode||handle?.dataset.dragNode||node?.dataset.nodeId;
   if(!palette&&!id)return;if(id&&model.locked(id)){notify('Componente bloqueado.',true);return;}
   const ids=id&&selection().has(id)?[...selection()]:id?[id]:[];

@@ -50,11 +50,25 @@ class ComposeGenerator:
 
     def action(self,n):
         e=n['events'].get('onClick',{})
-        result=f'onAction({quote(e.get("action",""))}, {quote(e.get("target",""))})'
+        from apps.android_designer.domain.events import action_kind
+        result=f'onAction({quote(action_kind(e))}, {quote(e.get("target",""))})'
+        conditions=[]
+        for rule in e.get('validation',[]):
+            value='v_'+rule['field']
+            conditions.append(value+'.isBlank()' if rule['type']=='required' else value+'.length < 6' if rule['type']=='password' else '!android.util.Patterns.EMAIL_ADDRESS.matcher('+value+').matches()')
+        if conditions:result='if ('+' || '.join(conditions)+') { onAction("custom", "Preencha os campos corretamente") } else { '+result+' }'
         return f'if (false) {{ {result} }}' if n['type']=='FloatingButton' and not n['props']['enabled'] else result
 
     def emit(self,n,omit=()):
         if n['id'] in omit or not n['layout']['visible']:return ''
+        aliases={'Avatar':'Card','Chip':'Button','Badge':'TextLabel','ListItem':'Row','NavigationRail':'Region','TabRow':'Row'}
+        if n['type'] in aliases:return self.emit({**n,'type':aliases[n['type']]},omit)
+        if n['type']=='RadioButton':return f'RadioButton(selected = v_{n["id"]}, onClick = {{ v_{n["id"]} = !v_{n["id"]} }}, enabled = {str(n["props"]["enabled"]).lower()}, modifier = {self.modifier(n)})'
+        if n['type']=='ProgressIndicator':return f'LinearProgressIndicator(progress = {{ {float(n["props"]["value"])}f }}, modifier = {self.modifier(n)}, color = Color(0xFF{n["props"]["color"][1:]}))'
+        if n['type'] in {'Shape','DrawingCanvas','Chart'}:
+            from .graphics import native_graphic
+            view=native_graphic(self,n)
+            return f'androidx.compose.ui.viewinterop.AndroidView(factory = {{ {view}(it) }}, modifier = {self.modifier(n)})'
         if n['type']=='ConstraintLayout':
             from .constraints import compose_container
             return compose_container(self,n,omit)
@@ -129,12 +143,12 @@ class ComposeGenerator:
         if kind in {'TextField','SearchBar'}:
             leading=next((c for c in n['children'] if c['role']=='leading'),None)
             trailing=next((c for c in n['children'] if c['role']=='trailing'),None)
-            slots=(f', leadingIcon = {{ {self.emit(leading)} }}' if leading else '')+(f', trailingIcon = {{ {self.emit(trailing)} }}' if trailing else '')
+            slots=(f', leadingIcon = {{ {self.emit(leading)} }}' if leading else '')+(f', trailingIcon = {{ {self.emit(trailing)} }}' if trailing and kind!='SearchBar' and p.get('keyboard')!='password' else '')
             if kind=='SearchBar':slots+=f', trailingIcon = {{ IconButton(onClick = {{ {var} = "" }}) {{ Icon(painterResource(R.drawable.agata_close), contentDescription = "Limpar pesquisa") }} }}'
             keyboard={'text':'Text','email':'Email','number':'Number','password':'Password','phone':'Phone'}.get(p.get('keyboard'),'Text')
             fun='TextField' if p.get('variant')=='filled' else 'OutlinedTextField'
             extra=f', label = {{ Text({self.string(n,"label")}) }}, isError = {str(bool(p["error"])).lower()}, supportingText = {{ Text({self.string(n,"error" if p["error"] else "helper")}) }}' if kind=='TextField' else ''
-            if p.get('keyboard')=='password':extra+=', visualTransformation = PasswordVisualTransformation()'
+            if p.get('keyboard')=='password':extra+=f', visualTransformation = if (visible_{n["id"]}) androidx.compose.ui.text.input.VisualTransformation.None else PasswordVisualTransformation(), trailingIcon = {{ TextButton(onClick = {{ visible_{n["id"]} = !visible_{n["id"]} }}) {{ Text(if (visible_{n["id"]}) "Ocultar" else "Mostrar") }} }}'
             return f'{fun}(value = {var}, onValueChange = {{ {var} = it }}, enabled = {str(p["enabled"]).lower()}, placeholder = {{ Text({self.string(n,"placeholder")}) }}, modifier = {m}, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.{keyboard}){extra}{slots})'
         if kind in {'Checkbox','Switch'}:return f'{kind}(checked = {var}, onCheckedChange = {{ {var} = it }}, enabled = {str(p["enabled"]).lower()}, modifier = {m})'
         if kind=='Slider':return f'Slider(value = {var}, onValueChange = {{ {var} = it }}, valueRange = {float(p["min"])}f..{float(p["max"])}f, enabled = {str(p["enabled"]).lower()}, modifier = {m})'
@@ -159,9 +173,10 @@ class ComposeGenerator:
         for s in self.doc['screens']:
             declarations=[]
             for n in walk(s['root']):
-                if n['type'] in {'TextField','SearchBar','Checkbox','Switch','Slider'}:
+                if n['type'] in {'TextField','SearchBar','Checkbox','Switch','Slider','RadioButton'}:
                     value=n['props'].get('checked',n['props'].get('value',''))
                     literal=str(value).lower() if type(value) is bool else f'{float(value)}f' if type(value) in (int,float) else quote(value)
+                    if n['props'].get('keyboard')=='password':declarations.append(f'var visible_{n["id"]} by rememberSaveable {{ mutableStateOf(false) }}')
                     declarations.append(f'var v_{n["id"]} by rememberSaveable {{ mutableStateOf({literal}) }}')
             drawers=[c for c in s['root']['children'] if c['type']=='Sidebar']
             if len(drawers)>1:raise ValueError('Use no máximo uma Sidebar por Screen.')
@@ -213,12 +228,14 @@ fun Screen_{s['id']}(onAction: (String, String) -> Unit) {{
 }}
 '''
             self.files[f'{base}/ui/screens/Screen_{s["id"]}.kt']=code
-        navigation='\n'.join(f'composable({quote(s["id"])}) {{ Screen_{s["id"]}(onAction = {{ action, target -> if (action == "back") navController.popBackStack() else if (action == "navigate") navController.navigate(target) }}) }}' for s in self.doc['screens'])
+        handler='if (action == "back") navController.popBackStack() else if (action == "navigate" || action == "replace" || action.startsWith("popUpTo:")) navController.navigate(target) { launchSingleTop = true; if (action == "replace") popUpTo(navController.currentDestination?.route ?: target) { inclusive = true }; if (action.startsWith("popUpTo:")) popUpTo(action.substringAfter(":")) } else if (action == "url") context.startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(target))) else if (action == "custom") android.widget.Toast.makeText(context, "Ação: " + target, android.widget.Toast.LENGTH_SHORT).show()'
+        navigation='\n'.join(f'composable({quote(s["id"])}) {{ Screen_{s["id"]}(onAction = {{ action, target -> '+handler+' }) }' for s in self.doc['screens'])
         self.files[f'{base}/navigation/AppNavigation.kt']=f'''package {self.ns}.navigation
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.*
 import {self.ns}.ui.screens.*
 @Composable fun AppNavigation() {{
+ val context = androidx.compose.ui.platform.LocalContext.current
  val navController = rememberNavController()
  NavHost(navController, startDestination = {quote(self.doc['start_screen'])}) {{
  {navigation}

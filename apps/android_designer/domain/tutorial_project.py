@@ -31,6 +31,9 @@ def tutorial_document():
     login['root']['children'] += [new_node('TextField',{'label':'E-mail'}),new_node('TextField',{'label':'Senha','keyboard':'password'})]
     enter=new_node('Button');enter['children'][1]['props']['text']='Entrar';enter['events']={'onClick':{'action':'navigate','target':dashboard['id']}};login['root']['children'].append(enter)
     back=new_node('Button');back['children'][1]['props']['text']='Voltar';back['events']={'onClick':{'action':'back'}};dashboard['root']['children'].append(back)
+    profile=new_screen('Perfil',2070,80);profile['root']['children']=[new_node('TopBar'),new_node('Avatar'),new_node('TextField',{'label':'Nome'})];d['screens'].append(profile)
+    profile_button=new_node('IconButton');profile_button['events']={'onClick':{'action':'navigate','target':profile['id']}};dashboard['root']['children'].append(profile_button)
+    drawing=new_node('DrawingCanvas');drawing['layout']['height']=140;shape=new_node('Shape',{'kind':'star','fill':'#FFC857'});shape['layout'].update(x=24,y=24,width=90,height=90);drawing['children']=[shape];dashboard['root']['children'] += [new_node('Chart'),drawing];dashboard['root']['layout']['scroll']='vertical'
     home['layers']=[{'id':'l_navigation','name':'Navegação','nodes':[top['id'],bottom['id'],left['id'],right['id']],'visible':True,'locked':False,'opacity':1},{'id':'l_content','name':'Conteúdo','nodes':[center['id']],'visible':True,'locked':False,'opacity':1},{'id':'l_floating','name':'Flutuantes','nodes':[button['id']],'visible':True,'locked':False,'opacity':1}]
     d['tutorial_template']=True
     return validate(d)

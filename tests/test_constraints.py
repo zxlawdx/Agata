@@ -7,7 +7,7 @@ from apps.android_designer.exporters.project import generate
 
 class ConstraintTests(unittest.TestCase):
     def test_tutorial_is_semantic_and_exports_both(self):
-        d=tutorial_document();self.assertEqual(len(d['screens']),3)
+        d=tutorial_document();self.assertEqual(len(d['screens']),4)
         root=d['screens'][0]['root'];button=root['children'][-1]
         self.assertEqual(button['layout']['horizontalBias'],.5)
         for backend in ('xml','compose'):
@@ -47,7 +47,7 @@ class ConstraintTests(unittest.TestCase):
                 for key in ('constraints','horizontalBias','verticalBias'):n['layout'].pop(key)
                 n['events']={}
         original=copy.deepcopy(d);clean=validate(d)
-        self.assertEqual(d,original);self.assertEqual(clean['version'],3)
+        self.assertEqual(d,original);self.assertEqual(clean['version'],4)
         self.assertEqual(clean['screens'][0]['root']['id'],d['screens'][0]['root']['id'])
         self.assertEqual(clean['screens'][0]['layers'],[])
 

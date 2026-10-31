@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/zxlawdx/Agata/ui-model-v3",
-  "title": "Agata semantic Android document v3",
+  "$id": "https://github.com/zxlawdx/Agata/ui-model-v4",
+  "title": "Agata semantic Android document v4",
   "type": "object",
   "required": [
     "version",
@@ -14,7 +14,7 @@
   ],
   "properties": {
     "version": {
-      "const": 3
+      "const": 4
     },
     "namespace": {
       "type": "string",
@@ -1611,6 +1611,671 @@
                     "references",
                     "barrierMargin"
                   ],
+                  "additionalProperties": false
+                },
+                "layout": {
+                  "type": "object",
+                  "required": [
+                    "width",
+                    "height",
+                    "padding",
+                    "gap",
+                    "alignment",
+                    "arrangement",
+                    "scroll",
+                    "weight",
+                    "mode",
+                    "x",
+                    "y",
+                    "minWidth",
+                    "maxWidth",
+                    "minHeight",
+                    "maxHeight",
+                    "aspectRatio",
+                    "margin",
+                    "anchorX",
+                    "anchorY",
+                    "columns",
+                    "wrap",
+                    "visible",
+                    "locked",
+                    "responsive",
+                    "constraints",
+                    "horizontalBias",
+                    "verticalBias"
+                  ]
+                }
+              }
+            },
+            {
+              "properties": {
+                "type": {
+                  "const": "Shape"
+                },
+                "props": {
+                  "type": "object",
+                  "properties": {
+                    "kind": {
+                      "type": "string"
+                    },
+                    "fill": {
+                      "type": "string"
+                    },
+                    "stroke": {
+                      "type": "string"
+                    },
+                    "strokeWidth": {
+                      "type": "number"
+                    },
+                    "opacity": {
+                      "type": "number"
+                    },
+                    "rotation": {
+                      "type": "number"
+                    },
+                    "radius": {
+                      "type": "number"
+                    },
+                    "path": {
+                      "type": "array"
+                    },
+                    "text": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "kind",
+                    "fill",
+                    "stroke",
+                    "strokeWidth",
+                    "opacity",
+                    "rotation",
+                    "radius",
+                    "path",
+                    "text"
+                  ],
+                  "additionalProperties": false
+                },
+                "layout": {
+                  "type": "object",
+                  "required": [
+                    "width",
+                    "height",
+                    "padding",
+                    "gap",
+                    "alignment",
+                    "arrangement",
+                    "scroll",
+                    "weight",
+                    "mode",
+                    "x",
+                    "y",
+                    "minWidth",
+                    "maxWidth",
+                    "minHeight",
+                    "maxHeight",
+                    "aspectRatio",
+                    "margin",
+                    "anchorX",
+                    "anchorY",
+                    "columns",
+                    "wrap",
+                    "visible",
+                    "locked",
+                    "responsive",
+                    "constraints",
+                    "horizontalBias",
+                    "verticalBias"
+                  ]
+                }
+              }
+            },
+            {
+              "properties": {
+                "type": {
+                  "const": "DrawingCanvas"
+                },
+                "props": {
+                  "type": "object",
+                  "properties": {
+                    "background": {
+                      "type": "string"
+                    },
+                    "viewportWidth": {
+                      "type": "number"
+                    },
+                    "viewportHeight": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "background",
+                    "viewportWidth",
+                    "viewportHeight"
+                  ],
+                  "additionalProperties": false
+                },
+                "layout": {
+                  "type": "object",
+                  "required": [
+                    "width",
+                    "height",
+                    "padding",
+                    "gap",
+                    "alignment",
+                    "arrangement",
+                    "scroll",
+                    "weight",
+                    "mode",
+                    "x",
+                    "y",
+                    "minWidth",
+                    "maxWidth",
+                    "minHeight",
+                    "maxHeight",
+                    "aspectRatio",
+                    "margin",
+                    "anchorX",
+                    "anchorY",
+                    "columns",
+                    "wrap",
+                    "visible",
+                    "locked",
+                    "responsive",
+                    "constraints",
+                    "horizontalBias",
+                    "verticalBias"
+                  ]
+                }
+              }
+            },
+            {
+              "properties": {
+                "type": {
+                  "const": "Chart"
+                },
+                "props": {
+                  "type": "object",
+                  "properties": {
+                    "kind": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "labels": {
+                      "type": "array"
+                    },
+                    "series": {
+                      "type": "array"
+                    },
+                    "legend": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "kind",
+                    "title",
+                    "labels",
+                    "series",
+                    "legend"
+                  ],
+                  "additionalProperties": false
+                },
+                "layout": {
+                  "type": "object",
+                  "required": [
+                    "width",
+                    "height",
+                    "padding",
+                    "gap",
+                    "alignment",
+                    "arrangement",
+                    "scroll",
+                    "weight",
+                    "mode",
+                    "x",
+                    "y",
+                    "minWidth",
+                    "maxWidth",
+                    "minHeight",
+                    "maxHeight",
+                    "aspectRatio",
+                    "margin",
+                    "anchorX",
+                    "anchorY",
+                    "columns",
+                    "wrap",
+                    "visible",
+                    "locked",
+                    "responsive",
+                    "constraints",
+                    "horizontalBias",
+                    "verticalBias"
+                  ]
+                }
+              }
+            },
+            {
+              "properties": {
+                "type": {
+                  "const": "RadioButton"
+                },
+                "props": {
+                  "type": "object",
+                  "properties": {
+                    "checked": {
+                      "type": "boolean"
+                    },
+                    "enabled": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "checked",
+                    "enabled"
+                  ],
+                  "additionalProperties": false
+                },
+                "layout": {
+                  "type": "object",
+                  "required": [
+                    "width",
+                    "height",
+                    "padding",
+                    "gap",
+                    "alignment",
+                    "arrangement",
+                    "scroll",
+                    "weight",
+                    "mode",
+                    "x",
+                    "y",
+                    "minWidth",
+                    "maxWidth",
+                    "minHeight",
+                    "maxHeight",
+                    "aspectRatio",
+                    "margin",
+                    "anchorX",
+                    "anchorY",
+                    "columns",
+                    "wrap",
+                    "visible",
+                    "locked",
+                    "responsive",
+                    "constraints",
+                    "horizontalBias",
+                    "verticalBias"
+                  ]
+                }
+              }
+            },
+            {
+              "properties": {
+                "type": {
+                  "const": "ProgressIndicator"
+                },
+                "props": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "number"
+                    },
+                    "color": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "value",
+                    "color"
+                  ],
+                  "additionalProperties": false
+                },
+                "layout": {
+                  "type": "object",
+                  "required": [
+                    "width",
+                    "height",
+                    "padding",
+                    "gap",
+                    "alignment",
+                    "arrangement",
+                    "scroll",
+                    "weight",
+                    "mode",
+                    "x",
+                    "y",
+                    "minWidth",
+                    "maxWidth",
+                    "minHeight",
+                    "maxHeight",
+                    "aspectRatio",
+                    "margin",
+                    "anchorX",
+                    "anchorY",
+                    "columns",
+                    "wrap",
+                    "visible",
+                    "locked",
+                    "responsive",
+                    "constraints",
+                    "horizontalBias",
+                    "verticalBias"
+                  ]
+                }
+              }
+            },
+            {
+              "properties": {
+                "type": {
+                  "const": "Avatar"
+                },
+                "props": {
+                  "type": "object",
+                  "properties": {
+                    "variant": {
+                      "type": "string"
+                    },
+                    "background": {
+                      "type": "string"
+                    },
+                    "radius": {
+                      "type": "number"
+                    },
+                    "elevation": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "variant",
+                    "background",
+                    "radius",
+                    "elevation"
+                  ],
+                  "additionalProperties": false
+                },
+                "layout": {
+                  "type": "object",
+                  "required": [
+                    "width",
+                    "height",
+                    "padding",
+                    "gap",
+                    "alignment",
+                    "arrangement",
+                    "scroll",
+                    "weight",
+                    "mode",
+                    "x",
+                    "y",
+                    "minWidth",
+                    "maxWidth",
+                    "minHeight",
+                    "maxHeight",
+                    "aspectRatio",
+                    "margin",
+                    "anchorX",
+                    "anchorY",
+                    "columns",
+                    "wrap",
+                    "visible",
+                    "locked",
+                    "responsive",
+                    "constraints",
+                    "horizontalBias",
+                    "verticalBias"
+                  ]
+                }
+              }
+            },
+            {
+              "properties": {
+                "type": {
+                  "const": "Chip"
+                },
+                "props": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean"
+                    },
+                    "variant": {
+                      "type": "string"
+                    },
+                    "background": {
+                      "type": "string"
+                    },
+                    "radius": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "enabled",
+                    "variant",
+                    "background",
+                    "radius"
+                  ],
+                  "additionalProperties": false
+                },
+                "layout": {
+                  "type": "object",
+                  "required": [
+                    "width",
+                    "height",
+                    "padding",
+                    "gap",
+                    "alignment",
+                    "arrangement",
+                    "scroll",
+                    "weight",
+                    "mode",
+                    "x",
+                    "y",
+                    "minWidth",
+                    "maxWidth",
+                    "minHeight",
+                    "maxHeight",
+                    "aspectRatio",
+                    "margin",
+                    "anchorX",
+                    "anchorY",
+                    "columns",
+                    "wrap",
+                    "visible",
+                    "locked",
+                    "responsive",
+                    "constraints",
+                    "horizontalBias",
+                    "verticalBias"
+                  ]
+                }
+              }
+            },
+            {
+              "properties": {
+                "type": {
+                  "const": "Badge"
+                },
+                "props": {
+                  "type": "object",
+                  "properties": {
+                    "text": {
+                      "type": "string"
+                    },
+                    "color": {
+                      "type": "string"
+                    },
+                    "fontSize": {
+                      "type": "number"
+                    },
+                    "bold": {
+                      "type": "boolean"
+                    },
+                    "align": {
+                      "type": "string"
+                    },
+                    "maxLines": {
+                      "type": "number"
+                    },
+                    "overflow": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "text",
+                    "color",
+                    "fontSize",
+                    "bold",
+                    "align",
+                    "maxLines",
+                    "overflow"
+                  ],
+                  "additionalProperties": false
+                },
+                "layout": {
+                  "type": "object",
+                  "required": [
+                    "width",
+                    "height",
+                    "padding",
+                    "gap",
+                    "alignment",
+                    "arrangement",
+                    "scroll",
+                    "weight",
+                    "mode",
+                    "x",
+                    "y",
+                    "minWidth",
+                    "maxWidth",
+                    "minHeight",
+                    "maxHeight",
+                    "aspectRatio",
+                    "margin",
+                    "anchorX",
+                    "anchorY",
+                    "columns",
+                    "wrap",
+                    "visible",
+                    "locked",
+                    "responsive",
+                    "constraints",
+                    "horizontalBias",
+                    "verticalBias"
+                  ]
+                }
+              }
+            },
+            {
+              "properties": {
+                "type": {
+                  "const": "ListItem"
+                },
+                "props": {
+                  "type": "object",
+                  "properties": {},
+                  "required": [],
+                  "additionalProperties": false
+                },
+                "layout": {
+                  "type": "object",
+                  "required": [
+                    "width",
+                    "height",
+                    "padding",
+                    "gap",
+                    "alignment",
+                    "arrangement",
+                    "scroll",
+                    "weight",
+                    "mode",
+                    "x",
+                    "y",
+                    "minWidth",
+                    "maxWidth",
+                    "minHeight",
+                    "maxHeight",
+                    "aspectRatio",
+                    "margin",
+                    "anchorX",
+                    "anchorY",
+                    "columns",
+                    "wrap",
+                    "visible",
+                    "locked",
+                    "responsive",
+                    "constraints",
+                    "horizontalBias",
+                    "verticalBias"
+                  ]
+                }
+              }
+            },
+            {
+              "properties": {
+                "type": {
+                  "const": "NavigationRail"
+                },
+                "props": {
+                  "type": "object",
+                  "properties": {
+                    "background": {
+                      "type": "string"
+                    },
+                    "orientation": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "background",
+                    "orientation"
+                  ],
+                  "additionalProperties": false
+                },
+                "layout": {
+                  "type": "object",
+                  "required": [
+                    "width",
+                    "height",
+                    "padding",
+                    "gap",
+                    "alignment",
+                    "arrangement",
+                    "scroll",
+                    "weight",
+                    "mode",
+                    "x",
+                    "y",
+                    "minWidth",
+                    "maxWidth",
+                    "minHeight",
+                    "maxHeight",
+                    "aspectRatio",
+                    "margin",
+                    "anchorX",
+                    "anchorY",
+                    "columns",
+                    "wrap",
+                    "visible",
+                    "locked",
+                    "responsive",
+                    "constraints",
+                    "horizontalBias",
+                    "verticalBias"
+                  ]
+                }
+              }
+            },
+            {
+              "properties": {
+                "type": {
+                  "const": "TabRow"
+                },
+                "props": {
+                  "type": "object",
+                  "properties": {},
+                  "required": [],
                   "additionalProperties": false
                 },
                 "layout": {

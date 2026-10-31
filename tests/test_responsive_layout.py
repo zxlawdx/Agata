@@ -17,7 +17,7 @@ class ResponsiveLayoutTests(unittest.TestCase):
                 node['layout']={k:v for k,v in node['layout'].items() if k in keys}
                 if node['type']=='TextLabel':node['props'].pop('maxLines');node['props'].pop('overflow')
         before=copy.deepcopy(old);migrated=validate(old)
-        self.assertEqual(old,before);self.assertEqual(migrated['version'],3)
+        self.assertEqual(old,before);self.assertEqual(migrated['version'],4)
         self.assertEqual(migrated['screens'][0]['root']['children'][2]['events'],old['screens'][0]['root']['children'][2]['events'])
         self.assertEqual(migrated['screens'][0]['id'],old['screens'][0]['id'])
 

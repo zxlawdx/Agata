@@ -6,7 +6,7 @@ import re
 from pathlib import Path
 from uuid import uuid4
 
-VERSION = 3
+VERSION = 4
 REGISTRY = json.loads((Path(__file__).resolve().parents[1]/'static/model/components.json').read_text())
 ICONS = {'none','menu','back','home','search','close','settings','plus'}
 ID = re.compile(r'^[a-z][a-z0-9_]{0,63}$')
@@ -56,7 +56,8 @@ def migrate(document):
             screen.setdefault('layers',[])
             for n in walk(screen['root']):
                 n['layout']={**copy.deepcopy(REGISTRY.get(n['type'],{}).get('layout',{})),**n['layout']}
-        document['version']=VERSION
+        document['version']=3
+    if isinstance(document,dict) and document.get('version')==3:document['version']=VERSION
     return document
 
 
@@ -118,7 +119,8 @@ def validate(document):
         if not isinstance(props,dict) or set(props)!=set(spec['properties']):raise ValueError('Propriedades incompatíveis com o registro.')
         for key,default in spec['properties'].items():
             value=props[key]
-            if isinstance(default,bool):valid=type(value) is bool
+            if isinstance(default,(list,dict)):valid=isinstance(value,type(default))
+            elif isinstance(default,bool):valid=type(value) is bool
             elif isinstance(default,(int,float)):valid=number(value,-100000,100000)
             else:valid=isinstance(value,str) and len(value)<=(3_000_000 if key=='source' else 500000)
             if not valid:raise ValueError('Valor inválido: '+key)
@@ -129,6 +131,7 @@ def validate(document):
         if props.get('variant','filled') not in {'filled','outlined','text','tonal','elevated'}:raise ValueError('Variante inválida.')
         if props.get('keyboard','text') not in {'text','email','number','password','phone'}:raise ValueError('Teclado inválido.')
         if props.get('align','start') not in {'start','center','end'}:raise ValueError('Alinhamento de texto inválido.')
+        if n['type']=='ProgressIndicator' and not number(props['value'],0,1):raise ValueError('Progresso deve estar entre 0 e 1.')
         if n['type']=='Slider' and not (props['min']<props['max'] and props['min']<=props['value']<=props['max']):raise ValueError('Limites do Slider inválidos.')
         if not isinstance(layout,dict) or set(layout)!=set(spec['layout']):raise ValueError('Layout inválido.')
         for key in ('width','height'):
@@ -173,12 +176,14 @@ def validate(document):
         if n['type']=='TextLabel':
             if type(props['maxLines']) is not int or not 0<=props['maxLines']<=1000 or props['overflow'] not in {'clip','ellipsis'}:raise ValueError('Regra de texto inválida.')
         if layout['weight'] and (parent is None or parent['type'] not in {'Row','Column'} or parent['layout']['scroll']!='none'):
-            raise ValueError('Peso requer Row/Column sem scroll.')
+            raise ValueError('Peso requer Row/Column sem scroll: '+n['id']+' ('+n['name']+'), weight='+str(layout['weight'])+', pai='+(parent['type'] if parent else 'raiz'))
         if not isinstance(events,dict) or set(events)-{'onClick'}:raise ValueError('Evento não suportado.')
         if events:
-            event=events['onClick']
-            if not isinstance(event,dict) or event.get('action') not in {'navigate','back'}:raise ValueError('Ação inválida.')
-            if event['action']=='navigate' and event.get('target') not in screen_ids:raise ValueError('Screen de destino inexistente.')
+            from .events import validate_event
+            validate_event(events['onClick'],screen_ids)
+        if n['type'] in {'Shape','DrawingCanvas','Chart'}:
+            from .graphics import validate_graphic
+            validate_graphic(n)
         children=n.get('children')
         if not isinstance(children,list) or children and not spec['container']:raise ValueError('Este componente não aceita filhos.')
         for c in children:node(c,depth+1,n)
@@ -188,6 +193,9 @@ def validate(document):
         for n in walk(screen['root']):
             if n['type']=='ConstraintLayout':validate_container(n)
         validate_layers(screen)
+        fields={n['id'] for n in walk(screen['root']) if n['type']=='TextField'}
+        for n in walk(screen['root']):
+            if any(rule['field'] not in fields for rule in n['events'].get('onClick',{}).get('validation',[])):raise ValueError('Campo de validação inexistente na Screen.')
 
     if document.get('start_screen') not in screen_ids:raise ValueError('Screen inicial inexistente.')
     theme=document.get('theme',{})
@@ -199,4 +207,8 @@ def validate(document):
     for path,content in files.items():
         if not re.fullmatch(r'(compose|xml)/app/src/main/(java/[a-zA-Z0-9_/]+\.kt|res/(layout|values)/[a-z0-9_]+\.xml)',path) or not isinstance(content,str) or len(content)>500000:
             raise ValueError('Caminho ou conteúdo de código personalizado inválido.')
+        if path.endswith('.xml'):
+            from xml.etree import ElementTree
+            try:ElementTree.fromstring(content)
+            except ElementTree.ParseError as exc:raise ValueError('XML personalizado inválido: '+path+' — '+str(exc)) from exc
     return copy.deepcopy(document)

@@ -110,3 +110,15 @@ O botão **Ajuda · Tutorial** inicia/retoma as práticas. Veja o
 [constraints e camadas](docs/tutorials/CONSTRAINTS_E_CAMADAS.md),
 [exportação](docs/tutorials/EXPORTANDO_ANDROID.md) e
 [arquitetura e limites](docs/CONSTRAINTS_REGIONS_TUTORIAL_ARCHITECTURE.md).
+
+## Navegação visual, pintura e gráficos
+
+O conector roxo de onClick liga componentes a Screens; o Inspector oferece destinos e políticas
+de histórico. O Balde altera propriedades persistidas. Shape/DrawingCanvas e Chart guardam
+vetores/dados reais e geram código Canvas/Paint para Views e Compose via AndroidView.
+A criação de projetos oferece uma galeria de templates editáveis. Consulte a
+[auditoria e limites](docs/IMPLEMENTATION_AUDIT.md),
+[pesquisa](docs/RESEARCH_DECISIONS.md) e os tutoriais de
+[navegação](docs/tutorials/NAVEGACAO_VISUAL.md),
+[desenho/gráficos](docs/tutorials/DESENHO_E_GRAFICOS.md) e
+[código](docs/tutorials/EDITANDO_CODIGO.md).
