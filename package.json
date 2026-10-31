@@ -1,11 +1,11 @@
 {
-  "name": "yara-desktop",
+  "name": "agata-desktop",
   "private": true,
   "version": "0.2.0",
-  "description": "Assets de desenho offline para o Yara",
+  "description": "Assets de desenho offline para o Agata",
   "scripts": {
     "vendor": "node scripts/vendor-fabric.cjs",
-    "check:js": "node --check apps/sketch_editor/static/js/editor.js && node --check apps/sketch_editor/static/js/sketch_core.js && node --check apps/sketch_editor/static/js/components.js && node --check apps/sketch_editor/static/js/component_edit.js && node --check apps/sketch_editor/static/js/element_tree.js && node --check apps/home/static/yara.js"
+    "check:js": "node --check apps/sketch_editor/static/js/editor.js && node --check apps/sketch_editor/static/js/sketch_core.js && node --check apps/sketch_editor/static/js/components.js && node --check apps/sketch_editor/static/js/component_edit.js && node --check apps/sketch_editor/static/js/element_tree.js && node --check apps/home/static/agata.js"
   },
   "dependencies": {
     "fabric": "5.3.0"

@@ -1,4 +1,4 @@
-/* Distribui Fabric.js 5.3.0 localmente, sem CDN durante o uso do Yara. */
+/* Distribui Fabric.js 5.3.0 localmente, sem CDN durante o uso do Agata. */
 const fs = require("node:fs");
 const path = require("node:path");
 const source = require.resolve("fabric/dist/fabric.js");

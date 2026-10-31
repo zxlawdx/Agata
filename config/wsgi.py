@@ -1,8 +1,8 @@
-"""Composition root do Yara; registra módulos no runtime nativo do Vela."""
+"""Composition root do Agata; registra módulos no runtime nativo do Vela."""
 import sys
 
 from config import settings
-from config.bridge import YaraBridge
+from config.bridge import AgataBridge
 from vela.cli.collectstatic import collect_static
 from vela.core.app import VelaApp
 
@@ -19,8 +19,8 @@ def run():
             verbose=False,
         )
         if report["errors"]:
-            raise RuntimeError("Não foi possível carregar os recursos estáticos do Yara.")
-    app = VelaApp(settings_module="config.settings", bridge_class=YaraBridge)
+            raise RuntimeError("Não foi possível carregar os recursos estáticos do Agata.")
+    app = VelaApp(settings_module="config.settings", bridge_class=AgataBridge)
     for module in INSTALLED_APPS:
         app.register_app(module)
     app.run()

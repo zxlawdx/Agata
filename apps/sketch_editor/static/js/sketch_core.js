@@ -60,5 +60,5 @@
     [state.layers[index], state.layers[next]] = [state.layers[next], state.layers[index]];
     return true;
   }
-  window.YaraSketchCore = {upgrade, layer, find, editable, add, duplicate, remove, move};
+  window.AgataSketchCore = {upgrade, layer, find, editable, add, duplicate, remove, move};
 })();

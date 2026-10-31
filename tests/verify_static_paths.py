@@ -1,4 +1,4 @@
-"""Conferência de todos os caminhos static(...) usados nos templates do Yara.
+"""Conferência de todos os caminhos static(...) usados nos templates do Agata.
 
 Rode após npm run vendor, pois Fabric é gerado a partir da dependência npm.
 """

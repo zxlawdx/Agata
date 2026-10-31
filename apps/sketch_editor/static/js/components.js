@@ -1,5 +1,5 @@
 /* Componentes editáveis: cada detalhe é um objeto vetorial ou texto individual. */
-window.YaraSketchComponents = (() => {
+window.AgataSketchComponents = (() => {
  "use strict";
  const f = () => window.fabric;
  let serial=0;

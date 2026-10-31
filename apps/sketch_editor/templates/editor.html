@@ -1,17 +1,17 @@
 <!-- Tela visual do editor: fragmento do Vela; scripts carregados em ordem. -->
 <style>@import url("{{ static('sketch_editor/editor.css') }}?v={{ assets_version }}");</style>
 <style>@import url("{{ static('sketch_editor/picadeiro.css') }}?v={{ assets_version }}");</style>
-<div id="yara-sketch" class="ys-editor" data-project-id="{{ project_id }}">
+<div id="agata-sketch" class="ys-editor" data-project-id="{{ project_id }}">
   <header class="ys-header">
-    <div class="ys-brand"><span class="ys-mark">✦</span><strong>Yara</strong><span class="ys-separator">/</span><span id="ys-title">Carregando projeto...</span></div>
+    <div class="ys-brand"><span class="ys-mark">✦</span><strong>Agata</strong><span class="ys-separator">/</span><span id="ys-title">Carregando projeto...</span></div>
     <div class="ys-head-actions"><span id="ys-dirty-status" class="ys-status">Carregando...</span><button type="button" id="ys-save" class="ys-btn-primary" disabled>Salvar <kbd>Ctrl+S</kbd></button><button type="button" id="ys-home" class="ys-btn-quiet">← Início</button></div>
   </header>
   <nav class="ys-studio-nav" aria-label="Projetos e exportação">
     <button type="button" id="ys-go-new">＋ Novo projeto</button>
     <button type="button" id="ys-go-recents">Recentes</button>
     <button type="button" id="ys-go-models">Modelos</button>
-    <button type="button" id="ys-export-svg" title="Salvar SVG em ~/Yara/Exports">Exportar SVG</button>
-    <button type="button" id="ys-export-png" title="Salvar PNG em ~/Yara/Exports">Exportar PNG</button>
+    <button type="button" id="ys-export-svg" title="Salvar SVG em ~/Agata/Exports">Exportar SVG</button>
+    <button type="button" id="ys-export-png" title="Salvar PNG em ~/Agata/Exports">Exportar PNG</button>
     <button type="button" id="ys-export-json" title="Salvar cópia JSON do projeto">Exportar JSON</button>
     <button type="button" id="ys-toggle-grid" aria-pressed="true">Grade ●</button>
   </nav>
@@ -140,7 +140,7 @@
 </div>
 <script>
 (() => {
-  const root = document.getElementById("yara-sketch");
+  const root = document.getElementById("agata-sketch");
   if (!root || root.dataset.loaderStarted) return;
   root.dataset.loaderStarted = "1";
   const urls = [
@@ -161,14 +161,14 @@
   (async () => {
     try {
       for (const url of urls) await load(url);
-      if (root.isConnected) await window.YaraSketchEditor.mount(root);
+      if (root.isConnected) await window.AgataSketchEditor.mount(root);
     } catch (err) {
       if (!root.isConnected) return;
       root.querySelector("#ys-fatal").hidden = false;
       root.querySelector("#ys-fatal-detail").textContent = err.message +
         ". Verifique os arquivos em staticfiles/sketch_editor/. Execute npm run vendor e python manage.py collectstatic --no-tailwind --no-install antes de reiniciar.";
       root.querySelector("#ys-fatal-home").onclick = () => window.Vela?.navigate("/home");
-      console.error("[Yara/sketch]", err);
+      console.error("[Agata/sketch]", err);
     }
   })();
 })();

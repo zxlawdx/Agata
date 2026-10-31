@@ -1,96 +1,96 @@
 /* Picadeiro Pop — visual do editor. Mantém todos os IDs/ações do Fabric e do Vela. */
-#yara-sketch{--ink:#242424;--cream:#FFF9EF;--cyan:#96E6EC;--blue:#53AFF2;
+#agata-sketch{--ink:#242424;--cream:#FFF9EF;--cyan:#96E6EC;--blue:#53AFF2;
   --pink:#FFCCCF;--mint:#B9EFC1;--yellow:#FFE28A;--lilac:#BCACF5;
   font:12px "Trebuchet MS","Comic Sans MS",system-ui,sans-serif;color:var(--ink);background:var(--cream)}
-#yara-sketch .ys-header{background:var(--cream);color:var(--ink);height:50px;flex-basis:50px;
+#agata-sketch .ys-header{background:var(--cream);color:var(--ink);height:50px;flex-basis:50px;
   border-bottom:2px solid var(--ink);padding:0 15px}
-#yara-sketch .ys-brand strong{color:var(--ink);font-size:19px}
-#yara-sketch .ys-brand #ys-title,#yara-sketch .ys-separator,#yara-sketch .ys-status{color:var(--ink)}
-#yara-sketch .ys-mark{background:var(--yellow);color:var(--ink);border:2px solid var(--ink);padding:3px 8px;border-radius:50%}
-#yara-sketch button{background:var(--cream);border:2px solid var(--ink);border-radius:9px;color:var(--ink);
+#agata-sketch .ys-brand strong{color:var(--ink);font-size:19px}
+#agata-sketch .ys-brand #ys-title,#agata-sketch .ys-separator,#agata-sketch .ys-status{color:var(--ink)}
+#agata-sketch .ys-mark{background:var(--yellow);color:var(--ink);border:2px solid var(--ink);padding:3px 8px;border-radius:50%}
+#agata-sketch button{background:var(--cream);border:2px solid var(--ink);border-radius:9px;color:var(--ink);
   min-height:30px;box-shadow:none}
-#yara-sketch button:hover:not(:disabled){background:var(--yellow);color:var(--ink)}
-#yara-sketch button:disabled{opacity:.42}
-#yara-sketch :is(button,input,select):focus-visible{outline:3px solid var(--blue);outline-offset:2px}
-#yara-sketch .ys-btn-primary{background:var(--mint);font-weight:800;color:var(--ink);border-color:var(--ink)}
-#yara-sketch .ys-btn-quiet{background:white;color:var(--ink)}
-#yara-sketch kbd{color:var(--ink)}
-#yara-sketch .ys-studio-nav{flex:0 0 auto;display:flex;gap:7px;align-items:center;overflow-x:auto;
+#agata-sketch button:hover:not(:disabled){background:var(--yellow);color:var(--ink)}
+#agata-sketch button:disabled{opacity:.42}
+#agata-sketch :is(button,input,select):focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+#agata-sketch .ys-btn-primary{background:var(--mint);font-weight:800;color:var(--ink);border-color:var(--ink)}
+#agata-sketch .ys-btn-quiet{background:white;color:var(--ink)}
+#agata-sketch kbd{color:var(--ink)}
+#agata-sketch .ys-studio-nav{flex:0 0 auto;display:flex;gap:7px;align-items:center;overflow-x:auto;
   min-height:48px;padding:5px 12px;background:var(--cyan);border-bottom:2px solid var(--ink)}
-#yara-sketch .ys-studio-nav button{flex:0 0 auto;white-space:nowrap;padding:4px 11px;background:var(--cream)}
-#yara-sketch #ys-export-svg,#yara-sketch #ys-export-png,#yara-sketch #ys-export-json{background:var(--mint)}
-#yara-sketch #ys-go-new{background:var(--yellow)}
-#yara-sketch .ys-toolbar{background:var(--cream);border-bottom:2px solid var(--ink);padding:7px 11px}
-#yara-sketch .ys-toolbar button{border:2px solid var(--ink);background:white;padding:0 8px}
-#yara-sketch .ys-toolbar button.active{background:var(--yellow);color:var(--ink);border-color:var(--ink)}
-#yara-sketch .ys-divider{background:var(--ink)}
-#yara-sketch #ys-zoom-label{color:var(--ink)}
-#yara-sketch .ys-layout{grid-template-columns:230px minmax(0,1fr) 256px;gap:0;padding:8px;
+#agata-sketch .ys-studio-nav button{flex:0 0 auto;white-space:nowrap;padding:4px 11px;background:var(--cream)}
+#agata-sketch #ys-export-svg,#agata-sketch #ys-export-png,#agata-sketch #ys-export-json{background:var(--mint)}
+#agata-sketch #ys-go-new{background:var(--yellow)}
+#agata-sketch .ys-toolbar{background:var(--cream);border-bottom:2px solid var(--ink);padding:7px 11px}
+#agata-sketch .ys-toolbar button{border:2px solid var(--ink);background:white;padding:0 8px}
+#agata-sketch .ys-toolbar button.active{background:var(--yellow);color:var(--ink);border-color:var(--ink)}
+#agata-sketch .ys-divider{background:var(--ink)}
+#agata-sketch #ys-zoom-label{color:var(--ink)}
+#agata-sketch .ys-layout{grid-template-columns:230px minmax(0,1fr) 256px;gap:0;padding:8px;
   background:var(--cream)}
-#yara-sketch .ys-panel{background:var(--cyan);color:var(--ink);padding:16px 13px;border:2px solid var(--ink);
+#agata-sketch .ys-panel{background:var(--cyan);color:var(--ink);padding:16px 13px;border:2px solid var(--ink);
   border-radius:19px;min-width:0}
-#yara-sketch .ys-left{margin-right:8px}
-#yara-sketch .ys-right{margin-left:8px}
-#yara-sketch .ys-panel-title{color:var(--ink);font-size:11px;letter-spacing:.65px;font-weight:800}
-#yara-sketch .ys-hint,#yara-sketch .ys-note,#yara-sketch .ys-tool-description,
-#yara-sketch .ys-field{color:#252525}
-#yara-sketch .ys-panel-spaced{margin-top:18px}
-#yara-sketch .ys-form-tiles{display:grid;gap:4px;background:var(--pink);border:2px solid var(--ink);
+#agata-sketch .ys-left{margin-right:8px}
+#agata-sketch .ys-right{margin-left:8px}
+#agata-sketch .ys-panel-title{color:var(--ink);font-size:11px;letter-spacing:.65px;font-weight:800}
+#agata-sketch .ys-hint,#agata-sketch .ys-note,#agata-sketch .ys-tool-description,
+#agata-sketch .ys-field{color:#252525}
+#agata-sketch .ys-panel-spaced{margin-top:18px}
+#agata-sketch .ys-form-tiles{display:grid;gap:4px;background:var(--pink);border:2px solid var(--ink);
   border-radius:17px;padding:10px;margin-top:10px}
-#yara-sketch .ys-form-tiles button{display:flex;gap:9px;align-items:center;justify-content:flex-start;
+#agata-sketch .ys-form-tiles button{display:flex;gap:9px;align-items:center;justify-content:flex-start;
   padding:5px 10px;background:var(--cream);font-size:18px}
-#yara-sketch .ys-form-tiles button span{font-size:11px}
-#yara-sketch .ys-form-tiles button.active{background:var(--yellow)}
-#yara-sketch .ys-palette{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;padding:9px 7px;
+#agata-sketch .ys-form-tiles button span{font-size:11px}
+#agata-sketch .ys-form-tiles button.active{background:var(--yellow)}
+#agata-sketch .ys-palette{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;padding:9px 7px;
   margin-top:10px;background:var(--pink);border:2px solid var(--ink);border-radius:14px}
-#yara-sketch .ys-palette button{background:var(--swatch);width:100%;aspect-ratio:1;
+#agata-sketch .ys-palette button{background:var(--swatch);width:100%;aspect-ratio:1;
   min-height:0;border:2px solid var(--ink);border-radius:9px}
-#yara-sketch .ys-palette button.active{outline:3px solid var(--blue);outline-offset:1px}
-#yara-sketch .ys-pick-color{width:100%;margin-top:9px;background:var(--cream)}
-#yara-sketch .ys-component-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:9px 0 16px}
-#yara-sketch .ys-component-grid button{min-height:50px;background:var(--pink);padding:4px}
-#yara-sketch .ys-component-grid button span{font-size:11px}
-#yara-sketch .ys-structure-panel,#yara-sketch .ys-layers,
-#yara-sketch .ys-component-edit-panel,#yara-sketch .ys-inspector-styles,
-#yara-sketch .ys-align-panel{border-color:var(--ink)}
-#yara-sketch .ys-object-tree .ys-tree-header,#yara-sketch .ys-layer-item{
+#agata-sketch .ys-palette button.active{outline:3px solid var(--blue);outline-offset:1px}
+#agata-sketch .ys-pick-color{width:100%;margin-top:9px;background:var(--cream)}
+#agata-sketch .ys-component-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:9px 0 16px}
+#agata-sketch .ys-component-grid button{min-height:50px;background:var(--pink);padding:4px}
+#agata-sketch .ys-component-grid button span{font-size:11px}
+#agata-sketch .ys-structure-panel,#agata-sketch .ys-layers,
+#agata-sketch .ys-component-edit-panel,#agata-sketch .ys-inspector-styles,
+#agata-sketch .ys-align-panel{border-color:var(--ink)}
+#agata-sketch .ys-object-tree .ys-tree-header,#agata-sketch .ys-layer-item{
  background:var(--pink);border:1px solid var(--ink);color:var(--ink)}
-#yara-sketch .ys-tree-row{color:var(--ink)}
-#yara-sketch .ys-tree-row:hover{background:var(--yellow)}
-#yara-sketch .ys-tree-row.selected,#yara-sketch .ys-layer-item.active{background:var(--yellow);
+#agata-sketch .ys-tree-row{color:var(--ink)}
+#agata-sketch .ys-tree-row:hover{background:var(--yellow)}
+#agata-sketch .ys-tree-row.selected,#agata-sketch .ys-layer-item.active{background:var(--yellow);
   color:var(--ink);border-color:var(--ink)}
-#yara-sketch .ys-tree-row .ys-tree-icon{color:var(--ink)}
-#yara-sketch .ys-tree-title{color:var(--ink)}
-#yara-sketch .ys-workspace{background:var(--blue);border:2px solid var(--ink);border-radius:20px;
+#agata-sketch .ys-tree-row .ys-tree-icon{color:var(--ink)}
+#agata-sketch .ys-tree-title{color:var(--ink)}
+#agata-sketch .ys-workspace{background:var(--blue);border:2px solid var(--ink);border-radius:20px;
   overflow:hidden}
-#yara-sketch .ys-workspace-title{color:var(--ink);height:44px;background:var(--blue)}
-#yara-sketch .ys-workspace-title>span:nth-child(2),#yara-sketch .ys-device-indicator{color:var(--ink)}
-#yara-sketch .ys-scroll{background-color:var(--blue);
+#agata-sketch .ys-workspace-title{color:var(--ink);height:44px;background:var(--blue)}
+#agata-sketch .ys-workspace-title>span:nth-child(2),#agata-sketch .ys-device-indicator{color:var(--ink)}
+#agata-sketch .ys-scroll{background-color:var(--blue);
  background-image:radial-gradient(#ffffff72 1px,transparent 1px);background-size:21px 21px}
-#yara-sketch .ys-scroll.ys-grid-off{background-image:none}
-#yara-sketch .ys-canvas-wrap{border:4px solid var(--ink);border-radius:15px;
+#agata-sketch .ys-scroll.ys-grid-off{background-image:none}
+#agata-sketch .ys-canvas-wrap{border:4px solid var(--ink);border-radius:15px;
   box-shadow:6px 7px 0 #24242444}
-#yara-sketch .ys-message{background:var(--cream);border:2px solid var(--ink);
+#agata-sketch .ys-message{background:var(--cream);border:2px solid var(--ink);
   color:var(--ink);box-shadow:3px 3px 0 #24242455}
-#yara-sketch .ys-properties{order:1}
-#yara-sketch .ys-layers{order:0;border-top:0;padding-top:0;padding-bottom:14px;
+#agata-sketch .ys-properties{order:1}
+#agata-sketch .ys-layers{order:0;border-top:0;padding-top:0;padding-bottom:14px;
   border-bottom:2px solid var(--ink)}
-#yara-sketch .ys-layers-heading button{background:var(--yellow);border-color:var(--ink)}
-#yara-sketch .ys-layer-item{padding:3px}
-#yara-sketch .ys-layer-item button{min-height:24px}
-#yara-sketch .ys-field input[type=color],
-#yara-sketch .ys-field input[type=number],#yara-sketch .ys-inspector-styles input,
-#yara-sketch #ys-prop-text,#yara-sketch .ys-icon-choice select{background:var(--cream);color:var(--ink);
+#agata-sketch .ys-layers-heading button{background:var(--yellow);border-color:var(--ink)}
+#agata-sketch .ys-layer-item{padding:3px}
+#agata-sketch .ys-layer-item button{min-height:24px}
+#agata-sketch .ys-field input[type=color],
+#agata-sketch .ys-field input[type=number],#agata-sketch .ys-inspector-styles input,
+#agata-sketch #ys-prop-text,#agata-sketch .ys-icon-choice select{background:var(--cream);color:var(--ink);
   border:2px solid var(--ink)}
-#yara-sketch .ys-field input[type=range]{accent-color:var(--blue)}
-#yara-sketch .ys-edit-primary button{background:var(--yellow);color:var(--ink);border-color:var(--ink)}
-#yara-sketch .ys-edit-primary button:hover:not(:disabled){background:var(--mint)}
-#yara-sketch .ys-footer{background:var(--cream);color:var(--ink);border-top:2px solid var(--ink)}
-#yara-sketch .ys-fatal{background:var(--cream);color:var(--ink)}
-#yara-sketch .ys-fatal p{color:var(--ink)}
-@media(max-width:1000px){#yara-sketch .ys-layout{grid-template-columns:175px minmax(0,1fr) 215px}
-#yara-sketch .ys-component-grid{grid-template-columns:1fr 1fr}}
-@media(max-width:720px){#yara-sketch .ys-layout{grid-template-columns:120px minmax(0,1fr) 168px}
-#yara-sketch .ys-panel{padding:8px 6px}
-#yara-sketch .ys-form-tiles button span{display:none}
-#yara-sketch .ys-form-tiles button{justify-content:center}}
+#agata-sketch .ys-field input[type=range]{accent-color:var(--blue)}
+#agata-sketch .ys-edit-primary button{background:var(--yellow);color:var(--ink);border-color:var(--ink)}
+#agata-sketch .ys-edit-primary button:hover:not(:disabled){background:var(--mint)}
+#agata-sketch .ys-footer{background:var(--cream);color:var(--ink);border-top:2px solid var(--ink)}
+#agata-sketch .ys-fatal{background:var(--cream);color:var(--ink)}
+#agata-sketch .ys-fatal p{color:var(--ink)}
+@media(max-width:1000px){#agata-sketch .ys-layout{grid-template-columns:175px minmax(0,1fr) 215px}
+#agata-sketch .ys-component-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:720px){#agata-sketch .ys-layout{grid-template-columns:120px minmax(0,1fr) 168px}
+#agata-sketch .ys-panel{padding:8px 6px}
+#agata-sketch .ys-form-tiles button span{display:none}
+#agata-sketch .ys-form-tiles button{justify-content:center}}

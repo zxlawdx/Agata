@@ -11,15 +11,18 @@ from apps.sketch_editor.services.sketches import SketchService
 
 
 def project_repository() -> JsonProjectRepository:
-    # Pasta externa ao executável: preservada após upgrades do Yara.
-    return JsonProjectRepository(Path.home() / "Yara" / "Projetos")
+    # Projetos novos em Agata e acesso aos antigos, sem movê-los automaticamente.
+    return JsonProjectRepository(
+        Path.home() / "Agata" / "Projetos",
+        legacy_root=Path.home() / "Yara" / "Projetos",
+    )
 
 
 def project_service() -> ProjectService:
     return ProjectService(project_repository())
 
 
-class YaraBridge(BaseBridge):
+class AgataBridge(BaseBridge):
     """A UI só passa IDs e dados; caminhos de arquivo são resolvidos no Python."""
 
     def list_projects(self) -> list[dict]:

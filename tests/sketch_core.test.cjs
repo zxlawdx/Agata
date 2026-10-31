@@ -5,7 +5,7 @@ const vm = require("node:vm");
 const context = {window:{}};
 vm.createContext(context);
 vm.runInContext(fs.readFileSync("apps/sketch_editor/static/js/sketch_core.js","utf8"),context);
-const core = context.window.YaraSketchCore;
+const core = context.window.AgataSketchCore;
 test("projeto legado ganha camadas sem modificar o registro anterior",()=>{
   const screen = {elements: []};
   const state = core.upgrade(screen);

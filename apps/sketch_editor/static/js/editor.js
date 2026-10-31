@@ -1,9 +1,9 @@
-/* Editor de esboços do Yara: Fabric.js 5, Vela Bridge e modelo de camadas. */
+/* Editor de esboços do Agata: Fabric.js 5, Vela Bridge e modelo de camadas. */
 (() => {
   "use strict";
-  const C = () => window.YaraSketchCore;
+  const C = () => window.AgataSketchCore;
   const F = () => window.fabric;
-  const COMPONENTS = () => window.YaraSketchComponents;
+  const COMPONENTS = () => window.AgataSketchComponents;
   const TOOLS = ["select", "pen", "erase", "text", "rect", "ellipse", "triangle", "diamond", "line"];
   const SHAPES = new Set(["rect", "ellipse", "triangle", "diamond", "line"]);
   const HELP = {
@@ -46,7 +46,7 @@
     let savedSnapshot = "";
     const abort = new AbortController();
     const collapsedLayers = new Set();
-    const E = () => window.YaraElementTree;
+    const E = () => window.AgataElementTree;
     const on = (element, event, callback) => element?.addEventListener(event, callback, {signal: abort.signal});
     const message = (text, error = false) => {
       const host = get("ys-message");
@@ -327,7 +327,7 @@
          object?.type!=="group" || !object.componentKind)return;
       try {
         canvas.discardActiveObject();
-        componentSession=window.YaraComponentEditing.enter(canvas,object,F());
+        componentSession=window.AgataComponentEditing.enter(canvas,object,F());
         setTool("select");
         message("Edite texto, ícones e fundo separadamente. Depois conclua a edição.");
         renderComponentControls();
@@ -339,7 +339,7 @@
       const session=componentSession;
       try {
         canvas.discardActiveObject();
-        const grouped=window.YaraComponentEditing.finish(canvas,session,F());
+        const grouped=window.AgataComponentEditing.finish(canvas,session,F());
         componentSession=null;
         if(grouped){canvas.setActiveObject(grouped);ensureInside(grouped);}
         applyLayerRules();commit();
@@ -550,7 +550,7 @@
         if (disposed) return;
         copy.set({left:object.left+16, top:object.top+16});
         copy.componentKind=object.componentKind;
-        if(object.componentKind)copy.componentId=window.YaraComponentEditing.newId();
+        if(object.componentKind)copy.componentId=window.AgataComponentEditing.newId();
         if (addObject(copy)) {canvas.setActiveObject(copy);canvas.requestRenderAll();commit();}
       }, ["layerId", "componentKind"]);
     }
@@ -648,7 +648,7 @@
     on(get("ys-link-component"),"click",()=>{
       if(!componentSession)return;
       const object=canvas.getActiveObject();
-      if(window.YaraComponentEditing.link(object,componentSession)){
+      if(window.AgataComponentEditing.link(object,componentSession)){
         message("Elemento vinculado: acompanhará o componente.");
         renderComponentControls();
       } else message("Selecione um elemento solto da camada para vincular.",true);
@@ -656,7 +656,7 @@
     on(get("ys-unlink-component"),"click",()=>{
       if(!componentSession)return;
       const object=canvas.getActiveObject();
-      if(window.YaraComponentEditing.unlink(object,componentSession)){
+      if(window.AgataComponentEditing.unlink(object,componentSession)){
         message("Elemento desvinculado e independente.");
         renderComponentControls();
       }
@@ -810,5 +810,5 @@
     updateHistoryButtons();updateDirty();setTool("select");setZoom(fitZoom());
     get("ys-save").disabled=false;get("ys-message").hidden=true;renderElementTree();
   }
-  window.YaraSketchEditor={mount};
+  window.AgataSketchEditor={mount};
 })();

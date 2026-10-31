@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Comandos de desenvolvimento do Yara, via CLI nativa do Vela."""
+"""Comandos de desenvolvimento do Agata, via CLI nativa do Vela."""
 import os
 import sys
 

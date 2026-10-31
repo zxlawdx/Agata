@@ -1,4 +1,4 @@
-"""Home Yara: contexto de navegação do Vela + valores seguros."""
+"""Home Agata: contexto de navegação do Vela + valores seguros."""
 from config.settings import APP_VERSION
 from vela.template_engine import render_template
 

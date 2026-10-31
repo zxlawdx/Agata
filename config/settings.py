@@ -1,10 +1,10 @@
-"""Configuração do aplicativo desktop Yara."""
-APP_TITLE = "Yara"
+"""Configuração do aplicativo desktop Agata."""
+APP_TITLE = "Agata"
 APP_VERSION = "0.1.0"
 APP_ICON = ""
 APP_AUTHOR = ""
 APP_DESCRIPTION = "Ambiente desktop de criação visual, esboços e componentes."
-APP_FILE_EXTENSIONS = [".yara"]
+APP_FILE_EXTENSIONS = [".agata", ".yara"]  # arquivos antigos continuam reconhecidos
 
 ENTRY_ROUTE = "/home"
 WINDOW_WIDTH = 1440

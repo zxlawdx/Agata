@@ -1,4 +1,4 @@
-name: Yara checks
+name: Agata checks
 
 on:
   push:

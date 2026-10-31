@@ -14,7 +14,7 @@ from apps.workspace.repositories.base import ProjectRepository
 class ArtworkExporter:
     def __init__(self, repository: ProjectRepository, root: Path | None = None):
         self.repository = repository
-        self.root = root or Path.home() / "Yara" / "Exports"
+        self.root = root or Path.home() / "Agata" / "Exports"
 
     def export(self, project_id: str, file_format: str, data: str = "") -> dict:
         if file_format not in {"svg", "png", "json"}:
