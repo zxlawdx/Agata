@@ -40,6 +40,7 @@
    q("agata-view-all").hidden=page!=="home";
    selectNavigation();
    render();
+   root.dispatchEvent(new CustomEvent('agata:section-change',{detail:page}));
  }
  function selectNavigation(){
    root.querySelectorAll(".agata-nav [data-section],.agata-nav [data-editor-mode]").forEach(btn=>{
@@ -175,6 +176,16 @@
   }catch(e){q("agata-form-error").textContent=e.message;q("agata-form-error").hidden=false;}
   finally{if(!disposed)btn.disabled=false;}
  }
+ window.AgataOpenTemplate=(platform,template)=>{
+  if(!["android","web"].includes(platform))throw Error("Plataforma indisponível");
+  openCreate(platform);
+  q("agata-template").value=template;
+  if(q("agata-template").value!==template){
+   q("agata-form-error").hidden=false;
+   q("agata-form-error").textContent="Modelo não está disponível para esta plataforma.";return;
+  }
+  q("agata-name").value="Meu "+q("agata-template").selectedOptions[0].textContent;
+ };
  on(q("agata-create"),"click",()=>openCreate());
  on(q("agata-view-all"),"click",()=>navigate("projects"));
  on(q("agata-create-form"),"submit",create);
