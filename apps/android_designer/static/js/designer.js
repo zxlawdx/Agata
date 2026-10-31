@@ -5,6 +5,15 @@ window.AgataAndroidDesigner={async mount(root){
  const abort=new AbortController(),on=(e,type,fn)=>e.addEventListener(type,fn,{signal:abort.signal});
  const api=window.pywebview.api,notifications=window.AgataNotifications.create($('ad-toast'));
  const message=(text,error=false)=>notifications.show(text,{error});
+ const applyIdeTheme=value=>{
+  const choice=['system','light','dark'].includes(value)?value:'system';
+  root.dataset.ideTheme=choice;
+  $('ad-ide-theme').value=choice;
+  localStorage.setItem('agata-ide-theme',choice);
+ };
+ applyIdeTheme(localStorage.getItem('agata-ide-theme')||'system');
+ on($('ad-ide-theme'),'change',()=>applyIdeTheme($('ad-ide-theme').value));
+
  const registry=await (await fetch(root.dataset.registry)).json();
  const loaded=await api.get_interface(root.dataset.projectId);if(!root.isConnected)return;
  const model=new M.Document(loaded.document,registry);let revision=loaded.revision,screenId=model.value.start_screen;
