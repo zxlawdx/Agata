@@ -60,6 +60,9 @@ dependencies {{ {dependencies} }}
     files['app/src/main/res/values/colors.xml']=f'<resources><color name="agata_primary">{document["theme"]["primary"]}</color></resources>\n'
     warnings=[]
     for screen in document['screens']:
+        for node in walk(screen['root']):
+            if node.get('compose',{}).get('placeholder') or any(b.get('status')=='Dynamic' for b in node.get('compose',{}).get('styles',{}).values()):warnings.append({'node':node['id'],'message':'Compose dinâmico/parcial: a cópia gerada usa somente o subconjunto resolvido; consulte as fontes originais e os diagnósticos.'})
+    for screen in document['screens']:
         for parent in walk(screen['root']):
             if parent['type']!='ConstraintLayout':continue
             for child in parent['children']:

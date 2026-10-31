@@ -4,6 +4,7 @@ window.AgataUIRenderer=(()=>{
  const el=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;};
  function icon(name){const s=document.createElementNS('http://www.w3.org/2000/svg','svg');s.setAttribute('viewBox','0 0 24 24');s.setAttribute('width','24');s.setAttribute('height','24');s.setAttribute('aria-hidden','true');const p=document.createElementNS(s.namespaceURI,'path');p.setAttribute('d',paths[name]||'');p.setAttribute('fill','none');p.setAttribute('stroke','currentColor');p.setAttribute('stroke-width','2');s.append(p);return s;}
  function render(n,options={}){
+  n=window.AgataComposePresentation?.resolve(n,options)||n;
   const aliases={Avatar:'Card',Chip:'Button',Badge:'TextLabel',ListItem:'Row',NavigationRail:'Region',TabRow:'Row'};if(aliases[n.type])return render({...n,type:aliases[n.type]},options);
   const p=n.props,l=window.AgataLayout.resolve(n.layout,options.width,options.height),preview=!!options.preview;
   const childOptions={...options,parentType:n.type,parentLayout:l};
@@ -44,7 +45,7 @@ window.AgataUIRenderer=(()=>{
    control.oninput=()=>{if(options.state)options.state[n.id]=control.type==='range'?Number(control.value):control.checked;};e.append(control);
   }else for(const child of n.children)e.append(render(child,childOptions));
   if(n.type==='Region')e.style.flexDirection=p.orientation==='horizontal'?'row':'column';
-  if(n.type==='Box'){e.style.display='grid';e.style.placeItems={start:'start',center:'center',end:'end'}[l.alignment];for(const child of e.children)child.style.gridArea='1 / 1';}
+  if(n.type==='Box'){e.style.display='grid';if(n.compose){e.style.gridTemplateColumns='minmax(0,1fr)';e.style.justifyContent='stretch';}e.style.placeItems={start:'start',center:'center',end:'end'}[l.alignment];for(const child of e.children)child.style.gridArea='1 / 1';}
   if(['Button','NavigationItem','FloatingButton','IconButton'].includes(n.type)){
    e.setAttribute('role','button');e.setAttribute('aria-disabled',String(!p.enabled));e.tabIndex=preview&&p.enabled!==false?0:-1;
    e.dataset.variant=p.variant||'filled';if(!p.enabled)e.style.opacity='.45';
@@ -58,9 +59,11 @@ window.AgataUIRenderer=(()=>{
   if(!preview&&n.type==='TextLabel')e.ondblclick=event=>{event.stopPropagation();options.editText?.(n);};
   if(options.validationErrors?.[n.id])e.append(el('small','ui-field-error',options.validationErrors[n.id]));
   window.AgataLayout.apply(e,n,options);
+  window.AgataComposePresentation?.apply(e,n,options);
   if(n._layer){e.style.zIndex=n._layer.order;e.style.opacity=Number(e.style.opacity||1)*n._layer.opacity;}
   if(['Guideline','Barrier'].includes(n.type)){e.classList.add('ad-helper');if(preview)e.style.visibility='hidden';else e.title=n.name;}
   window.AgataConstraints.layout(e,{...n,layout:l,children:n.children.map(c=>({...c,layout:AgataLayout.resolve(c.layout,options.width,options.height)}))},options);
+  if(n.name==='BoxWithConstraints'&&n.compose){const content=e.querySelector(`[data-compose-owner="${n.id}"]`)||e;let previous='';const observer=new ResizeObserver(()=>{if(!e.isConnected){observer.disconnect();return;}const width=content.clientWidth,height=content.clientHeight,key=width+','+height;if(key===previous||!width)return;previous=key;content.replaceChildren(...n.children.map(child=>render(child,{...childOptions,constraintWidth:width,constraintHeight:height})));});observer.observe(content);e._composeObserver=observer;}
   if(!preview){const handle=el('span','ad-drag-handle');handle.dataset.dragNode=n.id;handle.title='Arrastar '+n.name;handle.setAttribute('aria-label','Arrastar '+n.name);e.append(handle);if(options.selected?.has(n.id)){const resize=el('span','ad-resize-handle');resize.dataset.resizeNode=n.id;resize.title='Redimensionar';e.append(resize);}}
   return e;
  }

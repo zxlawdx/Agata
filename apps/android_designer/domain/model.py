@@ -188,6 +188,8 @@ def validate(document):
         if n['type'] in {'Shape','DrawingCanvas','Chart'}:
             from .graphics import validate_graphic
             validate_graphic(n)
+        from .compose import validate_compose
+        validate_compose(n)
         children=n.get('children')
         if not isinstance(children,list) or children and not spec['container']:raise ValueError('Este componente não aceita filhos.')
         for c in children:node(c,depth+1,n)

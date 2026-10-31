@@ -116,3 +116,7 @@
 .ad-constraint-lines text{fill:#006074;font-size:12px;paint-order:stroke;stroke:white;stroke-width:3px}
 #android-designer .ad-live-wire path{fill:none;stroke:#008fa6;stroke-width:3}
 #android-designer[data-constraint-mode=true] #ad-links{visibility:hidden}
+
+.ad-compose-placeholder{border:1px dashed #bb7b00!important;background:repeating-linear-gradient(45deg,#fff8e8,#fff8e8 8px,#ffe6b3 8px,#ffe6b3 16px)!important;color:#573800!important;font:12px/1.4 sans-serif!important;padding:8px!important;min-height:40px!important}.ad-compose-modifier{min-width:0}.ad-compose-content{box-sizing:border-box}.ui-node[data-compose-dynamic=true]{outline:1px dashed #a76c00}.ad-field~details p{overflow-wrap:anywhere;font-size:11px}
+
+#android-designer #ad-preview-viewport{box-sizing:content-box;resize:both}

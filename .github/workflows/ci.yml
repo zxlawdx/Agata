@@ -95,3 +95,13 @@ jobs:
         env:
           AGATA_UI_SCRIPT: tests/lists_ui.cjs
         run: node tests/run_ui.cjs
+
+      - name: Exercise Compose styles, helper references and modifier order
+        env:
+          AGATA_UI_SCRIPT: tests/compose_fidelity_ui.cjs
+        run: node tests/run_ui.cjs
+
+      - name: Exercise supplied Spotify project at three viewport sizes
+        env:
+          AGATA_UI_SCRIPT: tests/spotify_import_ui.cjs
+        run: node tests/run_ui.cjs

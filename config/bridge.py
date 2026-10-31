@@ -93,9 +93,9 @@ class AgataBridge(BaseBridge):
         from apps.workspace.services.project_import.coordinator import ImportCoordinator
         return ImportCoordinator(project_repository()).upload_sources(files)
 
-    def confirm_project_import(self, token: str, name=None, initialize=False):
+    def confirm_project_import(self, token: str, name=None, initialize=False, screen_ids=None):
         from apps.workspace.services.project_import.coordinator import ImportCoordinator
-        return ImportCoordinator(project_repository()).confirm(token,name,initialize)
+        return ImportCoordinator(project_repository()).confirm(token,name,initialize,screen_ids)
 
     def cancel_project_import(self, token: str):
         from apps.workspace.services.project_import.coordinator import ImportCoordinator

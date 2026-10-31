@@ -1,0 +1,65 @@
+[
+  {
+    "type": "Column",
+    "id": "n_6f351e93d70d0bd1dbd9bcdb",
+    "w": 390,
+    "css": "390px",
+    "parent": 390
+  },
+  {
+    "type": "Box",
+    "id": "n_12276a315d612141247abd92",
+    "w": 342,
+    "css": "342px",
+    "parent": 342
+  },
+  {
+    "type": "TextLabel",
+    "id": "n_e748378ceaef3685a8ee897c",
+    "w": 342,
+    "css": "342px",
+    "parent": 342
+  },
+  {
+    "type": "Box",
+    "id": "n_53c824d8c8ff4705a0690649",
+    "w": 342,
+    "css": "342px",
+    "parent": 342
+  },
+  {
+    "type": "Card",
+    "id": "n_cb7a6ef64bc628ebbe2d1edb",
+    "w": 342,
+    "css": "342px",
+    "parent": 342
+  },
+  {
+    "type": "TextLabel",
+    "id": "n_98ddba28d802ee851bba5b69",
+    "w": 236.5625,
+    "css": "236.562px",
+    "parent": 310
+  },
+  {
+    "type": "Box",
+    "id": "n_d4ff1b8b13623f3ef3a499be",
+    "w": 99.484375,
+    "css": "99.4844px",
+    "parent": 342
+  },
+  {
+    "type": "Button",
+    "id": "n_cc394129adf57963e8878cf1",
+    "w": 99.484375,
+    "css": "99.4844px",
+    "parent": 99.484375
+  },
+  {
+    "type": "TextLabel",
+    "id": "n_0f9e0bc1f7a13d19de8a6bab",
+    "w": 49.484375,
+    "css": "49.4844px",
+    "parent": 99.484375
+  }
+]

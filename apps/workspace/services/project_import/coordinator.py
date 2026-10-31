@@ -68,7 +68,7 @@ class ImportCoordinator:
         doc['import_summary']={'kind':kind,'source_files':sorted(files),'resources':resources['paths'],'warnings':warnings,'classification':counts,'provenance':parser.provenance if parser else {},'empty':not doc['screens']}
         token=uuid4().hex;stage=self.staging/token;stage.mkdir(parents=True)
         for name,data in files.items():p=stage/'files'/safe_name(name);p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(data)
-        result={'token':token,'name':native_project.get('name','Projeto importado') if native_project else source.stem if source else doc['app_name'],'kind':kind,'framework':settings['ui_framework'],'screen_count':len(doc['screens']),'component_count':component_count,'resource_count':len(resources['paths']),'classification':counts,'warnings':warnings,'files':sorted(files),'requires_initialization':kind=='empty-folder','empty':not doc['screens']}
+        result={'token':token,'name':native_project.get('name','Projeto importado') if native_project else source.stem if source else doc['app_name'],'kind':kind,'framework':settings['ui_framework'],'screen_count':len(doc['screens']),'component_count':component_count,'resource_count':len(resources['paths']),'classification':counts,'warnings':warnings,'files':sorted(files),'screen_candidates':doc.get('compose_project',{}).get('screen_candidates',[]),'reusable_components':[v for v in doc.get('compose_project',{}).get('definitions',{}).values() if v['kind']=='Reusable Component'],'requires_initialization':kind=='empty-folder','empty':not doc['screens']}
         metadata={'preview':result,'document':doc,'settings':settings,'managed_files':baseline,'conflicts':conflicts,'original_path':str(source.absolute()) if source else None,'sketch_screens':native_project.get('screens') if native_project else None}
         (stage/'analysis.json').write_text(json.dumps(metadata,ensure_ascii=False),encoding='utf-8');return result
     def upload(self,name,encoded):
@@ -97,9 +97,17 @@ class ImportCoordinator:
             files[name]=data
         return self.analyze(files=files)
 
-    def confirm(self,token,name=None,initialize=False):
+    def confirm(self,token,name=None,initialize=False,screen_ids=None):
         stage=self._stage(token);meta=json.loads((stage/'analysis.json').read_text());preview=meta['preview']
         if preview['requires_initialization'] and not initialize:raise ValueError('Confirme explicitamente a inicialização da pasta vazia.')
+        if screen_ids is not None:
+            if not isinstance(screen_ids,list) or not screen_ids or set(screen_ids)-{s['id'] for s in meta['document']['screens']}:raise ValueError('Selecione ao menos uma Screen válida.')
+            meta['document']['screens']=[s for s in meta['document']['screens'] if s['id'] in screen_ids]
+            if meta['document']['start_screen'] not in screen_ids:meta['document']['start_screen']=screen_ids[0]
+            for screen in meta['document']['screens']:
+                for node in walk(screen['root']):
+                    event=node['events'].get('onClick')
+                    if event and event.get('action')=='navigate' and event['target'] not in screen_ids:event['broken']=True
         payload={'name':name or preview['name'],'platform':'android'}
         if preview['requires_initialization']:payload.update(location=meta['original_path'],settings=meta['settings'])
         registry_before=self.repo._registry()
