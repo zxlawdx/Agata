@@ -514,6 +514,9 @@
       q("reduced").checked = !!doc.metadata.settings?.reducedMotion;
       q("network").checked = !!doc.metadata.settings?.allowHttps;
       setMode(pref.mode || (innerWidth < 900 ? "design" : "split"));
+      root.dataset.projectState = "ready";
+      root.querySelector(".ws-layout").hidden = false;
+      q("welcome").hidden = true;
       status("Projeto " + doc.project.name);
     }
     const actions = {
@@ -1039,8 +1042,19 @@
     q("project-template").replaceChildren(
       ...catalog.templates.map((t) => new Option(t.name, t.id)),
     );
+    const describeTemplate = () => {
+      const selected = catalog.templates.find(t => t.id === q("project-template").value);
+      q("welcome-template").textContent = selected
+        ? "Modelo selecionado: " + selected.name + " · " + selected.category + " · licença " + selected.license + ". Clique em Usar modelo selecionado para criar arquivos editáveis."
+        : "Selecione um modelo Web para continuar.";
+    };
+    on(q("project-template"), "change", describeTemplate);
+    describeTemplate();
     if (root.dataset.projectId) await load(root.dataset.projectId);
     else {
+      root.dataset.projectState = "empty";
+      root.querySelector(".ws-layout").hidden = true;
+      q("welcome").hidden = false;
       status("Escolha um template e crie ou importe um projeto");
       for (const control of root.querySelectorAll("input,textarea,select"))
         if (
@@ -1053,7 +1067,7 @@
           button.disabled = true;
           button.title = "Crie ou importe um projeto primeiro";
         }
-      root.dataset.mode = "code";
+      root.dataset.mode = "design";
     }
     global.AgataWebStudio.actions = actions;
   }
