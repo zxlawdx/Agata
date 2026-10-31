@@ -99,6 +99,14 @@
       code?.editor.layout();
       if (value === "preview") refreshPreview();
     }
+    const ideThemes = new Set(["system", "light", "dark"]);
+    const setIdeTheme = value => {
+      root.dataset.ideTheme = ideThemes.has(value) ? value : "system";
+      q("ide-theme").value = root.dataset.ideTheme;
+      localStorage.setItem("agata-ide-theme", root.dataset.ideTheme);
+    };
+    setIdeTheme(localStorage.getItem("agata-ide-theme") || "system");
+    on(q("ide-theme"), "change", () => setIdeTheme(q("ide-theme").value));
     const pref = prefs();
     root.dataset.left = pref.left || (innerWidth < 900 ? "hidden" : "visible");
     root.dataset.right =
@@ -1058,7 +1066,7 @@
       status("Escolha um template e crie ou importe um projeto");
       for (const control of root.querySelectorAll("input,textarea,select"))
         if (
-          control.id !== "ws-project-template" &&
+          !["ws-project-template", "ws-ide-theme"].includes(control.id) &&
           !q("dialog").contains(control)
         )
           control.disabled = true;
