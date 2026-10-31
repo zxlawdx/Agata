@@ -1,0 +1,206 @@
+"""Compose generator over validated semantic nodes, never Fabric objects."""
+import json
+from xml.sax.saxutils import escape
+from apps.android_designer.domain.model import walk
+
+PATHS={
+'menu':'M3,6 L21,6 M3,12 L21,12 M3,18 L21,18',
+'back':'M14,4 L6,12 L14,20 M6,12 L22,12',
+'home':'M2,11 L12,2 L22,11 M5,10 L5,22 L19,22 L19,10',
+'search':'M20,20 L15,15 M17,10 A7,7 0,1 1,3 10 A7,7 0,1 1,17 10',
+'close':'M4,4 L20,20 M20,4 L4,20','settings':'M12,2 L12,22 M2,12 L22,12 M5,5 L19,19 M19,5 L5,19',
+'plus':'M12,3 L12,21 M3,12 L21,12'}
+
+
+def quote(text):return json.dumps(str(text),ensure_ascii=False).replace('$','\\$')
+
+
+def resource_text(value):
+    return escape(str(value).replace('\\','\\\\').replace("'","\\'").replace('"','\\"').replace('\n','\\n'))
+
+
+class ComposeGenerator:
+    def __init__(self,document):
+        self.doc=document;self.ns=document['namespace'];self.strings={'app_name':document['app_name']};self.files={}
+
+    def string(self,node,key,default=''):
+        value=node['props'].get(key,default);name=node['id']+'_'+key.lower()
+        self.strings[name]=value
+        return f'stringResource(R.string.{name})'
+
+    def modifier(self,n):
+        l=n['layout'];s='Modifier'
+        for k in ('width','height'):
+            value=l[k]
+            if value=='fill':s+='.'+('fillMaxWidth()' if k=='width' else 'fillMaxHeight()')
+            elif value!='wrap':s+=f'.{k}({value}.dp)'
+        if l['weight']:s+=f".weight({float(l['weight'])}f)"
+        if l['padding']:s+=f".padding({l['padding']}.dp)"
+        if l['scroll']!='none':s+='.'+l['scroll']+'Scroll(rememberScrollState())'
+        if n['props'].get('background') and n['type'] in {'Column','Row','Box'}:s+=f".background(Color(0xFF{n['props']['background'][1:]}))"
+        if n['events'] and n['type'] not in {'Button','NavigationItem','FloatingButton'}:
+            s+=f'.clickable {{ {self.action(n)} }}'
+        return s
+
+    def action(self,n):
+        e=n['events'].get('onClick',{});return f'onAction({quote(e.get("action",""))}, {quote(e.get("target",""))})'
+
+    def emit(self,n,omit=()):
+        if n['id'] in omit:return ''
+        kind=n['type'];p=n['props'];m=self.modifier(n);var='v_'+n['id']
+        children=lambda nodes=None:'\n'.join(self.emit(c,omit) for c in (n['children'] if nodes is None else nodes))
+        if kind=='TextLabel':
+            return f'Text(text = {self.string(n,"text")}, color = Color(0xFF{p["color"][1:]}), fontSize = {p["fontSize"]}.sp, fontWeight = FontWeight.{"Bold" if p["bold"] else "Normal"}, textAlign = TextAlign.{dict(start="Start",center="Center",end="End")[p["align"]]}, modifier = {m})'
+        if kind=='Icon':
+            if p['icon']=='none':return ''
+            return f'Icon(painterResource(R.drawable.agata_{p["icon"]}), contentDescription = {self.string(n,"description")}, tint = Color(0xFF{p["color"][1:]}), modifier = {m}.size(24.dp))'
+        if kind in {'Row','Column','Box'}:
+            if kind=='Box':args=f'contentAlignment = Alignment.{dict(start="TopStart",center="Center",end="BottomEnd")[n["layout"]["alignment"]]}'
+            else:
+                orientation='horizontal' if kind=='Row' else 'vertical';cross='vertical' if kind=='Row' else 'horizontal'
+                align=({'start':'Top','center':'CenterVertically','end':'Bottom'} if kind=='Row' else {'start':'Start','center':'CenterHorizontally','end':'End'})[n['layout']['alignment']]
+                arrange={'start':f'spacedBy({n["layout"]["gap"]}.dp)','center':'Center','end':('End' if kind=='Row' else 'Bottom'),'spaceBetween':'SpaceBetween'}[n['layout']['arrangement']]
+                args=f'{orientation}Arrangement = Arrangement.{arrange}, {cross}Alignment = Alignment.{align}'
+            return f'{kind}(modifier = {m}, {args}) {{\n{children()}\n}}'
+        if kind in {'Button','FloatingButton','NavigationItem'}:
+            if kind=='NavigationItem':
+                # Shared semantic item works in drawer and bottom bar, with independent label/icon/events.
+                fun='FilledTonalButton' if p['selected'] else 'TextButton'
+            elif kind=='FloatingButton':fun='FloatingActionButton'
+            else:fun={'filled':'Button','outlined':'OutlinedButton','text':'TextButton','tonal':'FilledTonalButton','elevated':'Button'}[p['variant']]
+            enabled='' if kind=='FloatingButton' else f', enabled = {str(p["enabled"]).lower()}'
+            extras=f', shape = RoundedCornerShape({p["radius"]}.dp), colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF{p["background"][1:]}))' if kind=='Button' else ''
+            return f'{fun}(onClick = {{ {self.action(n)} }}, modifier = {m}{enabled}{extras}) {{\n{children()}\n}}'
+        if kind=='Card':
+            fun={'filled':'Card','outlined':'OutlinedCard','elevated':'ElevatedCard','text':'Card','tonal':'Card'}[p['variant']]
+            return f'{fun}(modifier = {m}, shape = RoundedCornerShape({p["radius"]}.dp), colors = CardDefaults.cardColors(containerColor = Color(0xFF{p["background"][1:]})), elevation = CardDefaults.cardElevation(defaultElevation = {p["elevation"]}.dp)) {{ Column(Modifier.padding({n["layout"]["padding"]}.dp), verticalArrangement = Arrangement.spacedBy({n["layout"]["gap"]}.dp)) {{\n{children()}\n}} }}'
+        if kind=='TopBar':
+            title=[c for c in n['children'] if c['role'] in {'title','subtitle'}]
+            navigation=[c for c in n['children'] if c['role']=='navigation']
+            actions=[c for c in n['children'] if c not in title+navigation]
+            return f'TopAppBar(modifier = {m}, colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF{p["background"][1:]})), title = {{ Column {{ {children(title)} }} }}, navigationIcon = {{ {children(navigation)} }}, actions = {{ {children(actions)} }})'
+        if kind=='BottomBar':return f'NavigationBar(modifier = {m}, containerColor = Color(0xFF{p["background"][1:]})) {{\n'+ '\n'.join(self.nav_item(c) for c in n['children'])+'\n}'
+        if kind=='Sidebar':raise ValueError('Sidebar deve ser filha direta da Column principal da Screen.')
+        if kind in {'TextField','SearchBar'}:
+            leading=next((c for c in n['children'] if c['role']=='leading'),None)
+            trailing=next((c for c in n['children'] if c['role']=='trailing'),None)
+            slots=(f', leadingIcon = {{ {self.emit(leading)} }}' if leading else '')+(f', trailingIcon = {{ {self.emit(trailing)} }}' if trailing else '')
+            if kind=='SearchBar':slots+=f', trailingIcon = {{ IconButton(onClick = {{ {var} = "" }}) {{ Icon(painterResource(R.drawable.agata_close), contentDescription = "Limpar pesquisa") }} }}'
+            keyboard={'text':'Text','email':'Email','number':'Number','password':'Password','phone':'Phone'}.get(p.get('keyboard'),'Text')
+            fun='TextField' if p.get('variant')=='filled' else 'OutlinedTextField'
+            extra=f', label = {{ Text({self.string(n,"label")}) }}, isError = {str(bool(p["error"])).lower()}, supportingText = {{ Text({self.string(n,"error" if p["error"] else "helper")}) }}' if kind=='TextField' else ''
+            if p.get('keyboard')=='password':extra+=', visualTransformation = PasswordVisualTransformation()'
+            return f'{fun}(value = {var}, onValueChange = {{ {var} = it }}, enabled = {str(p["enabled"]).lower()}, placeholder = {{ Text({self.string(n,"placeholder")}) }}, modifier = {m}, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.{keyboard}){extra}{slots})'
+        if kind in {'Checkbox','Switch'}:return f'{kind}(checked = {var}, onCheckedChange = {{ {var} = it }}, enabled = {str(p["enabled"]).lower()}, modifier = {m})'
+        if kind=='Slider':return f'Slider(value = {var}, onValueChange = {{ {var} = it }}, valueRange = {float(p["min"])}f..{float(p["max"])}f, enabled = {str(p["enabled"]).lower()}, modifier = {m})'
+        if kind=='Spacer':return f'Spacer(modifier = {m})'
+        if kind=='Image':
+            import base64
+            source=p['source']
+            if not source.startswith('data:image/png;base64,'):raise ValueError('Image requer PNG local; selecione uma imagem no Inspector.')
+            data=base64.b64decode(source.split(',',1)[1],validate=True)
+            if not data.startswith(b'\x89PNG\r\n\x1a\n'):raise ValueError('PNG inválido.')
+            self.files[f'app/src/main/res/drawable/{n["id"]}.png']=data
+            return f'Image(painterResource(R.drawable.{n["id"]}), contentDescription = {self.string(n,"description")}, modifier = {m})'
+        raise ValueError('Componente sem exportador Compose: '+kind)
+
+    def nav_item(self,n):
+        if n['type']!='NavigationItem':raise ValueError('BottomBar aceita somente NavigationItem.')
+        label=[c for c in n['children'] if c['type']=='TextLabel'];icons=[c for c in n['children'] if c['type']=='Icon']
+        return f'NavigationBarItem(selected = {str(n["props"]["selected"]).lower()}, enabled = {str(n["props"]["enabled"]).lower()}, onClick = {{ {self.action(n)} }}, label = {{ '+ '\n'.join(self.emit(c) for c in label)+' }, icon = { '+'\n'.join(self.emit(c) for c in icons)+' })'
+
+    def generate(self):
+        base='app/src/main/java/'+self.ns.replace('.','/')
+        for s in self.doc['screens']:
+            declarations=[]
+            for n in walk(s['root']):
+                if n['type'] in {'TextField','SearchBar','Checkbox','Switch','Slider'}:
+                    value=n['props'].get('checked',n['props'].get('value',''))
+                    literal=str(value).lower() if type(value) is bool else f'{float(value)}f' if type(value) in (int,float) else quote(value)
+                    declarations.append(f'var v_{n["id"]} by rememberSaveable {{ mutableStateOf({literal}) }}')
+            drawers=[c for c in s['root']['children'] if c['type']=='Sidebar']
+            if len(drawers)>1:raise ValueError('Use no máximo uma Sidebar por Screen.')
+            content=self.emit(s['root'],[d['id'] for d in drawers])
+            if drawers:
+                drawer=drawers[0];body='\n'.join(self.emit(c) for c in drawer['children'])
+                content='val drawerState = rememberDrawerState(DrawerValue.Closed)\n'+f'ModalNavigationDrawer(drawerState = drawerState, drawerContent = {{ ModalDrawerSheet {{ {body} }} }}) {{ Column {{ val scope = rememberCoroutineScope(); TextButton(onClick = {{ scope.launch {{ drawerState.open() }} }}) {{ Text("Menu") }}; {content} }} }}'
+            code=f'''package {self.ns}.ui.screens
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.foundation.*
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.launch
+import {self.ns}.R
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun Screen_{s['id']}(onAction: (String, String) -> Unit) {{
+{chr(10).join(declarations)}
+{content}
+}}
+'''
+            self.files[f'{base}/ui/screens/Screen_{s["id"]}.kt']=code
+        navigation='\n'.join(f'composable({quote(s["id"])}) {{ Screen_{s["id"]}(onAction = {{ action, target -> if (action == "back") navController.popBackStack() else if (action == "navigate") navController.navigate(target) }}) }}' for s in self.doc['screens'])
+        self.files[f'{base}/navigation/AppNavigation.kt']=f'''package {self.ns}.navigation
+import androidx.compose.runtime.Composable
+import androidx.navigation.compose.*
+import {self.ns}.ui.screens.*
+@Composable fun AppNavigation() {{
+ val navController = rememberNavController()
+ NavHost(navController, startDestination = {quote(self.doc['start_screen'])}) {{
+ {navigation}
+ }}
+}}
+'''
+        self.files[f'{base}/MainActivity.kt']=f'''package {self.ns}
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.Surface
+import androidx.compose.ui.Modifier
+import {self.ns}.navigation.AppNavigation
+import {self.ns}.ui.theme.AgataTheme
+class MainActivity : ComponentActivity() {{
+ override fun onCreate(savedInstanceState: Bundle?) {{
+  super.onCreate(savedInstanceState)
+  enableEdgeToEdge()
+  setContent {{ AgataTheme {{ Surface {{ Box(Modifier.fillMaxSize().safeDrawingPadding()) {{ AppNavigation() }} }} }} }}
+ }}
+}}
+'''
+        theme=self.doc['theme'];dark={'system':'isSystemInDarkTheme()','light':'false','dark':'true'}[theme['darkMode']]
+        self.files[f'{base}/ui/theme/Theme.kt']=f'''package {self.ns}.ui.theme
+import android.os.Build
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
+@Composable fun AgataTheme(content: @Composable () -> Unit) {{
+ val dark = {dark}
+ val colors = if ({str(theme['dynamicColor']).lower()} && Build.VERSION.SDK_INT >= 31) {{
+  if (dark) dynamicDarkColorScheme(LocalContext.current) else dynamicLightColorScheme(LocalContext.current)
+ }} else if (dark) darkColorScheme(primary = AgataPrimary) else lightColorScheme(primary = AgataPrimary)
+ MaterialTheme(colorScheme = colors, typography = AgataTypography, content = content)
+}}
+'''
+        self.files[f'{base}/ui/theme/Color.kt']=f'package {self.ns}.ui.theme\nimport androidx.compose.ui.graphics.Color\nval AgataPrimary = Color(0xFF{theme["primary"][1:]})\n'
+        self.files[f'{base}/ui/theme/Type.kt']=f'package {self.ns}.ui.theme\nimport androidx.compose.material3.Typography\nval AgataTypography = Typography()\n'
+        for name,path in PATHS.items():self.files[f'app/src/main/res/drawable/agata_{name}.xml']=f'<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24"><path android:pathData="{path}" android:fillColor="@android:color/transparent" android:strokeColor="#242424" android:strokeWidth="2" android:strokeLineCap="round"/></vector>\n'
+        self.files['app/src/main/res/values/strings.xml']='<resources>\n'+''.join(f'<string name="{k}">{resource_text(v)}</string>\n' for k,v in self.strings.items())+'</resources>\n'
+        return self.files

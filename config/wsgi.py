@@ -7,7 +7,7 @@ from config.bridge import AgataBridge
 from vela.cli.collectstatic import collect_static
 from vela.core.app import VelaApp
 
-INSTALLED_APPS = ["apps.home", "apps.workspace", "apps.sketch_editor"]
+INSTALLED_APPS = ["apps.home", "apps.workspace", "apps.sketch_editor", "apps.android_designer"]
 
 
 def run():

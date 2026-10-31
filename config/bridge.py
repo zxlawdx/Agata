@@ -43,3 +43,27 @@ class AgataBridge(BaseBridge):
         """Exporta o projeto salvo para SVG, PNG ou JSON na pasta local Exports."""
         from apps.sketch_editor.services.exports import ArtworkExporter
         return ArtworkExporter(project_repository()).export(project_id, file_format, data)
+
+
+    def get_interface(self, project_id: str) -> dict:
+        from apps.android_designer.services.documents import InterfaceService
+        return InterfaceService(project_repository()).get(project_id)
+
+    def save_interface(self, project_id: str, document: dict, revision: int) -> dict:
+        from apps.android_designer.services.documents import InterfaceService
+        return InterfaceService(project_repository()).save(project_id, document, revision)
+
+    def generate_android(self, document: dict, backend: str) -> dict:
+        from apps.android_designer.exporters.project import generate
+        files=generate(document, backend)
+        return {path:content for path,content in files.items() if isinstance(content,str)}
+
+    def export_android(self, project_id: str, backend: str) -> dict:
+        from apps.android_designer.services.documents import InterfaceService
+        from apps.android_designer.exporters.project import export_project
+        return export_project(InterfaceService(project_repository()).get(project_id)['document'], backend)
+
+
+    def validate_interface(self, document: dict) -> dict:
+        from apps.android_designer.domain.model import validate
+        return {"ok": True, "document": validate(document)}

@@ -1,3 +1,7 @@
 # License bytes must be reproducible across Windows and Linux checkouts.
 apps/sketch_editor/static/vendor/FABRIC-LICENSE.txt text eol=lf
 apps/sketch_editor/static/vendor/fabric.js -text
+apps/android_designer/static/vendor/codemirror.js -text
+apps/android_designer/static/vendor/licenses/*.txt text eol=lf
+apps/android_designer/resources/gradle/gradle-wrapper.jar -text
+apps/android_designer/resources/gradle/gradlew text eol=lf

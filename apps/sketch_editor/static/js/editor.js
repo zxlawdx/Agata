@@ -612,6 +612,11 @@
         }
       });
     }
+    on(get("ys-android"),"click",()=>{
+      finishComponent();
+      if(snapshot()!==savedSnapshot&&!window.confirm("Existem alterações não salvas. Sair sem salvar?"))return;
+      window.Vela.navigate("/android",{project_id:project.id});
+    });
     on(get("ys-save"),"click",save);
     on(get("ys-go-new"),"click",()=>leaveTo("home",true));
     on(get("ys-go-recents"),"click",()=>leaveTo("projects"));
