@@ -158,7 +158,8 @@ class ComposeGenerator:
                 padding_extra='' if n.get('compose') else f', contentPadding = PaddingValues({n["layout"]["padding"]}.dp)'
                 from .compose_fidelity import material_colors
                 imported_colors=material_colors(n,'ButtonDefaults.'+{'outlined':'outlinedButtonColors','text':'textButtonColors','tonal':'filledTonalButtonColors'}.get(p['variant'],'buttonColors'))
-                extras=f'{padding_extra}, shape = RoundedCornerShape({p["radius"]}.dp), colors = {imported_colors or 'ButtonDefaults.'+colors}'
+                rendered_colors=imported_colors or 'ButtonDefaults.'+colors
+                extras=f'{padding_extra}, shape = RoundedCornerShape({p["radius"]}.dp), colors = {rendered_colors}'
                 if p['variant']=='outlined':extras+=f', border = BorderStroke(1.dp, {color})'
 
             content=('\nSpacer(Modifier.width('+str(n['layout']['gap'])+'.dp))\n').join(filter(None,(self.emit(c,omit) for c in n['children'])))
