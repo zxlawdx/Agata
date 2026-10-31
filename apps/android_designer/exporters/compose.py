@@ -21,7 +21,8 @@ def resource_text(value):
 
 class ComposeGenerator:
     def __init__(self,document):
-        self.doc=document;self.ns=document['namespace'];self.strings={'app_name':document['app_name']};self.files={}
+        from apps.android_designer.domain.constraints import layered_screen
+        self.doc={**document,'screens':[layered_screen(s) for s in document['screens']]};self.ns=document['namespace'];self.strings={'app_name':document['app_name']};self.files={}
 
     def string(self,node,key,default=''):
         value=node['props'].get(key,default);name=node['id']+'_'+key.lower()
@@ -29,7 +30,8 @@ class ComposeGenerator:
         return f'stringResource(R.string.{name})'
 
     def modifier(self,n):
-        l=n['layout'];s='Modifier'
+        l=n['layout'];s='Modifier'+n.get('_constraint_modifier','')
+        if n.get('_layer'):s+=f".zIndex({float(n['_layer']['order'])}f).graphicsLayer(alpha = {float(n['_layer']['opacity'])}f)"
         if l['margin']:s+=f".padding({l['margin']}.dp)"
         if l['minWidth'] or l['maxWidth']<4096:s+=f".widthIn(min = {l['minWidth']}.dp, max = {l['maxWidth']}.dp)"
         if l['minHeight'] or l['maxHeight']<4096:s+=f".heightIn(min = {l['minHeight']}.dp, max = {l['maxHeight']}.dp)"
@@ -53,6 +55,11 @@ class ComposeGenerator:
 
     def emit(self,n,omit=()):
         if n['id'] in omit or not n['layout']['visible']:return ''
+        if n['type']=='ConstraintLayout':
+            from .constraints import compose_container
+            return compose_container(self,n,omit)
+        if n['type']=='Region':return self.emit({**n,'type':'Row' if n['props'].get('orientation')=='horizontal' else 'Column'},omit)
+        if n['type'] in {'Guideline','Barrier'}:return ''
         if n['type']=='Surface':
             return self.emit({**n,'type':'Card','props':{**n['props'],'variant':'filled','elevation':0}},omit)
         if n['type']=='ScrollContainer':return self.emit({**n,'type':'Column'},omit)
@@ -182,6 +189,9 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
+import androidx.constraintlayout.compose.*
+import androidx.compose.ui.zIndex
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource

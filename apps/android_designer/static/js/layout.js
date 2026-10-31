@@ -41,7 +41,7 @@ window.AgataLayout=(()=>{
    if(element.dataset.type==='TextLabel'&&element.scrollHeight>element.clientHeight+2)warnings.push({id:element.dataset.nodeId,kind:'text',message:'Texto truncado: '+element.textContent.slice(0,40)});
    if(['Button','IconButton','NavigationItem'].includes(element.dataset.type)&&Math.min(r.width,r.height)/scale<24)warnings.push({id:element.dataset.nodeId,kind:'touch',message:'Área de toque abaixo de 24 unidades.'});
   }
-  return {rectangles,warnings};
+  for(const e of [host,...host.querySelectorAll('.ui-ConstraintLayout')])warnings.push(...(e._constraintWarnings||[]));return {rectangles,warnings};
  }
  return {sizeClass,resolve,apply,measure};
 })();

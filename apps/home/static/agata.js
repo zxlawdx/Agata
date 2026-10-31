@@ -106,14 +106,14 @@
    const btn=q("agata-confirm-create");
    btn.disabled=true;q("agata-form-error").hidden=true;
    try{
-     const item=await api("create_project",{
+     const item=await api("create_project",{template:q("agata-template").value,
        name:q("agata-name").value.trim(),editor_mode:q("agata-mode").value,
        platform:q("agata-platform").value,
        width:Number(q("agata-width").value),height:Number(q("agata-height").value)
      });
      if(!item?.id)throw Error("O serviço não retornou o ID do projeto.");
      q("agata-create-dialog").close();
-     await window.Vela.navigate("/sketch",{project_id:item.id});
+     await window.Vela.navigate(q("agata-template").value==="android-tutorial"?"/android":"/sketch",{project_id:item.id});
    }catch(e){q("agata-form-error").textContent=e.message;q("agata-form-error").hidden=false;}
    finally{if(!disposed)btn.disabled=false;}
  }

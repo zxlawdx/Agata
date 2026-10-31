@@ -53,6 +53,12 @@ class ProjectService:
             "created_at": stamp,
             "updated_at": stamp,
         }
+        template=payload.get('template','empty')
+        if template not in {'empty','android-tutorial'}:raise ValueError('Modelo de projeto inválido.')
+        if template=='android-tutorial':
+            if platform!='android':raise ValueError('Tutorial requer plataforma Android.')
+            from apps.android_designer.domain.tutorial_project import tutorial_document
+            project['interface_document']=tutorial_document();project['interface_revision']=0
         self.repository.save(project)
         return project
 

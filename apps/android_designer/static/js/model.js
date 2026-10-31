@@ -8,18 +8,19 @@ window.AgataUIModel=(()=>{
  }
  class Document{
   constructor(value,registry){this.value=clone(value);this.registry=registry;this.past=[];this.future=[];this.saved=JSON.stringify(value);}
-  transact(fn){const before=JSON.stringify(this.value);try{fn(this.value);}catch(error){this.value=JSON.parse(before);throw error;}if(JSON.stringify(this.value)!==before){this.past.push(before);if(this.past.length>100)this.past.shift();this.future=[];}}
+  transact(fn){const before=JSON.stringify(this.value);try{fn(this.value);this.repair();}catch(error){this.value=JSON.parse(before);throw error;}if(JSON.stringify(this.value)!==before){this.past.push(before);if(this.past.length>100)this.past.shift();this.future=[];}}
   get dirty(){return JSON.stringify(this.value)!==this.saved;}
   markSaved(){this.saved=JSON.stringify(this.value);}
   undo(){if(this.past.length){this.future.push(JSON.stringify(this.value));this.value=JSON.parse(this.past.pop());}}
   redo(){if(this.future.length){this.past.push(JSON.stringify(this.value));this.value=JSON.parse(this.future.pop());}}
   find(id){let result=null;for(const screen of this.value.screens)walk(screen.root,(n,parent)=>{if(n.id===id)result={node:n,parent,screen};});return result;}
-  addScreen(){const s={id:id('s'),name:'Nova Screen',width:390,height:844,position:{x:80+this.value.screens.length*480,y:80},root:node(this.registry,'Column')};this.transact(d=>d.screens.push(s));return s;}
-  duplicateScreen(screen){const copy=clone(screen),map=new Map();map.set(copy.id,id('s'));copy.id=map.get(copy.id);copy.name+=' cópia';copy.position.x+=440;walk(copy.root,n=>{map.set(n.id,id('n'));n.id=map.get(n.id);});walk(copy.root,n=>{if(n.events.onClick?.target===screen.id)n.events.onClick.target=copy.id;});this.transact(d=>d.screens.push(copy));return copy;}
+  addScreen(){const s={id:id('s'),name:'Nova Screen',width:390,height:844,position:{x:Math.max(...this.value.screens.map(s=>s.position.x+s.width))+80,y:80},root:node(this.registry,'Column')};this.transact(d=>d.screens.push(s));return s;}
+  duplicateScreen(screen){const copy=clone(screen),map=new Map();map.set(copy.id,id('s'));copy.id=map.get(copy.id);copy.name+=' cópia';copy.position.x+=440;walk(copy.root,n=>{map.set(n.id,id('n'));n.id=map.get(n.id);});for(const l of copy.layers||[]){l.id=id('l');l.nodes=l.nodes.map(id=>map.get(id)).filter(Boolean);}walk(copy.root,n=>{for(const link of Object.values(n.layout.constraints||{}))if(map.has(link.target))link.target=map.get(link.target);if(n.type==='Barrier')n.props.references=n.props.references.split(/\s+/).map(id=>map.get(id)).filter(Boolean).join(' ');if(n.events.onClick?.target===screen.id)n.events.onClick.target=copy.id;});this.transact(d=>d.screens.push(copy));return copy;}
   deleteScreen(screen){if(this.value.screens.length===1)throw Error('Mantenha ao menos uma Screen.');this.transact(d=>{d.screens=d.screens.filter(s=>s.id!==screen.id);if(d.start_screen===screen.id)d.start_screen=d.screens[0].id;for(const s of d.screens)walk(s.root,n=>{if(n.events.onClick?.target===screen.id)delete n.events.onClick;});});}
-  locked(id){let c=this.find(id);while(c){if(c.node.layout.locked)return true;c=c.parent?this.find(c.parent.id):null;}return false;}
+  locked(id){let c=this.find(id);while(c){if(c.node.layout.locked||(c.screen.layers||[]).some(l=>l.locked&&l.nodes.includes(c.node.id)))return true;c=c.parent?this.find(c.parent.id):null;}return false;}
   accepts(parent,child){
    if(!this.registry[parent.type]?.container||this.locked(parent.id))return false;
+   if(['Guideline','Barrier'].includes(child.type)&&parent.type!=='ConstraintLayout')return false;
    if(parent.type==='BottomBar')return child.type==='NavigationItem';
    if(['Button','IconButton','FloatingButton','NavigationItem'].includes(parent.type))return ['TextLabel','Icon'].includes(child.type);
    if(['TextField','SearchBar'].includes(parent.type))return child.type==='Icon';
@@ -47,6 +48,7 @@ window.AgataUIModel=(()=>{
     for(const [i,source] of sources.entries()){
      // Weight is meaningful only in Row/Column without scroll.
      if(!['Row','Column'].includes(target.type)||target.layout.scroll!=='none')source.node.layout.weight=0;
+     if(target.type==='ConstraintLayout'&&position&&!Object.keys(source.node.layout.constraints).length)Object.assign(source.node.layout,{x:position.x+i*8,y:position.y+i*8});
      if(target.type==='Box'&&target.layout.mode==='free'&&position){Object.assign(source.node.layout,{x:position.x+i*8,y:position.y+i*8,anchorX:'start',anchorY:'top'});if(source.node.layout.width==='fill'&&position.width)source.node.layout.width=Math.max(1,Math.round(position.width));if(source.node.layout.height==='fill'&&position.height)source.node.layout.height=Math.max(1,Math.round(position.height));}
     }
    });
@@ -59,7 +61,19 @@ window.AgataUIModel=(()=>{
    const parent=nodes[0].parent,group=node(this.registry,type);if(!this.accepts(parent,group))throw Error('Destino não aceita grupo.');
    this.transact(()=>{const index=Math.min(...nodes.map(c=>parent.children.indexOf(c.node)));parent.children=parent.children.filter(n=>!nodes.some(c=>c.node===n));group.children=nodes.map(c=>c.node);parent.children.splice(index,0,group);});return group;
   }
-  cloneNode(original){const c=clone(original);walk(c,n=>n.id=id('n'));return c;}
+  repair(){
+   for(const s of this.value.screens){const own=new Set();walk(s.root,n=>own.add(n.id));s.layers=(s.layers||[]).map(l=>({...l,nodes:l.nodes.filter(id=>own.has(id))}));walk(s.root,n=>{
+    for(const c of n.children){if(n.type!=='ConstraintLayout')c.layout.constraints={};else for(const [a,link] of Object.entries(c.layout.constraints||{}))if(link.target!=='parent'&&!n.children.some(s=>s.id===link.target))delete c.layout.constraints[a];}
+    for(const helper of n.children.filter(c=>c.type==='Barrier')){helper.props.references=helper.props.references.split(/\s+/).filter(id=>n.children.some(c=>c.id===id)).join(' ');if(!helper.props.references)throw Error('Barrier sem alvos. Remova a Barrier junto com os componentes referenciados.');}
+   });}
+  }
+  setConstraint(id,anchor,link){const found=this.find(id);if(!found?.parent||found.parent.type!=='ConstraintLayout'||this.locked(id))throw Error('Selecione filho desbloqueado de ConstraintLayout.');
+   this.transact(()=>{if(link)found.node.layout.constraints[anchor]=clone(link);else delete found.node.layout.constraints[anchor];window.AgataConstraints.validate(found.parent);});
+  }
+  centerNode(id){const c=this.find(id);if(c?.parent?.type!=='ConstraintLayout'||['Guideline','Barrier'].includes(c.node.type)||this.locked(id))throw Error('Centralização requer pai ConstraintLayout.');this.transact(()=>{for(const a of ['start','end','top','bottom'])c.node.layout.constraints[a]={target:'parent',anchor:a,margin:0};delete c.node.layout.constraints.baseline;c.node.layout.horizontalBias=.5;c.node.layout.verticalBias=.5;});}
+  addLayer(screen,ids,name='Nova camada'){const valid=this.topNodes(ids).filter(c=>c.screen===screen);if(!valid.length)throw Error('Selecione componentes desta Screen.');const layer={id:id('l'),name,nodes:valid.map(c=>c.node.id),visible:true,locked:false,opacity:1};this.transact(()=>{for(const l of screen.layers||[])l.nodes=l.nodes.filter(id=>!layer.nodes.includes(id));(screen.layers??=[]).push(layer);});return layer;}
+  cloneNode(original){const c=clone(original),map=new Map();walk(c,n=>{map.set(n.id,id('n'));n.id=map.get(n.id);});walk(c,n=>{for(const [a,link] of Object.entries(n.layout.constraints||{}))if(map.has(link.target))link.target=map.get(link.target);else if(link.target!=='parent')delete n.layout.constraints[a];if(n.type==='Barrier')n.props.references=n.props.references.split(/\s+/).filter(id=>map.has(id)).map(id=>map.get(id)).join(' ');});return c;}
+
  }
  return {Document,node,walk,clone,id};
 })();
