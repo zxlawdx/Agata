@@ -109,3 +109,34 @@
 #agata-home .agata-project-name{overflow-wrap:anywhere}
 #agata-home .agata-dialog{max-height:90vh;overflow:auto}
 #agata-home .agata-manager-actions{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0;align-items:center}#agata-home .agata-manager-actions button,#agata-home .agata-manager-actions input,#agata-home .agata-manager-actions select{font:inherit;border:2px solid #242424;border-radius:10px;padding:10px;background:#fff9ef;max-width:100%}#agata-home .agata-manager-actions input{flex:1;min-width:140px}.agata-manager-dialog{max-width:min(900px,94vw);max-height:90vh;overflow:auto}.agata-manager-dialog>button,.agata-manager-dialog>input,.agata-manager-dialog>label{margin:8px}.agata-manager-dialog input{max-width:100%}#agata-import-preview{padding:14px;border:2px solid #242424;border-radius:12px;background:#96e6ec}#agata-import-preview ul{max-height:180px;overflow:auto}#agata-wizard-settings{padding:12px;border:2px solid #242424;border-radius:12px;margin:10px 0}#agata-wizard-settings label{display:block;margin:9px 0}.agata-project-meta small{overflow-wrap:anywhere}
+
+/* Shared Agata IDE appearance, independent of project output themes. */
+#agata-home .agata-theme-setting{display:grid;gap:6px;padding:10px 9px;margin-top:auto;border-top:1px solid #24242444}
+#agata-home .agata-theme-setting label{font-size:11px;font-weight:800}
+#agata-home .agata-theme-setting select{width:100%;min-height:36px;border:2px solid var(--ink);border-radius:9px;background:var(--cream);color:var(--ink);padding:5px}
+#agata-home .agata-side-bottom{margin-top:0}
+#agata-home[data-ide-theme="dark"]{
+ --cream:#182430;--paper:#233342;--cyan:#27576a;--blue:#307ea3;
+ --pink:#573b50;--mint:#295846;--yellow:#79602c;--lilac:#50446b;--ink:#f3ecdf;
+ color:var(--ink);background:#101a26;
+}
+@media(prefers-color-scheme:dark){
+ #agata-home[data-ide-theme="system"]{
+  --cream:#182430;--paper:#233342;--cyan:#27576a;--blue:#307ea3;
+  --pink:#573b50;--mint:#295846;--yellow:#79602c;--lilac:#50446b;--ink:#f3ecdf;
+  color:var(--ink);background:#101a26;
+ }
+}
+#agata-home:is([data-ide-theme="dark"]) .agata-project-list{background:var(--pink)}
+#agata-home:is([data-ide-theme="dark"]) .agata-project-card{background:var(--pink)}
+#agata-home:is([data-ide-theme="dark"]) .agata-project-card:hover{background:#71536a}
+#agata-home:is([data-ide-theme="dark"]) .agata-dialog{background:var(--cream)}
+#agata-home:is([data-ide-theme="dark"]) .agata-dialog input,
+#agata-home:is([data-ide-theme="dark"]) .agata-dialog select{background:var(--paper);color:var(--ink)}
+#agata-home:is([data-ide-theme="dark"]) .agata-manager-actions :is(input,select,button){background:var(--paper);color:var(--ink)}
+@media(prefers-color-scheme:dark){
+ #agata-home[data-ide-theme="system"] .agata-project-card{background:var(--pink)}
+ #agata-home[data-ide-theme="system"] .agata-project-card:hover{background:#71536a}
+ #agata-home[data-ide-theme="system"] .agata-dialog :is(input,select){background:var(--paper);color:var(--ink)}
+ #agata-home[data-ide-theme="system"] .agata-manager-actions :is(input,select,button){background:var(--paper);color:var(--ink)}
+}
