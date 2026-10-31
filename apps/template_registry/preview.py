@@ -94,12 +94,12 @@ def _web_preview(template_id):
         path = "components/" + match.group(1) + ".html"
         return files.get(path, "")
     html = re.sub(
-        r'<agata-include\\s+src="components/([a-z0-9_-]+)\\.html"\\s*></agata-include>',
+        r'<agata-include\s+src="components/([a-z0-9_-]+)\.html"\s*></agata-include>',
         replace_include, html,
     )
-    html = re.sub(r'<script\\b[^>]*>.*?</script>', "", html, flags=re.I | re.S)
-    html = re.sub(r'<link\\b[^>]*rel="stylesheet"[^>]*>', "", html, flags=re.I)
-    stylesheet = "\\n".join(files[x] for x in (
+    html = re.sub(r'<script\b[^>]*>.*?</script>', "", html, flags=re.I | re.S)
+    html = re.sub(r'<link\b[^>]*rel="stylesheet"[^>]*>', "", html, flags=re.I)
+    stylesheet = "\n".join(files[x] for x in (
         "css/tokens.css", "css/base.css", "css/layout.css",
         "css/components.css", "css/responsive.css",
     ) if x in files)
