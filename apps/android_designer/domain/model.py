@@ -63,7 +63,9 @@ def migrate(document):
 
 def resolve_layout(layout,width,height):
     result=copy.deepcopy(layout)
-    group='compact' if width<600 else 'medium' if width<840 else 'expanded'
+    group='compact' if width<600 else 'medium' if width<840 else 'expanded' if width<1200 else 'large' if width<1600 else 'extraLarge'
+    result.update(layout['responsive'].get('expanded',{}) if width>=1200 else {})
+    result.update(layout['responsive'].get('large',{}) if width>=1600 else {})
     result.update(layout['responsive'].get(group,{}))
     if width>height:result.update(layout['responsive'].get('landscape',{}))
     return result
@@ -167,7 +169,7 @@ def validate(document):
         if n['type']=='Barrier' and (props['direction'] not in {'start','end','top','bottom'} or not number(props['barrierMargin'],0,4096)):raise ValueError('Barrier inválida.')
         if n['type'] in {'Guideline','Barrier'} and (parent is None or parent['type']!='ConstraintLayout'):raise ValueError('Helper requer ConstraintLayout.')
         overrides=layout['responsive']
-        if not isinstance(overrides,dict) or set(overrides)-{'compact','medium','expanded','landscape'}:raise ValueError('Classe de janela inválida.')
+        if not isinstance(overrides,dict) or set(overrides)-{'compact','medium','expanded','large','extraLarge','landscape'}:raise ValueError('Classe de janela inválida.')
         for rule in overrides.values():
             if not isinstance(rule,dict) or set(rule)-{'width','height','minWidth','maxWidth','minHeight','maxHeight','padding','gap','weight','columns','alignment','arrangement','visible','wrap'}:raise ValueError('Override responsivo inválido.')
             resolved={**layout,**rule,'responsive':{}}
@@ -188,6 +190,9 @@ def validate(document):
         if n['type'] in {'Shape','DrawingCanvas','Chart'}:
             from .graphics import validate_graphic
             validate_graphic(n)
+        if 'motion' in n:
+            from .motion import validate_motion
+            validate_motion(n['motion'])
         from .compose import validate_compose
         validate_compose(n)
         children=n.get('children')

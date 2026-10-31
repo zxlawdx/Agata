@@ -1,0 +1,133 @@
+{
+  "browser": "153.0.8010.0",
+  "results": [
+    {
+      "template": "saas-dashboard",
+      "width": 375,
+      "openMs": 840,
+      "scroll": 375,
+      "main": true,
+      "background": "rgb(245, 240, 255)"
+    },
+    {
+      "template": "saas-dashboard",
+      "width": 1440,
+      "openMs": 840,
+      "scroll": 1440,
+      "main": true,
+      "background": "rgb(245, 240, 255)"
+    },
+    {
+      "template": "premium-landing",
+      "width": 375,
+      "openMs": 207,
+      "scroll": 375,
+      "main": true,
+      "background": "rgb(245, 240, 255)"
+    },
+    {
+      "template": "premium-landing",
+      "width": 1440,
+      "openMs": 207,
+      "scroll": 1440,
+      "main": true,
+      "background": "rgb(245, 240, 255)"
+    },
+    {
+      "template": "creative-portfolio",
+      "width": 375,
+      "openMs": 178,
+      "scroll": 375,
+      "main": true,
+      "background": "rgb(19, 21, 44)"
+    },
+    {
+      "template": "creative-portfolio",
+      "width": 1440,
+      "openMs": 178,
+      "scroll": 1440,
+      "main": true,
+      "background": "rgb(19, 21, 44)"
+    },
+    {
+      "template": "social-web",
+      "width": 375,
+      "openMs": 171,
+      "scroll": 375,
+      "main": true,
+      "background": "rgb(16, 19, 24)"
+    },
+    {
+      "template": "social-web",
+      "width": 1440,
+      "openMs": 171,
+      "scroll": 1440,
+      "main": true,
+      "background": "rgb(16, 19, 24)"
+    },
+    {
+      "template": "ecommerce",
+      "width": 375,
+      "openMs": 207,
+      "scroll": 375,
+      "main": true,
+      "background": "rgb(245, 240, 255)"
+    },
+    {
+      "template": "ecommerce",
+      "width": 1440,
+      "openMs": 207,
+      "scroll": 1440,
+      "main": true,
+      "background": "rgb(245, 240, 255)"
+    },
+    {
+      "template": "blog-editorial",
+      "width": 375,
+      "openMs": 163,
+      "scroll": 375,
+      "main": true,
+      "background": "rgb(244, 240, 232)"
+    },
+    {
+      "template": "blog-editorial",
+      "width": 1440,
+      "openMs": 163,
+      "scroll": 1440,
+      "main": true,
+      "background": "rgb(244, 240, 232)"
+    },
+    {
+      "template": "authentication-web",
+      "width": 375,
+      "openMs": 162,
+      "scroll": 375,
+      "main": true,
+      "background": "rgb(245, 240, 255)"
+    },
+    {
+      "template": "authentication-web",
+      "width": 1440,
+      "openMs": 162,
+      "scroll": 1440,
+      "main": true,
+      "background": "rgb(245, 240, 255)"
+    },
+    {
+      "template": "admin-panel",
+      "width": 375,
+      "openMs": 171,
+      "scroll": 375,
+      "main": true,
+      "background": "rgb(245, 240, 255)"
+    },
+    {
+      "template": "admin-panel",
+      "width": 1440,
+      "openMs": 171,
+      "scroll": 1440,
+      "main": true,
+      "background": "rgb(245, 240, 255)"
+    }
+  ]
+}

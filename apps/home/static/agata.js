@@ -130,7 +130,7 @@
  on(q("agata-cancel-create"),"click",closeCreate);
  on(q("agata-project-list"),"click",event=>{
    const btn=event.target.closest("[data-id]");
-   if(btn){window.pywebview.api.project_action?.(btn.dataset.id,"touch").catch(e=>error(e.message));const project=projects.find(p=>p.id===btn.dataset.id);window.Vela.navigate(project?.open_editor==="android"?"/android":"/sketch",{project_id:btn.dataset.id}).catch(e=>error(e.message));}
+   if(btn){window.pywebview.api.project_action?.(btn.dataset.id,"touch").catch(e=>error(e.message));const project=projects.find(p=>p.id===btn.dataset.id);window.Vela.navigate(project?.open_editor==="web"?"/web":project?.open_editor==="android"?"/android":"/sketch",{project_id:btn.dataset.id}).catch(e=>error(e.message));}
  });
  for(const btn of root.querySelectorAll("[data-section]"))
    on(btn,"click",()=>navigate(btn.dataset.section));
@@ -138,6 +138,7 @@
    on(btn,"click",()=>openCreate(btn.dataset.editorMode,true));
  for(const btn of root.querySelectorAll("[data-preset]"))
    on(btn,"click",()=>openCreate(btn.dataset.preset));
+ on(root.querySelector('[data-web-studio]'),"click",()=>window.Vela.navigate('/web'));
  const previous=window.VelaPage?.beforeUnmount;
  window.VelaPage={...(window.VelaPage||{}),beforeUnmount(){
    disposed=true;abort.abort();if(typeof previous==="function")previous.call(this);

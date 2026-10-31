@@ -22,7 +22,7 @@ class ProjectManager:
         self.repo.register(data['id'],p,data['name']);return self.describe(self.repo.get(data['id']))
     def describe(self,project):
         p=copy.deepcopy(project);p['location']=str(self.repo._read_path(p['id']).parent);p['unavailable']=False
-        p['open_editor']='android' if 'interface_document' in p or p.get('project_settings',{}).get('ui_framework') else 'sketch'
+        p['open_editor']='web' if p.get('kind')=='web' else 'android' if 'interface_document' in p or p.get('project_settings',{}).get('ui_framework') else 'sketch'
         p['framework']=p.get('project_settings',{}).get('ui_framework','compose' if p.get('interface_document') else 'sketch')
         return p
     def list(self,include_hidden=False):
@@ -44,8 +44,9 @@ class ProjectManager:
             p['updated_at']=stamp();self.repo.save(p);self.repo.register(project_id,self.repo._read_path(project_id),p['name'])
         elif action=='duplicate':
             original=p['id'];p=copy.deepcopy(p);p['id']=uuid4().hex;p['name']+=' cópia';p['created_at']=p['updated_at']=stamp();self.repo.save(p)
-            for folder in ['original-source','source-edits']:
+            for folder in ['original-source','source-edits','web-root','web-original']:
                 source=self.repo._read_path(original).parent/folder
+                if source.is_symlink() or source.is_dir() and any(child.is_symlink() for child in source.rglob('*')):raise ValueError('Links simbólicos não podem ser duplicados.')
                 if source.is_dir():shutil.copytree(source,self.repo._read_path(p['id']).parent/folder,symlinks=False)
             self.repo.register(p['id'],self.repo._read_path(p['id']),p['name'])
         elif action=='open_folder':

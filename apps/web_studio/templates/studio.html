@@ -1,0 +1,288 @@
+<link rel="stylesheet" href="{{ static('web_studio/vendor/grapes.css') }}" />
+<link rel="stylesheet" href="{{ static('web_studio/vendor/monaco.css') }}" />
+<link rel="stylesheet" href="{{ static('web_studio/studio.css') }}" />
+<section
+  id="web-studio"
+  data-project-id="{{ project_id }}"
+  data-assets="{{ static('web_studio/studio.css') }}"
+>
+  <header>
+    <button data-action="home">Agata</button><strong>Web Studio</strong
+    ><select id="ws-project-template" aria-label="Template"></select
+    ><button data-action="create">Novo</button
+    ><button data-action="import">Importar</button
+    ><button data-action="save">Salvar</button
+    ><button data-action="saveas">Salvar como</button
+    ><button data-action="undo" aria-label="Desfazer">↶</button
+    ><button data-action="redo" aria-label="Refazer">↷</button
+    ><button data-action="export">Exportar ZIP</button
+    ><output id="ws-status" role="status">Carregando…</output>
+  </header>
+  <nav aria-label="Workspace">
+    <button data-mode="design">Design</button
+    ><button data-mode="code">Código</button
+    ><button data-mode="split" aria-pressed="true">Dividido</button
+    ><button data-mode="preview">Preview</button
+    ><button data-action="left">Explorer</button
+    ><button data-action="right">Inspector</button
+    ><label
+      >Viewport
+      <select id="ws-viewport">
+        <option value="375">Mobile 375</option>
+        <option value="390">Mobile 390</option>
+        <option value="768">Tablet 768</option>
+        <option value="1024">Laptop 1024</option>
+        <option value="1440" selected>Desktop 1440</option>
+        <option value="1920">Wide 1920</option>
+        <option value="custom">Personalizado</option>
+      </select></label
+    ><input
+      id="ws-width"
+      type="number"
+      min="240"
+      max="3840"
+      value="1440"
+      aria-label="Largura em pixels"
+    /><select id="ws-page" aria-label="Página"></select
+    ><button data-action="entry">Definir inicial</button
+    ><label><input id="ws-reduced" type="checkbox" />Reduzir movimento</label
+    ><label><input id="ws-network" type="checkbox" />HTTPS no preview</label
+    ><label><input id="ws-autosave" type="checkbox" checked />Autosave</label
+    ><input
+      id="ws-autosave-interval"
+      type="number"
+      min="5"
+      max="300"
+      value="30"
+      aria-label="Intervalo autosave em segundos"
+    />
+  </nav>
+  <div class="ws-layout">
+    <aside class="ws-left">
+      <h3>Project Explorer</h3>
+      <input
+        id="ws-search-files"
+        placeholder="Buscar arquivo"
+        aria-label="Buscar arquivo"
+      />
+      <div class="ws-file-actions">
+        <button data-action="newfile">+ Arquivo</button
+        ><button data-action="folder">+ Pasta</button
+        ><button data-action="rename">Renomear/mover</button
+        ><button data-action="duplicatefile">Duplicar</button
+        ><button data-action="deletefile">Excluir</button
+        ><button data-action="asset">Importar asset</button>
+      </div>
+      <div id="ws-files"></div>
+      <h3>Elementos e blocos</h3>
+      <input
+        id="ws-search-blocks"
+        placeholder="Buscar componente"
+        aria-label="Buscar componente"
+      />
+      <div id="ws-blocks"></div>
+      <h3>Layers</h3>
+      <div id="ws-tree" role="tree"></div>
+    </aside>
+    <main class="ws-center">
+      <div class="ws-selection-tools">
+        <button data-action="parent">Selecionar pai</button
+        ><button data-action="detachcomponent">Desvincular instância</button
+        ><button data-action="copy">Copiar</button
+        ><button data-action="paste">Colar</button
+        ><button data-action="duplicate">Duplicar</button
+        ><button data-action="delete">Excluir</button
+        ><button data-action="up">Subir</button
+        ><button data-action="down">Descer</button
+        ><button data-action="center">Centralizar</button
+        ><button data-action="centerh">Centralizar H</button
+        ><button data-action="centerv">Centralizar V</button
+        ><button data-action="distribute">Distribuir</button
+        ><button data-action="autoflex">Auto Flex</button
+        ><button data-action="autogrid">Auto Grid</button
+        ><button data-action="gridguides">Guias Grid</button
+        ><button data-action="rulers">Réguas</button
+        ><button data-action="snap">Snap de tamanho</button
+        ><button data-action="group">Agrupar</button>
+      </div>
+      <div class="ws-editors">
+        <section id="ws-design" aria-label="Canvas visual">
+          <div id="ws-canvas"></div>
+        </section>
+        <section id="ws-code">
+          <div id="ws-tabs" role="tablist"></div>
+          <div class="ws-code-tools">
+            <button data-action="format">Formatar</button
+            ><button data-action="find">Buscar/substituir</button
+            ><button data-action="diff">Comparar salvo</button
+            ><button data-action="source">Localizar seleção</button>
+          </div>
+          <div id="ws-monaco"></div>
+        </section>
+        <section id="ws-runtime">
+          <iframe
+            id="ws-preview"
+            title="Preview isolado"
+            sandbox="allow-scripts allow-forms"
+            referrerpolicy="no-referrer"
+          ></iframe>
+        </section>
+      </div>
+    </main>
+    <aside class="ws-right">
+      <h3>Inspector</h3>
+      <output id="ws-selection">Selecione um elemento</output>
+      <div id="ws-attributes"></div>
+      <div id="ws-properties"></div>
+      <details>
+        <summary>Gradiente</summary>
+        <label
+          >Tipo
+          <select id="ws-gradient-kind">
+            <option>linear</option>
+            <option>radial</option>
+            <option>conic</option>
+          </select></label
+        ><label
+          >Ângulo
+          <input id="ws-gradient-angle" value="135" type="number" /></label
+        ><label
+          >Stops CSS
+          <textarea id="ws-gradient-stops">
+#16152b 0%, #4741a8 55%, #a051c8 100%</textarea
+          ></label
+        ><button data-action="gradient">Aplicar gradiente</button>
+      </details>
+      <details>
+        <summary>Animação</summary>
+        <label>Nome <input id="ws-animation-name" value="float" /></label
+        ><label
+          >Duração (s)
+          <input
+            id="ws-animation-duration"
+            type="number"
+            value="4"
+            min="0.1"
+            step="0.1" /></label
+        ><label
+          >Keyframes CSS
+          <textarea id="ws-animation-frames">
+0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); }</textarea
+          ></label
+        ><button data-action="animation">Aplicar animação</button>
+      </details>
+      <details>
+        <summary>Eventos</summary>
+        <label
+          >Ação
+          <select id="ws-event-action">
+            <option value="navigate">Navegar</option>
+            <option value="dialog">Abrir dialog</option>
+            <option value="toggle">Alternar visibilidade</option>
+          </select></label
+        ><label
+          >Destino / seletor
+          <input id="ws-event-target" value="/pages/about.html" /></label
+        ><button data-action="event">Configurar click</button>
+      </details>
+      <details>
+        <summary>Design tokens</summary>
+        <label
+          >CSS custom properties
+          <textarea id="ws-tokens" rows="8"></textarea></label
+        ><button data-action="tokens">Aplicar tokens</button>
+      </details>
+      <h3>Estilo calculado e origem</h3>
+      <pre id="ws-computed"></pre>
+    </aside>
+  </div>
+  <footer>
+    <details open>
+      <summary>Console / Diagnósticos / Problemas</summary>
+      <pre id="ws-console" aria-live="polite"></pre>
+      <pre id="ws-problems" aria-live="polite"></pre>
+    </details>
+  </footer>
+  <input id="ws-upload" type="file" hidden multiple />
+  <dialog id="ws-dialog">
+    <form method="dialog">
+      <h3 id="ws-dialog-title"></h3>
+      <label id="ws-dialog-label"></label
+      ><input id="ws-dialog-input" required />
+      <div>
+        <button value="cancel" formnovalidate>Cancelar</button
+        ><button value="ok">Continuar</button>
+      </div>
+    </form>
+  </dialog>
+</section>
+<script>
+  (async () => {
+    const root = document.getElementById("web-studio");
+    root.inert = true;
+    try {
+      const base = new URL(".", new URL(root.dataset.assets, document.baseURI))
+        .href;
+      root.dataset.assets = base;
+      window.MonacoEnvironment = {
+        getWorkerUrl: (_, label) =>
+          base +
+          "vendor/workers/" +
+          ({
+            html: "html",
+            handlebars: "html",
+            razor: "html",
+            css: "css",
+            scss: "css",
+            less: "css",
+            json: "json",
+            javascript: "typescript",
+            typescript: "typescript",
+          }[label] || "editor") +
+          ".js",
+      };
+      for (const file of [
+        "vendor/parsers.js",
+        "vendor/monaco.js",
+        "vendor/grapes.js",
+        "js/document.js",
+        "js/references.js",
+        "js/library.js",
+        "js/virtual_list.js",
+        "js/catalog.js",
+        "js/events.js",
+        "js/layout.js",
+        "js/adapters.js",
+        "js/styles.js",
+        "js/effects.js",
+        "js/inspector.js",
+        "js/studio.js",
+      ]) {
+        const cache = (window.AgataWebAssetLoads ||= new Map());
+        const url = base + file;
+        if (!cache.has(url))
+          cache.set(
+            url,
+            new Promise((ok, fail) => {
+              const script = document.createElement("script");
+              script.src = url;
+              script.onload = ok;
+              script.onerror = () => fail(Error("Falha ao carregar " + file));
+              document.head.append(script);
+            }).catch((error) => {
+              cache.delete(url);
+              throw error;
+            }),
+          );
+        await cache.get(url);
+        if (!root.isConnected) return;
+      }
+      await window.AgataWebStudio.mount(root);
+      root.inert = false;
+    } catch (e) {
+      root.inert = false;
+      root.querySelector("#ws-status").textContent = e.message;
+      console.error(e);
+    }
+  })();
+</script>

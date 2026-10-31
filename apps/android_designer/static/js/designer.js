@@ -131,11 +131,11 @@ window.AgataAndroidDesigner={async mount(root){
   for(const [key,value] of Object.entries(n.props)){
    if(key==='source'){
     const input=R.el('input');input.type='file';input.accept='image/png';input.setAttribute('aria-label','Imagem PNG local');input.onchange=async()=>{const file=input.files[0];if(!file)return;if(file.size>2_000_000){message('Imagem deve ter até 2 MB.',true);return;}const reader=new FileReader();reader.onload=()=>transact(()=>n.props.source=reader.result);reader.readAsDataURL(file);};host.append(input);
-   }else field(host,key,value,v=>{n.props[key]=v;if(key==='bold'&&n.compose?.styles?.fontWeight){const b=n.compose.styles.fontWeight;b.value=v?'FontWeight.Bold':'FontWeight.Normal';b.by_mode={light:b.value,dark:b.value};b.override=true;}},enums[key]);
+   }else field(host,key,value,v=>{n.props[key]=v;if(n.tokenReferences?.['props.'+key])n.tokenOverrides=[...new Set([...(n.tokenOverrides||[]),'props.'+key])];if(key==='bold'&&n.compose?.styles?.fontWeight){const b=n.compose.styles.fontWeight;b.value=v?'FontWeight.Bold':'FontWeight.Normal';b.by_mode={light:b.value,dark:b.value};b.override=true;}},enums[key]);
   }
   window.AgataComposePresentation?.inspector(host,n,field,transact,model.value,render);
   const scope=R.el('select');scope.setAttribute('aria-label','Variação responsiva');
-  for(const v of ['base','compact','medium','expanded','landscape']){const option=R.el('option','',v==='base'?'Base (todos os dispositivos)':v);option.value=v;scope.append(option);}scope.value=responsiveScope;scope.onchange=()=>{responsiveScope=scope.value;renderInspector();};host.append(scope);
+  for(const v of ['base','compact','medium','expanded','large','extraLarge','landscape']){const option=R.el('option','',v==='base'?'Base (todos os dispositivos)':v);option.value=v;scope.append(option);}scope.value=responsiveScope;scope.onchange=()=>{responsiveScope=scope.value;renderInspector();};host.append(scope);
   const supported=['width','height','minWidth','maxWidth','minHeight','maxHeight','padding','gap','weight','columns','alignment','arrangement','visible','wrap'];
   const currentLayout=responsiveScope==='base'?n.layout:{...n.layout,...n.layout.responsive[responsiveScope]};
   for(const [key,value] of Object.entries(currentLayout)){
@@ -193,7 +193,7 @@ window.AgataAndroidDesigner={async mount(root){
  function renderPreview(){
   const active=model.value.screens.find(s=>s.id===previewStack.at(-1))||model.value.screens.find(s=>s.id===model.value.start_screen);if(!active){$('ad-preview-screen').replaceChildren(R.el('p','','Crie sua primeira Screen.'));return;}
   $('ad-preview-name').value=active.name;$('ad-preview-screen').style.width='100%';$('ad-preview-screen').style.minHeight=previewHeight+'px';$('ad-preview-screen').style.height=previewHeight+'px';$('ad-preview-viewport').style.width=previewWidth+'px';$('ad-preview-viewport').style.height=previewHeight+'px';
-  $('ad-preview-screen').replaceChildren(R.render(AgataConstraints.layered(active).root,{preview:true,composeFonts:model.value.compose_project?.fonts,composeThemes:model.value.compose_project?.themes,composeTheme:model.value.theme.darkMode==='system'?(model.value.compose_project?.preview?.theme||'dark'):model.value.theme.darkMode,width:previewWidth,height:previewHeight,fontScale,state:previewState,validationErrors:previewErrors,activeScreen:active.id,action:runPreviewAction}));
+  $('ad-preview-screen').replaceChildren(R.render(AgataConstraints.layered(active).root,{preview:true,reducedMotion:!!(model.value.motionSettings?.reduced||model.value.design_system?.motion?.reduced),composeFonts:model.value.compose_project?.fonts,composeThemes:model.value.compose_project?.themes,composeTheme:model.value.theme.darkMode==='system'?(model.value.compose_project?.preview?.theme||'dark'):model.value.theme.darkMode,width:previewWidth,height:previewHeight,fontScale,state:previewState,validationErrors:previewErrors,activeScreen:active.id,action:runPreviewAction}));
   requestAnimationFrame(()=>{if(disposed)return;const diagnostics=window.AgataLayout.measure($('ad-preview-screen'));$('ad-layout-diagnostics').replaceChildren(...diagnostics.warnings.map(w=>R.el('li','',w.message)));$('ad-status').textContent=window.AgataLayout.sizeClass(previewWidth)+' · '+diagnostics.warnings.length+' aviso(s) de layout';});
  }
  function ensureEditor(){if(codeEditor)return;codeEditor=window.AgataCodeEditor.create($('ad-code-editor'),(text)=>{
@@ -323,6 +323,7 @@ window.AgataAndroidDesigner={async mount(root){
  });
  tour=window.AgataTutorial.mount(root,{model,render,setMode,notify:message});on($('ad-help'),'click',()=>tour.offer(true));
  window.VelaPage={...(window.VelaPage||{}),beforeUnmount(){disposed=true;clearTimeout(generationTimer);abort.abort();notifications.dispose();codeEditor?.destroy();dragController?.dispose();constraintEditor?.dispose();navigationEditor?.dispose();desktop?.dispose();graphicsEditor?.dispose();explorer?.dispose();tour?.dispose();previewObserver?.disconnect();panelObservers.forEach(o=>o.disconnect());}};
+ window.AgataPremiumAndroid?.mount({root,model,transact,render,screen,api,message,getSelected:()=>[...selected]});
  render();await setMode('design');tour.maybeOffer();
  if(model.value.viewport){$('ad-workspace').scrollTo(model.value.viewport.x,model.value.viewport.y);}else fit();
 }};

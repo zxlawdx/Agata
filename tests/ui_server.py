@@ -10,7 +10,7 @@ import tempfile
 from types import SimpleNamespace
 from bottle import request, response
 from vela.cli.collectstatic import collect_static
-from vela.core.api_server import ApiServer
+from config.http_server import AgataApiServer as ApiServer
 from vela.core.router import Router
 from apps.home.views import register_routes as home_routes
 from apps.sketch_editor.views import register_routes as editor_routes
@@ -23,11 +23,26 @@ home_routes(router)
 editor_routes(router)
 from apps.android_designer.views import register_routes as android_routes
 android_routes(router)
+from apps.web_studio.views import register_routes as web_routes
+web_routes(router)
 server = ApiServer(SimpleNamespace(routes=[]), port=0, docs_enabled=False)
 fixture_root = tempfile.TemporaryDirectory(prefix='agata-ui-')
 repository = JsonProjectRepository(Path(fixture_root.name)/'Agata'/'Projetos', Path(fixture_root.name)/'Yara'/'Projetos')
 bridge_module.project_repository = lambda: repository
 bridge = bridge_module.AgataBridge.__new__(bridge_module.AgataBridge)
+bridge.router=router
+bridge.config={'title':'Agata fixture','layout':{'sidebar':False,'topbar':False,'theme':'dark'}}
+bridge.hot_reload=SimpleNamespace(refresh=lambda:None)
+bridge.platform=SimpleNamespace(capabilities=lambda:{})
+from config.native_security import guarded_dispatcher
+native_guard=guarded_dispatcher(lambda window,name,params,value_id:getattr(window._js_api,name)(*params))
+native_window=SimpleNamespace(_js_api=bridge)
+
+@server.app.post('/fixture/native-dispatch')
+def native_dispatch():
+    data=request.json
+    return {'result':native_guard(native_window,data['name'],data.get('params'),data.get('id','fixture'))}
+
 from apps.sketch_editor.services.exports import ArtworkExporter
 from xml.etree import ElementTree
 import struct
@@ -54,6 +69,10 @@ def export_imported_android(project_id,backend,activate=False):
     return imported_export(repository,project_id,backend,activate,Path(fixture_root.name)/'Exports')
 bridge.export_imported_android=export_imported_android
 allowed = {'list_projects', 'create_project', 'get_project', 'save_sketch', 'export_artwork', 'get_interface', 'save_interface', 'generate_android', 'validate_interface', 'export_android','project_action','open_existing_project','inspect_project_import','upload_project_import','upload_project_sources','confirm_project_import','cancel_project_import','project_source','save_project_source','reanalyze_project','export_imported_android','choose_project_path'}
+
+allowed.update({'android_design_system','android_premium_component','web_catalog','create_web_project','get_web_project','save_web_project','import_web_project','export_web_project','web_preview','save_web_recovery'})
+from apps.web_studio.services.projects import WebProjectService
+bridge.export_web_project=lambda project_id: WebProjectService(repository).export(project_id,Path(fixture_root.name)/'Exports')
 
 @server.app.post('/fixture/api/<method>')
 def call(method):

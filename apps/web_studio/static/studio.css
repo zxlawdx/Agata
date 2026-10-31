@@ -1,0 +1,340 @@
+#web-studio {
+  --ws-left: 245px;
+  --ws-right: 290px;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  background: #131722;
+  color: #e6eaf1;
+  font: 13px system-ui;
+}
+#web-studio * {
+  box-sizing: border-box;
+}
+#web-studio button,
+#web-studio input,
+#web-studio select,
+#web-studio textarea {
+  font: inherit;
+  color: inherit;
+  background: #252c3a;
+  border: 1px solid #424e64;
+  border-radius: 5px;
+  padding: 6px;
+  min-width: 0;
+}
+#web-studio button {
+  cursor: pointer;
+}
+#web-studio button:hover {
+  background: #36435b;
+}
+#web-studio :focus-visible {
+  outline: 2px solid #98b7ff;
+  outline-offset: 2px;
+}
+#web-studio header,
+#web-studio nav {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  padding: 8px;
+  border-bottom: 1px solid #343b4b;
+  flex-wrap: wrap;
+}
+#web-studio header strong {
+  margin-right: auto;
+}
+#ws-status {
+  max-width: 360px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #b3c9f1;
+}
+.ws-layout {
+  display: grid;
+  grid-template-columns: var(--ws-left) minmax(0, 1fr) var(--ws-right);
+  flex: 1;
+  min-height: 0;
+}
+.ws-left,
+.ws-right {
+  overflow: auto;
+  padding: 10px;
+  resize: horizontal;
+  min-width: 180px;
+  max-width: 500px;
+  background: #1b202c;
+}
+.ws-right {
+  border-left: 1px solid #343b4b;
+}
+.ws-left {
+  border-right: 1px solid #343b4b;
+}
+.ws-center {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.ws-file-actions,
+.ws-selection-tools,
+.ws-code-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 5px;
+}
+#ws-files button,
+#ws-tree button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background: transparent;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#ws-files button[aria-current],
+#ws-tree button[aria-selected="true"] {
+  background: #344463;
+}
+#ws-search-files,
+#ws-search-blocks {
+  width: 100%;
+}
+#ws-blocks {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  max-height: 350px;
+  overflow: auto;
+}
+#ws-blocks button {
+  font-size: 11px;
+  overflow: hidden;
+}
+.ws-editors {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+#ws-design,
+#ws-code,
+#ws-runtime {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+}
+#ws-canvas {
+  height: 100%;
+}
+#ws-code {
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid #343b4b;
+}
+#ws-monaco {
+  flex: 1;
+  min-height: 100px;
+}
+#ws-tabs {
+  display: flex;
+  overflow: auto;
+  min-height: 35px;
+}
+#ws-tabs button {
+  white-space: nowrap;
+  border-radius: 0;
+}
+#ws-tabs button[aria-selected="true"] {
+  border-bottom: 2px solid #a5bfff;
+}
+#ws-runtime {
+  background: #303847;
+  padding: 15px;
+}
+#ws-preview {
+  height: 100%;
+  min-height: 600px;
+  border: 0;
+  background: white;
+  display: block;
+  margin: auto;
+}
+#web-studio[data-mode="design"] #ws-code,
+#web-studio[data-mode="code"] #ws-design,
+#web-studio:not([data-mode="preview"]) #ws-runtime,
+#web-studio[data-mode="preview"] #ws-design,
+#web-studio[data-mode="preview"] #ws-code {
+  display: none;
+}
+#web-studio[data-left="hidden"] .ws-left,
+#web-studio[data-right="hidden"] .ws-right {
+  display: none;
+}
+#web-studio[data-left="hidden"] .ws-layout {
+  grid-template-columns: 0 minmax(0, 1fr) var(--ws-right);
+}
+#web-studio[data-right="hidden"] .ws-layout {
+  grid-template-columns: var(--ws-left) minmax(0, 1fr) 0;
+}
+#web-studio[data-left="hidden"][data-right="hidden"] .ws-layout {
+  grid-template-columns: 0 minmax(0, 1fr) 0;
+}
+.ws-right details {
+  border-top: 1px solid #394356;
+  padding: 8px 0;
+}
+.ws-right summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.ws-right label {
+  display: grid;
+  grid-template-columns: 95px minmax(0, 1fr);
+  align-items: center;
+  gap: 4px;
+  margin: 6px 0;
+}
+.ws-right textarea {
+  width: 100%;
+  min-height: 65px;
+}
+.ws-right pre {
+  white-space: pre-wrap;
+  font-size: 11px;
+  max-height: 220px;
+  overflow: auto;
+}
+#web-studio footer {
+  border-top: 1px solid #343b4b;
+  padding: 4px 10px;
+  max-height: 150px;
+  overflow: auto;
+}
+#ws-console {
+  white-space: pre-wrap;
+  font-size: 11px;
+  margin: 3px 0;
+}
+#ws-width {
+  width: 75px;
+}
+#ws-dialog {
+  background: #1b202c;
+  color: #eee;
+  border: 1px solid #60708d;
+  border-radius: 12px;
+  padding: 24px;
+  max-width: 500px;
+}
+#ws-dialog input {
+  display: block;
+  width: 100%;
+  margin: 12px 0;
+}
+#ws-dialog::backdrop {
+  background: #0009;
+}
+.ws-prop {
+  margin-bottom: 5px;
+}
+@media (max-width: 1100px) {
+  #web-studio {
+    --ws-left: 195px;
+    --ws-right: 230px;
+  }
+  #web-studio header {
+    gap: 3px;
+  }
+  #web-studio nav {
+    font-size: 11px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #web-studio * {
+    scroll-behavior: auto !important;
+    transition: none !important;
+  }
+}
+
+#ws-autosave-interval {
+  width: 58px;
+}
+@media (max-width: 900px) {
+  #web-studio header,
+  #web-studio nav {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    flex-shrink: 0;
+    min-height: 46px;
+    white-space: nowrap;
+  }
+  #web-studio header strong,
+  #web-studio header button,
+  #web-studio nav button,
+  #web-studio nav label {
+    flex-shrink: 0;
+  }
+  #web-studio header select {
+    min-width: 160px;
+  }
+  #web-studio .ws-layout {
+    position: relative;
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+  #web-studio .ws-left,
+  #web-studio .ws-right {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: min(290px, 90vw);
+    max-width: 90vw;
+    z-index: 20;
+    box-shadow: 0 10px 32px #0009;
+    resize: none;
+  }
+  #web-studio .ws-left {
+    left: 0;
+  }
+  #web-studio .ws-right {
+    right: 0;
+  }
+  #web-studio .ws-center {
+    grid-column: 1;
+  }
+  #web-studio .ws-selection-tools {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    min-height: 40px;
+    flex-shrink: 0;
+  }
+  #web-studio .ws-selection-tools button {
+    flex-shrink: 0;
+  }
+  #web-studio footer {
+    max-height: 100px;
+  }
+}
+
+#ws-design {
+  resize: horizontal;
+  flex: 0 0 auto;
+  width: 50%;
+  min-width: 150px;
+  max-width: 90%;
+}
+#web-studio[data-mode="design"] #ws-design {
+  width: 100% !important;
+  max-width: none;
+  flex: 1;
+  resize: none;
+}
+
+@media(max-width:900px){#web-studio button,#web-studio input,#web-studio select{min-height:44px}}

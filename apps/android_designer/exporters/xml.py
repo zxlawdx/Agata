@@ -145,7 +145,7 @@ class XmlGenerator(ComposeGenerator):
         for s in screens:
             self.qualifier='';view=self.view(s['root']);self.files[f'app/src/main/res/layout/{s["id"]}.xml']=ET.tostring(view,encoding='unicode')+'\n'
             if any(n['layout']['responsive'] for n in walk(s['root'])):
-                for qualifier,width,height in [('w600dp',700,1400),('w840dp',900,1400),('land',390,300),('w600dp-land',700,300),('w840dp-land',900,300)]:
+                for qualifier,width,height in [('w600dp',700,1400),('w840dp',900,1400),('w1200dp',1400,1800),('w1600dp',1800,2200),('land',390,300),('w600dp-land',700,300),('w840dp-land',900,300),('w1200dp-land',1400,900),('w1600dp-land',1800,1000)]:
                     variant=resolve_screen(s,width,height);self.qualifier='-'+qualifier
                     self.files[f'app/src/main/res/layout-{qualifier}/{s["id"]}.xml']=ET.tostring(self.view(variant['root']),encoding='unicode')+'\n'
             self.qualifier=''

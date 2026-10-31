@@ -3,8 +3,13 @@ from .model import new_document,new_screen,new_node,validate
 from .tutorial_project import tutorial_document
 TEMPLATES={'empty-activity':'Empty Activity — Jetpack Compose','navigation-app':'Navigation App','material3-starter':'Material 3 Starter','authentication':'Autenticação Material 3','dashboard':'Dashboard','sidebar':'Sidebar / regiões','bars':'TopBar + BottomBar','profile':'Perfil','settings':'Configurações','form':'Formulário','catalog':'Catálogo','list-detail':'Lista / Detalhes','tasks':'Tarefas'}
 
+from apps.template_registry.registry import ANDROID
+TEMPLATES.update({key:name for key,name,_ in ANDROID})
 
 def template_document(key):
+    if key in {row[0] for row in ANDROID}:
+        from apps.design_system.services.android import template_document as premium
+        return premium(key)
     if key=='android-tutorial':return tutorial_document()
     if key not in TEMPLATES:raise ValueError('Template inexistente.')
     d=new_document();d['app_name']=TEMPLATES[key];first=d['screens'][0]

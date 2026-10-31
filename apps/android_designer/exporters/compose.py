@@ -25,6 +25,14 @@ class ComposeGenerator:
         self.doc={**document,'screens':[layered_screen(s) for s in document['screens']]};self.ns=document['namespace'];self.strings={'app_name':document['app_name']};self.files={}
 
     def color(self,node,key):
+        reference=node.get('tokenReferences',{}).get('props.'+key,'')
+        if self.doc.get('design_system') and reference.startswith('colors.') and 'props.'+key not in node.get('tokenOverrides',[]):
+            from apps.design_system.services.tokens import BASE
+            name=reference.split('.',1)[1]
+            roles={'background':'background','surface':'surface','surfaceVariant':'surfaceVariant','primary':'primary','secondary':'secondary','accent':'tertiary','textPrimary':'onSurface','textSecondary':'onSurfaceVariant','border':'outline','error':'error'}
+            if name in BASE['colors']:
+                if self.doc['theme']['dynamicColor'] and name in roles:return 'MaterialTheme.colorScheme.'+roles[name]
+                return self.ns+'.ui.theme.AgataTokens.'+name
         from .compose_fidelity import color
         return color(node,key)
 
@@ -68,12 +76,21 @@ class ComposeGenerator:
 
     def emit(self,n,omit=()):
         if n['id'] in omit or not n['layout']['visible']:return ''
+        if n.get('componentDefinition') in {'BottomSheet','Dialog'} and not n.get('_presentation_applied'):
+            from .presentation import wrap as presentation
+            return presentation(self,n,omit)
+        if n.get('motion') and not n.get('_motion_applied'):
+            from .motion import wrap
+            return wrap(self,n,omit)
         if n.get('compose',{}).get('placeholder'):return f'Box {{ Text({quote(n["compose"]["placeholder"])}) }}'
         if n.get('compose',{}).get('conditional',{}).get('rule'):
             rule=n['compose']['conditional']['rule'];axis='maxWidth' if rule['axis']=='width' else 'maxHeight';branches=n['children'];left=self.emit(branches[0],omit) if branches else '';right=self.emit(branches[1],omit) if len(branches)>1 else ''
             return f'BoxWithConstraints {{ if ({axis} {rule["operator"]} {rule["value"]}.dp) {{ {left} }} else {{ {right} }} }}'
-        aliases={'Avatar':'Card','Chip':'Button','Badge':'TextLabel','ListItem':'Row','NavigationRail':'Region','TabRow':'Row'}
+        aliases={'Avatar':'Card','Chip':'Button','Badge':'TextLabel','ListItem':'Row','TabRow':'Row'}
         if n['type'] in aliases:return self.emit({**n,'type':aliases[n['type']]},omit)
+        if n['type']=='NavigationRail':
+            if n['props'].get('orientation')=='horizontal':return self.emit({**n,'type':'Region'},omit)
+            return f'NavigationRail(modifier = {self.modifier(n)}, containerColor = {self.color(n,"background")}) {{ '+ '\n'.join(self.nav_item(c,'NavigationRailItem') if c['type']=='NavigationItem' else self.emit(c) for c in n['children'])+' }'
         if n['type']=='RadioButton':return f'RadioButton(selected = v_{n["id"]}, onClick = {{ v_{n["id"]} = !v_{n["id"]} }}, enabled = {str(n["props"]["enabled"]).lower()}, modifier = {self.modifier(n)})'
         if n['type']=='ProgressIndicator':return f'LinearProgressIndicator(progress = {{ {float(n["props"]["value"])}f }}, modifier = {self.modifier(n)}, color = Color(0xFF{n["props"]["color"][1:]}))'
         if n['type'] in {'Shape','DrawingCanvas','Chart'}:
@@ -173,8 +190,8 @@ class ComposeGenerator:
             title=[c for c in n['children'] if c['role'] in {'title','subtitle'}]
             navigation=[c for c in n['children'] if c['role']=='navigation']
             actions=[c for c in n['children'] if c not in title+navigation]
-            return f'TopAppBar(modifier = {m}, colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF{p["background"][1:]})), title = {{ Column {{ {children(title)} }} }}, navigationIcon = {{ {children(navigation)} }}, actions = {{ {children(actions)} }})'
-        if kind=='BottomBar':return f'NavigationBar(modifier = {m}, containerColor = Color(0xFF{p["background"][1:]})) {{\n'+ '\n'.join(self.nav_item(c) for c in n['children'])+'\n}'
+            return f'TopAppBar(modifier = {m}, colors = TopAppBarDefaults.topAppBarColors(containerColor = {self.color(n,"background")}), title = {{ Column {{ {children(title)} }} }}, navigationIcon = {{ {children(navigation)} }}, actions = {{ {children(actions)} }})'
+        if kind=='BottomBar':return f'NavigationBar(modifier = {m}, containerColor = {self.color(n,"background")}) {{\n'+ '\n'.join(self.nav_item(c) for c in n['children'])+'\n}'
         if kind=='Sidebar':raise ValueError('Sidebar deve ser filha direta da Column principal da Screen.')
         if kind in {'TextField','SearchBar'}:
             leading=next((c for c in n['children'] if c['role']=='leading'),None)
@@ -204,10 +221,10 @@ class ComposeGenerator:
             return f'Image(painterResource(R.drawable.{n["id"]}), contentDescription = {self.string(n,"description")}, modifier = {m})'
         raise ValueError('Componente sem exportador Compose: '+kind)
 
-    def nav_item(self,n):
+    def nav_item(self,n,kind="NavigationBarItem"):
         if n['type']!='NavigationItem':raise ValueError('BottomBar aceita somente NavigationItem.')
         label=[c for c in n['children'] if c['type']=='TextLabel'];icons=[c for c in n['children'] if c['type']=='Icon']
-        return f'NavigationBarItem(selected = {str(n["props"]["selected"]).lower()}, enabled = {str(n["props"]["enabled"]).lower()}, onClick = {{ {self.action(n)} }}, label = {{ '+ '\n'.join(self.emit(c) for c in label)+' }, icon = { '+'\n'.join(self.emit(c) for c in icons)+' })'
+        return f'{kind}(selected = {str(n["props"]["selected"]).lower()}, enabled = {str(n["props"]["enabled"]).lower()}, onClick = {{ {self.action(n)} }}, label = {{ '+ '\n'.join(self.emit(c) for c in label)+' }, icon = { '+'\n'.join(self.emit(c) for c in icons)+' })'
 
     def generate(self):
         base='app/src/main/java/'+self.ns.replace('.','/')
@@ -224,11 +241,11 @@ class ComposeGenerator:
             content=self.emit(s['root'],[d['id'] for d in drawers])
             if any(n['layout']['responsive'] for n in walk(s['root'])):
                 branches=[]
-                for label,width in [('expanded',900),('medium',700),('compact',390)]:
+                for label,width in [('extraLarge',1800),('large',1400),('expanded',900),('medium',700),('compact',390)]:
                     for landscape in [True,False]:
                         height=300 if landscape else 1400
                         variant=resolve_screen(s,width,height)
-                        condition=('maxWidth >= 840.dp' if label=='expanded' else 'maxWidth >= 600.dp' if label=='medium' else 'true')+(' && maxWidth > maxHeight' if landscape else '')
+                        condition=('maxWidth >= 1600.dp' if label=='extraLarge' else 'maxWidth >= 1200.dp' if label=='large' else 'maxWidth >= 840.dp' if label=='expanded' else 'maxWidth >= 600.dp' if label=='medium' else 'true')+(' && maxWidth > maxHeight' if landscape else '')
                         branches.append(condition+' -> { '+self.emit(variant['root'],[d['id'] for d in drawers])+' }')
                 content='BoxWithConstraints(Modifier.fillMaxSize()) { when { '+ '\n'.join(branches)+' } }'
 
@@ -238,7 +255,7 @@ class ComposeGenerator:
             code=f'''package {self.ns}.ui.screens
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.foundation.*
+{('import androidx.compose.animation.*'+chr(10)+'import androidx.compose.animation.core.*'+chr(10)+'import androidx.compose.ui.platform.LocalContext'+chr(10)) if any(n.get('motion') for n in walk(s['root'])) else ''}import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 {('import androidx.compose.foundation.lazy.*'+chr(10)+'import androidx.compose.foundation.lazy.grid.*'+chr(10)+'import androidx.compose.foundation.lazy.staggeredgrid.*'+chr(10)) if any(n['type'] in {'ListView','RecyclerView','GridView','LazyColumn','LazyRow','LazyVerticalGrid','LazyStaggeredGrid'} for n in walk(s['root'])) else ''}import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -303,6 +320,9 @@ class MainActivity : ComponentActivity() {{
 '''
         theme=self.doc['theme'];dark={'system':'isSystemInDarkTheme()','light':'false','dark':'true'}[theme['darkMode']]
         schemes=self.doc.get('compose_project',{}).get('themes',{})
+        if self.doc.get('design_system'):
+            from .premium import scheme
+            schemes={'dark':scheme(self.doc),'light':scheme(self.doc)}
         from .compose_fidelity import scalar
         theme_call=lambda mode: mode+'ColorScheme('+', '.join(key+' = '+scalar(value) for key,value in schemes.get(mode,{}).items() if key!='constructor' and isinstance(value,str) and value.startswith('#') and key.isalpha())+')' if schemes.get(mode) else mode+'ColorScheme(primary = AgataPrimary)'
         self.files[f'{base}/ui/theme/Theme.kt']=f'''package {self.ns}.ui.theme
@@ -323,4 +343,7 @@ import androidx.compose.ui.platform.LocalContext
         self.files[f'{base}/ui/theme/Type.kt']=f'package {self.ns}.ui.theme\nimport androidx.compose.material3.Typography\nval AgataTypography = Typography()\n'
         for name,path in PATHS.items():self.files[f'app/src/main/res/drawable/agata_{name}.xml']=f'<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24"><path android:pathData="{path}" android:fillColor="@android:color/transparent" android:strokeColor="#242424" android:strokeWidth="2" android:strokeLineCap="round"/></vector>\n'
         self.files['app/src/main/res/values/strings.xml']='<resources>\n'+''.join(f'<string name="{k}">{resource_text(v)}</string>\n' for k,v in self.strings.items())+'</resources>\n'
+        if self.doc.get('design_system'):
+            from .premium import files as premium_files
+            self.files.update(premium_files(self.doc))
         return self.files

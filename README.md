@@ -122,3 +122,13 @@ A criação de projetos oferece uma galeria de templates editáveis. Consulte a
 [navegação](docs/tutorials/NAVEGACAO_VISUAL.md),
 [desenho/gráficos](docs/tutorials/DESENHO_E_GRAFICOS.md) e
 [código](docs/tutorials/EDITANDO_CODIGO.md).
+
+## Agata Web Studio e Android premium
+
+O Web Studio reúne projetos HTML/CSS/JS reais, Monaco offline, canvas estrutural,
+Inspector CSS, templates originais, preview isolado e exportação/reimportação ZIP.
+Android ganhou seis estilos com tokens e composições editáveis, classes de janela
+ampliadas e saída Compose. Consulte [utilização, evidências e limites por fase](docs/STUDIO_2026.md)
+e a [seleção/licenças das tecnologias](docs/STUDIO_2026_TECHNOLOGIES.md).
+A especificação mestre completa ainda tem pendências Android/SDK e ferramentas avançadas;
+esta entrega não as apresenta como concluídas.

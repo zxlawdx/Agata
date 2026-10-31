@@ -105,3 +105,6 @@ jobs:
         env:
           AGATA_UI_SCRIPT: tests/spotify_import_ui.cjs
         run: node tests/run_ui.cjs
+
+      - name: Verify Web Studio round trip, effects, isolated preview and premium templates
+        run: npm run test:studio-ui

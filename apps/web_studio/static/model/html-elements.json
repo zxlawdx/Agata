@@ -1,0 +1,1135 @@
+{
+  "version": "2026.10.31",
+  "source": "Monaco 0.57.0 / vscode-html-languageservice webCustomData tag names; MDN/WHATWG reference; Agata category/content metadata original",
+  "license": "MIT metadata; names only, no copied documentation text",
+  "elements": [
+    {
+      "name": "a",
+      "category": "Text",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/a"
+    },
+    {
+      "name": "abbr",
+      "category": "Text",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/abbr"
+    },
+    {
+      "name": "acronym",
+      "category": "Advanced",
+      "deprecated": true,
+      "visual": false,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/acronym"
+    },
+    {
+      "name": "address",
+      "category": "Layout",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/address"
+    },
+    {
+      "name": "applet",
+      "category": "Advanced",
+      "deprecated": true,
+      "visual": false,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/applet"
+    },
+    {
+      "name": "area",
+      "category": "Media",
+      "deprecated": false,
+      "visual": true,
+      "void": true,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/area"
+    },
+    {
+      "name": "article",
+      "category": "Layout",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/article"
+    },
+    {
+      "name": "aside",
+      "category": "Layout",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/aside"
+    },
+    {
+      "name": "audio",
+      "category": "Media",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/audio"
+    },
+    {
+      "name": "b",
+      "category": "Text",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/b"
+    },
+    {
+      "name": "base",
+      "category": "Document",
+      "deprecated": false,
+      "visual": false,
+      "void": true,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/base"
+    },
+    {
+      "name": "basefont",
+      "category": "Advanced",
+      "deprecated": true,
+      "visual": false,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/basefont"
+    },
+    {
+      "name": "bdi",
+      "category": "Text",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/bdi"
+    },
+    {
+      "name": "bdo",
+      "category": "Text",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/bdo"
+    },
+    {
+      "name": "bgsound",
+      "category": "Advanced",
+      "deprecated": true,
+      "visual": false,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/bgsound"
+    },
+    {
+      "name": "big",
+      "category": "Advanced",
+      "deprecated": true,
+      "visual": false,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/big"
+    },
+    {
+      "name": "blink",
+      "category": "Advanced",
+      "deprecated": true,
+      "visual": false,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/blink"
+    },
+    {
+      "name": "blockquote",
+      "category": "Text",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/blockquote"
+    },
+    {
+      "name": "body",
+      "category": "Document",
+      "deprecated": false,
+      "visual": false,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/body"
+    },
+    {
+      "name": "br",
+      "category": "Text",
+      "deprecated": false,
+      "visual": true,
+      "void": true,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/br"
+    },
+    {
+      "name": "button",
+      "category": "Forms",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/button"
+    },
+    {
+      "name": "canvas",
+      "category": "Media",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/canvas"
+    },
+    {
+      "name": "caption",
+      "category": "Tables",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/caption"
+    },
+    {
+      "name": "center",
+      "category": "Advanced",
+      "deprecated": true,
+      "visual": false,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/center"
+    },
+    {
+      "name": "cite",
+      "category": "Text",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/cite"
+    },
+    {
+      "name": "code",
+      "category": "Text",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/code"
+    },
+    {
+      "name": "col",
+      "category": "Tables",
+      "deprecated": false,
+      "visual": true,
+      "void": true,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/col"
+    },
+    {
+      "name": "colgroup",
+      "category": "Tables",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/colgroup"
+    },
+    {
+      "name": "content",
+      "category": "Advanced",
+      "deprecated": true,
+      "visual": false,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/content"
+    },
+    {
+      "name": "data",
+      "category": "Text",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/data"
+    },
+    {
+      "name": "datalist",
+      "category": "Forms",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/datalist"
+    },
+    {
+      "name": "dd",
+      "category": "Lists",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dd"
+    },
+    {
+      "name": "del",
+      "category": "Text",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/del"
+    },
+    {
+      "name": "details",
+      "category": "Interactive",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/details"
+    },
+    {
+      "name": "dfn",
+      "category": "Text",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dfn"
+    },
+    {
+      "name": "dialog",
+      "category": "Interactive",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dialog"
+    },
+    {
+      "name": "dir",
+      "category": "Advanced",
+      "deprecated": true,
+      "visual": false,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dir"
+    },
+    {
+      "name": "div",
+      "category": "Advanced",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/div"
+    },
+    {
+      "name": "dl",
+      "category": "Lists",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dl"
+    },
+    {
+      "name": "dt",
+      "category": "Lists",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dt"
+    },
+    {
+      "name": "em",
+      "category": "Text",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/em"
+    },
+    {
+      "name": "embed",
+      "category": "Advanced",
+      "deprecated": false,
+      "visual": true,
+      "void": true,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/embed"
+    },
+    {
+      "name": "fieldset",
+      "category": "Forms",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/fieldset"
+    },
+    {
+      "name": "figcaption",
+      "category": "Media",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/figcaption"
+    },
+    {
+      "name": "figure",
+      "category": "Media",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/figure"
+    },
+    {
+      "name": "font",
+      "category": "Advanced",
+      "deprecated": true,
+      "visual": false,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/font"
+    },
+    {
+      "name": "footer",
+      "category": "Layout",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/footer"
+    },
+    {
+      "name": "form",
+      "category": "Forms",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/form"
+    },
+    {
+      "name": "frame",
+      "category": "Advanced",
+      "deprecated": true,
+      "visual": false,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/frame"
+    },
+    {
+      "name": "frameset",
+      "category": "Advanced",
+      "deprecated": true,
+      "visual": false,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/frameset"
+    },
+    {
+      "name": "h1",
+      "category": "Text",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/h1"
+    },
+    {
+      "name": "h2",
+      "category": "Text",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/h2"
+    },
+    {
+      "name": "h3",
+      "category": "Text",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/h3"
+    },
+    {
+      "name": "h4",
+      "category": "Text",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/h4"
+    },
+    {
+      "name": "h5",
+      "category": "Text",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/h5"
+    },
+    {
+      "name": "h6",
+      "category": "Text",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/h6"
+    },
+    {
+      "name": "head",
+      "category": "Document",
+      "deprecated": false,
+      "visual": false,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/head"
+    },
+    {
+      "name": "header",
+      "category": "Layout",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/header"
+    },
+    {
+      "name": "hgroup",
+      "category": "Layout",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/hgroup"
+    },
+    {
+      "name": "hr",
+      "category": "Text",
+      "deprecated": false,
+      "visual": true,
+      "void": true,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/hr"
+    },
+    {
+      "name": "html",
+      "category": "Document",
+      "deprecated": false,
+      "visual": false,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/html"
+    },
+    {
+      "name": "i",
+      "category": "Text",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/i"
+    },
+    {
+      "name": "iframe",
+      "category": "Advanced",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/iframe"
+    },
+    {
+      "name": "image",
+      "category": "Advanced",
+      "deprecated": true,
+      "visual": false,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/image"
+    },
+    {
+      "name": "img",
+      "category": "Media",
+      "deprecated": false,
+      "visual": true,
+      "void": true,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/img"
+    },
+    {
+      "name": "input",
+      "category": "Forms",
+      "deprecated": false,
+      "visual": true,
+      "void": true,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input"
+    },
+    {
+      "name": "ins",
+      "category": "Text",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/ins"
+    },
+    {
+      "name": "kbd",
+      "category": "Text",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/kbd"
+    },
+    {
+      "name": "keygen",
+      "category": "Advanced",
+      "deprecated": true,
+      "visual": false,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/keygen"
+    },
+    {
+      "name": "label",
+      "category": "Forms",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/label"
+    },
+    {
+      "name": "legend",
+      "category": "Forms",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/legend"
+    },
+    {
+      "name": "li",
+      "category": "Lists",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/li"
+    },
+    {
+      "name": "link",
+      "category": "Document",
+      "deprecated": false,
+      "visual": false,
+      "void": true,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/link"
+    },
+    {
+      "name": "main",
+      "category": "Layout",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/main"
+    },
+    {
+      "name": "map",
+      "category": "Media",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/map"
+    },
+    {
+      "name": "mark",
+      "category": "Text",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/mark"
+    },
+    {
+      "name": "marquee",
+      "category": "Advanced",
+      "deprecated": true,
+      "visual": false,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/marquee"
+    },
+    {
+      "name": "math",
+      "category": "Advanced",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/math"
+    },
+    {
+      "name": "menu",
+      "category": "Lists",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/menu"
+    },
+    {
+      "name": "menuitem",
+      "category": "Advanced",
+      "deprecated": true,
+      "visual": false,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/menuitem"
+    },
+    {
+      "name": "meta",
+      "category": "Document",
+      "deprecated": false,
+      "visual": false,
+      "void": true,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/meta"
+    },
+    {
+      "name": "meter",
+      "category": "Forms",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/meter"
+    },
+    {
+      "name": "nav",
+      "category": "Layout",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/nav"
+    },
+    {
+      "name": "nobr",
+      "category": "Advanced",
+      "deprecated": true,
+      "visual": false,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/nobr"
+    },
+    {
+      "name": "noembed",
+      "category": "Advanced",
+      "deprecated": true,
+      "visual": false,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/noembed"
+    },
+    {
+      "name": "noframes",
+      "category": "Advanced",
+      "deprecated": true,
+      "visual": false,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/noframes"
+    },
+    {
+      "name": "noscript",
+      "category": "Development",
+      "deprecated": false,
+      "visual": false,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/noscript"
+    },
+    {
+      "name": "object",
+      "category": "Advanced",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/object"
+    },
+    {
+      "name": "ol",
+      "category": "Lists",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/ol"
+    },
+    {
+      "name": "optgroup",
+      "category": "Forms",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/optgroup"
+    },
+    {
+      "name": "option",
+      "category": "Forms",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/option"
+    },
+    {
+      "name": "output",
+      "category": "Forms",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/output"
+    },
+    {
+      "name": "p",
+      "category": "Text",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/p"
+    },
+    {
+      "name": "param",
+      "category": "Advanced",
+      "deprecated": true,
+      "visual": false,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/param"
+    },
+    {
+      "name": "picture",
+      "category": "Media",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/picture"
+    },
+    {
+      "name": "plaintext",
+      "category": "Advanced",
+      "deprecated": true,
+      "visual": false,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/plaintext"
+    },
+    {
+      "name": "pre",
+      "category": "Text",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/pre"
+    },
+    {
+      "name": "progress",
+      "category": "Forms",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/progress"
+    },
+    {
+      "name": "q",
+      "category": "Text",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/q"
+    },
+    {
+      "name": "rb",
+      "category": "Advanced",
+      "deprecated": true,
+      "visual": false,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/rb"
+    },
+    {
+      "name": "rp",
+      "category": "Text",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/rp"
+    },
+    {
+      "name": "rt",
+      "category": "Text",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/rt"
+    },
+    {
+      "name": "rtc",
+      "category": "Advanced",
+      "deprecated": true,
+      "visual": false,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/rtc"
+    },
+    {
+      "name": "ruby",
+      "category": "Text",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/ruby"
+    },
+    {
+      "name": "s",
+      "category": "Text",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/s"
+    },
+    {
+      "name": "samp",
+      "category": "Text",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/samp"
+    },
+    {
+      "name": "script",
+      "category": "Development",
+      "deprecated": false,
+      "visual": false,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script"
+    },
+    {
+      "name": "search",
+      "category": "Layout",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/search"
+    },
+    {
+      "name": "section",
+      "category": "Layout",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/section"
+    },
+    {
+      "name": "select",
+      "category": "Forms",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/select"
+    },
+    {
+      "name": "shadow",
+      "category": "Advanced",
+      "deprecated": true,
+      "visual": false,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/shadow"
+    },
+    {
+      "name": "slot",
+      "category": "Development",
+      "deprecated": false,
+      "visual": false,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/slot"
+    },
+    {
+      "name": "small",
+      "category": "Text",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/small"
+    },
+    {
+      "name": "source",
+      "category": "Media",
+      "deprecated": false,
+      "visual": true,
+      "void": true,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/source"
+    },
+    {
+      "name": "span",
+      "category": "Text",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/span"
+    },
+    {
+      "name": "strike",
+      "category": "Advanced",
+      "deprecated": true,
+      "visual": false,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/strike"
+    },
+    {
+      "name": "strong",
+      "category": "Text",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/strong"
+    },
+    {
+      "name": "style",
+      "category": "Development",
+      "deprecated": false,
+      "visual": false,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/style"
+    },
+    {
+      "name": "sub",
+      "category": "Text",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/sub"
+    },
+    {
+      "name": "summary",
+      "category": "Interactive",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/summary"
+    },
+    {
+      "name": "sup",
+      "category": "Text",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/sup"
+    },
+    {
+      "name": "svg",
+      "category": "Media",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/svg"
+    },
+    {
+      "name": "table",
+      "category": "Tables",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/table"
+    },
+    {
+      "name": "tbody",
+      "category": "Tables",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/tbody"
+    },
+    {
+      "name": "td",
+      "category": "Tables",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/td"
+    },
+    {
+      "name": "template",
+      "category": "Development",
+      "deprecated": false,
+      "visual": false,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/template"
+    },
+    {
+      "name": "textarea",
+      "category": "Forms",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/textarea"
+    },
+    {
+      "name": "tfoot",
+      "category": "Tables",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/tfoot"
+    },
+    {
+      "name": "th",
+      "category": "Tables",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/th"
+    },
+    {
+      "name": "thead",
+      "category": "Tables",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/thead"
+    },
+    {
+      "name": "time",
+      "category": "Text",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/time"
+    },
+    {
+      "name": "title",
+      "category": "Document",
+      "deprecated": false,
+      "visual": false,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/title"
+    },
+    {
+      "name": "tr",
+      "category": "Tables",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/tr"
+    },
+    {
+      "name": "track",
+      "category": "Media",
+      "deprecated": false,
+      "visual": true,
+      "void": true,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/track"
+    },
+    {
+      "name": "tt",
+      "category": "Advanced",
+      "deprecated": true,
+      "visual": false,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/tt"
+    },
+    {
+      "name": "u",
+      "category": "Text",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/u"
+    },
+    {
+      "name": "ul",
+      "category": "Lists",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/ul"
+    },
+    {
+      "name": "var",
+      "category": "Text",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/var"
+    },
+    {
+      "name": "video",
+      "category": "Media",
+      "deprecated": false,
+      "visual": true,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/video"
+    },
+    {
+      "name": "wbr",
+      "category": "Text",
+      "deprecated": false,
+      "visual": true,
+      "void": true,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/wbr"
+    },
+    {
+      "name": "xmp",
+      "category": "Advanced",
+      "deprecated": true,
+      "visual": false,
+      "void": false,
+      "reference": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/xmp"
+    }
+  ]
+}

@@ -1,8 +1,8 @@
 /* Shared layout rules. Browser flex/grid performs intrinsic text measurement;
    measured rectangles are the authoritative geometry for hit testing/diagnostics. */
 window.AgataLayout=(()=>{
- const sizeClass=w=>w<600?'compact':w<840?'medium':'expanded';
- function resolve(layout,width=390,height=844){return {...layout,...layout.responsive?.[sizeClass(width)],...(width>height?layout.responsive?.landscape:{})};}
+ const sizeClass=w=>w<600?'compact':w<840?'medium':w<1200?'expanded':w<1600?'large':'extraLarge';
+ function resolve(layout,width=390,height=844){return {...layout,...(width>=1200?layout.responsive?.expanded:{}),...(width>=1600?layout.responsive?.large:{}),...layout.responsive?.[sizeClass(width)],...(width>height?layout.responsive?.landscape:{})};}
  function apply(element,node,options){
   const l=resolve(node.layout,options.width,options.height),parent=options.parentLayout;
   Object.assign(element.style,{minWidth:l.minWidth+'px',maxWidth:l.maxWidth+'px',minHeight:l.minHeight+'px',maxHeight:l.maxHeight+'px',margin:l.margin+'px'});

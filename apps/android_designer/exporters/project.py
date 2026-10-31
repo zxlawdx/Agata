@@ -72,6 +72,7 @@ dependencies {{ {dependencies} }}
                     if not set(c)&anchors:warnings.append({'node':child['id'],'message':'ConstraintLayout: eixo '+axis+' sem links; x/y convertido em margem explícita ao pai.'})
                 if 'baseline' in c:warnings.append({'node':child['id'],'message':'Baseline: Preview estima métricas de fonte; confira a baseline nativa no Android.'})
     if backend=='xml':
+        if any(n.get('motion') for s in document['screens'] for n in walk(s['root'])):warnings.append({'message':'XML: presets de motion usam fallback estático; a animação Compose permanece preservada no agata-model.json.'})
         for screen in document['screens']:
             for node in walk(screen['root']):
                 if node['type']=='Row' and node['layout']['wrap']:warnings.append({'node':node['id'],'message':'XML: Row com quebra de linha usa LinearLayout sem wrap. Use Grid para uma grade nativa.'})
