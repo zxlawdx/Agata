@@ -11,11 +11,6 @@ class XmlGenerator(ComposeGenerator):
     def view(self,n,parent_type=None):
         aliases={'Avatar':'Card','Chip':'Button','Badge':'TextLabel','ListItem':'Row','NavigationRail':'Region','TabRow':'Row'}
         if n['type'] in aliases:return self.view({**n,'type':aliases[n['type']]},parent_type)
-        if n['type'] in {'RadioButton','ProgressIndicator'}:
-            p=n['props'];tag='RadioButton' if n['type']=='RadioButton' else 'ProgressBar';attrs={f'{{{A}}}id':'@+id/'+n['id'],f'{{{A}}}layout_width':'wrap_content',f'{{{A}}}layout_height':'wrap_content'}
-            if tag=='RadioButton':attrs[f'{{{A}}}checked']=str(p['checked']).lower();attrs[f'{{{A}}}enabled']=str(p['enabled']).lower()
-            else:attrs.update({'style':'@android:style/Widget.ProgressBar.Horizontal',f'{{{A}}}max':'100',f'{{{A}}}progress':str(round(p['value']*100)),f'{{{A}}}layout_width':'match_parent',f'{{{A}}}indeterminate':'false'})
-            return ET.Element(tag,attrs)
         graphic_tag=None
         if n['type'] in {'Shape','DrawingCanvas','Chart'}:
             from .graphics import native_graphic
@@ -33,7 +28,7 @@ class XmlGenerator(ComposeGenerator):
              'TextLabel':'TextView','Icon':'ImageView','Button':'com.google.android.material.button.MaterialButton',
              'FloatingButton':'com.google.android.material.floatingactionbutton.FloatingActionButton',
              'Card':'com.google.android.material.card.MaterialCardView','TextField':'com.google.android.material.textfield.TextInputLayout',
-             'SearchBar':'SearchView','Image':'ImageView','Checkbox':'CheckBox','Switch':'Switch','Slider':'SeekBar','Spacer':'Space'}.get(kind,graphic_tag)
+             'SearchBar':'SearchView','Image':'ImageView','RadioButton':'RadioButton','ProgressIndicator':'ProgressBar','Checkbox':'CheckBox','Switch':'Switch','Slider':'SeekBar','Spacer':'Space'}.get(kind,graphic_tag)
         def size(k):return {'fill':'match_parent','wrap':'wrap_content'}.get(str(layout[k]),f'{layout[k]}dp')
         v=ET.Element(tag,{f'{{{A}}}id':'@+id/'+n['id'],f'{{{A}}}layout_width':size('width'),f'{{{A}}}layout_height':size('height')})
         def attr(k,val):v.set('{'+A+'}'+k,str(val))
@@ -89,7 +84,9 @@ class XmlGenerator(ComposeGenerator):
         elif kind=='Image':
             # Shared resource encoding only; no Compose code is used by this backend.
             self.emit(n);attr('src','@drawable/'+n['id']);self.string(n,'description');attr('contentDescription','@string/'+n['id']+'_description')
-        elif kind in {'Checkbox','Switch'}:attr('checked',str(p['checked']).lower())
+        elif kind in {'Checkbox','Switch','RadioButton'}:attr('checked',str(p['checked']).lower())
+        elif kind=='ProgressIndicator':
+            v.set('style','@android:style/Widget.ProgressBar.Horizontal');attr('max',100);attr('progress',round(p['value']*100));attr('indeterminate','false');attr('progressTint',p['color'])
         elif kind=='Slider':attr('max',100);attr('progress',round((p['value']-p['min'])/(p['max']-p['min'])*100))
         elif kind=='Card':
             app('cardCornerRadius',f'{p["radius"]}dp');app('cardElevation',f'{p["elevation"]}dp');app('cardBackgroundColor',p['background'])

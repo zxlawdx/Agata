@@ -19,3 +19,28 @@ Fabric 5.3 offline continua em `sketch_editor`; o editor Android renderiza nós 
 
 Não se reimplementam histórico, Fabric, CodeMirror, responsividade ou tutorial. Correções e
 extensões devem reutilizar essas fronteiras. Ver CONSTRAINTS_FORENSIC_AUDIT.md e RESEARCH_DECISIONS.md.
+
+## Resultado deste incremento e limites verificáveis
+
+IR v4 acrescenta Shape/DrawingCanvas/Chart e ações estruturadas. Balde escreve propriedades,
+Canvas guarda comandos numéricos, gráficos guardam séries/labels. Os templates são árvores
+editáveis. Exportadores incluem Canvas/Paint e handlers nativos, sem executar código manual.
+Navegação mantém destinos quebrados para correção; exportação bloqueia referências pendentes.
+
+Testes: unidade Python/JS; cinco fluxos Chromium (legado, Android, responsivo, Constraints,
+workflow mestre). Capturas `constraints-live-drag.png` e `onclick-drag.png` mostram arrastes
+ativos. XML manual é validado estruturalmente; Kotlin gerado é analisado por parser.
+
+**A definição ampla de editor completo ainda não foi atingida.** Este incremento não inclui:
+chains/prioridades flexíveis, parâmetros tipados de rotas/transições, emulação de IME/insets,
+leitor de tela integral, SVG arbitrário/editor de pontos avançado, grupos vetoriais aninhados,
+gradientes/filtros, autenticação real/servidor, animações de loading de rede, gráficos financeiros
+ou eixos/formatadores completos. NavigationRail/TabRow/ListItem/Chip/Avatar têm equivalentes
+estruturais documentados (Region/Row/Button/Card), não todos os slots Material 3 nativos.
+Variações Outlined/Password continuam por propriedades dos componentes existentes; não se
+criam tipos duplicados para nomes diferentes. Gráficos bar/column são colunas agrupadas;
+scatter usa índice x, progress/gauge usam % inicial. Fontes e baseline podem diferir do Android.
+
+SDK ausente: sem assembleDebug/APK/emulador ou validação de WebViews Windows/Linux. Não se
+considera parsing equivalente a build. Exportação de Shape interno não cria eventos por forma
+nem referências individuais de acessibilidade; use componentes nativos para interações.

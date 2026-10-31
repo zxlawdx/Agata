@@ -2,7 +2,7 @@
 window.AgataNavigationEditor={mount(root,{model,selection,select,render,preview,notify}){
  const abort=new AbortController(),on=(e,t,f,o={})=>e.addEventListener(t,f,{...o,signal:abort.signal});let active=null,wire=null;
  const NS='http://www.w3.org/2000/svg',el=(tag,text)=>{const e=document.createElement(tag);if(text)e.textContent=text;return e;};
- const set=(id,event)=>{try{model.updateEvent(id,event);render();}catch(e){notify(e.message,true);}};
+ const set=(id,event)=>{try{model.updateEvent(id,event);document.dispatchEvent(new CustomEvent('agata:action',{detail:'navigate'}));render();}catch(e){notify(e.message,true);}};
  function inspector(host,n){const section=el('details');section.open=true;section.className='ad-inspector-section';section.append(el('summary','Eventos > onClick'));host.append(section);
   const action=el('select');action.id='ad-event-action';action.setAttribute('aria-label','Tipo de ação onClick');for(const [v,t] of [['','Nenhuma'],['navigate','Navegar para Screen'],['back','Voltar'],['url','Abrir URL'],['custom','Ação nomeada (sem código)']]){const o=el('option',t);o.value=v;action.append(o);}action.value=n.events.onClick?.action||'';section.append(action);
   const old=n.events.onClick||{};action.onchange=()=>{if(!action.value)set(n.id,null);else if(action.value==='navigate')set(n.id,{action:'navigate',target:model.value.screens[0].id,policy:'push'});else if(action.value==='back')set(n.id,{action:'back'});else set(n.id,{action:action.value,target:action.value==='url'?'https://example.com':'minhaAcao'});};

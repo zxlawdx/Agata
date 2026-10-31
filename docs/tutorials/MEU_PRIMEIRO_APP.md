@@ -44,3 +44,11 @@ Não é preciso escrever Kotlin para acompanhar as práticas.
 O progresso do tour é guardado por projeto no armazenamento local do perfil WebView. O botão
 Salvar guarda o modelo do app; não existe autosave. A prática pode deixar Screens/componentes
 novos, que você pode remover ou desfazer após pausar o tour.
+
+## Fluxos adicionais
+
+O projeto padrão agora inclui Perfil, Chart e DrawingCanvas com estrela editável no Dashboard.
+Ajuda oferece tours separados de setinhas/bias, navegação onClick, Balde/Canvas/gráficos e
+edição/exportação. Veja [Navegação](NAVEGACAO_VISUAL.md), [Desenho](DESENHO_E_GRAFICOS.md) e
+[Código](EDITANDO_CODIGO.md). A galeria mantém vazio e acrescenta autenticação demonstrativa,
+dashboard, barras, regiões laterais, perfil, configurações, formulário, catálogo, lista/detalhes e tarefas.

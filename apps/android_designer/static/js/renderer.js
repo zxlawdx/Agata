@@ -36,7 +36,7 @@ window.AgataUIRenderer=(()=>{
    }
    for(const c of n.children.filter(c=>c.role==='trailing'))row.append(render(c,childOptions));if(p.keyboard==='password'){const toggle=el('button','','Mostrar');toggle.type='button';toggle.disabled=!preview;toggle.onclick=ev=>{ev.stopPropagation();input.type=input.type==='password'?'text':'password';toggle.textContent=input.type==='password'?'Mostrar':'Ocultar';};row.append(toggle);}e.append(row);
    if(p.error||p.helper)e.append(el('small',p.error?'ui-field-error':'',p.error||p.helper));
-  }else if(n.type==='ProgressIndicator'){const progress=el('progress');progress.max=1;progress.value=p.value;progress.style.width='100%';progress.setAttribute('aria-label',n.name);e.append(progress);}
+  }else if(n.type==='ProgressIndicator'){const progress=el('progress');progress.max=1;progress.value=p.value;progress.style.width='100%';progress.style.accentColor=p.color;progress.setAttribute('aria-label',n.name);e.append(progress);}
   else if(['Checkbox','Switch','Slider','RadioButton'].includes(n.type)){
    const control=el('input');control.type=n.type==='Slider'?'range':n.type==='RadioButton'?'radio':'checkbox';control.disabled=!p.enabled||!preview;
    if(n.type==='Slider'){control.min=p.min;control.max=p.max;control.value=options.state?.[n.id]??p.value;}

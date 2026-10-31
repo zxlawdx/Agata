@@ -75,3 +75,8 @@ jobs:
         env:
           AGATA_UI_SCRIPT: tests/constraints_ui.cjs
         run: node tests/run_ui.cjs
+
+      - name: Exercise integrated navigation, paint, graphics and code workflow
+        env:
+          AGATA_UI_SCRIPT: tests/workflow_ui.cjs
+        run: node tests/run_ui.cjs

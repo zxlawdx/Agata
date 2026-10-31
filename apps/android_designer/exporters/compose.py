@@ -143,12 +143,12 @@ class ComposeGenerator:
         if kind in {'TextField','SearchBar'}:
             leading=next((c for c in n['children'] if c['role']=='leading'),None)
             trailing=next((c for c in n['children'] if c['role']=='trailing'),None)
-            slots=(f', leadingIcon = {{ {self.emit(leading)} }}' if leading else '')+(f', trailingIcon = {{ {self.emit(trailing)} }}' if trailing else '')
+            slots=(f', leadingIcon = {{ {self.emit(leading)} }}' if leading else '')+(f', trailingIcon = {{ {self.emit(trailing)} }}' if trailing and kind!='SearchBar' and p.get('keyboard')!='password' else '')
             if kind=='SearchBar':slots+=f', trailingIcon = {{ IconButton(onClick = {{ {var} = "" }}) {{ Icon(painterResource(R.drawable.agata_close), contentDescription = "Limpar pesquisa") }} }}'
             keyboard={'text':'Text','email':'Email','number':'Number','password':'Password','phone':'Phone'}.get(p.get('keyboard'),'Text')
             fun='TextField' if p.get('variant')=='filled' else 'OutlinedTextField'
             extra=f', label = {{ Text({self.string(n,"label")}) }}, isError = {str(bool(p["error"])).lower()}, supportingText = {{ Text({self.string(n,"error" if p["error"] else "helper")}) }}' if kind=='TextField' else ''
-            if p.get('keyboard')=='password':extra+=', visualTransformation = PasswordVisualTransformation()'
+            if p.get('keyboard')=='password':extra+=f', visualTransformation = if (visible_{n["id"]}) androidx.compose.ui.text.input.VisualTransformation.None else PasswordVisualTransformation(), trailingIcon = {{ TextButton(onClick = {{ visible_{n["id"]} = !visible_{n["id"]} }}) {{ Text(if (visible_{n["id"]}) "Ocultar" else "Mostrar") }} }}'
             return f'{fun}(value = {var}, onValueChange = {{ {var} = it }}, enabled = {str(p["enabled"]).lower()}, placeholder = {{ Text({self.string(n,"placeholder")}) }}, modifier = {m}, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.{keyboard}){extra}{slots})'
         if kind in {'Checkbox','Switch'}:return f'{kind}(checked = {var}, onCheckedChange = {{ {var} = it }}, enabled = {str(p["enabled"]).lower()}, modifier = {m})'
         if kind=='Slider':return f'Slider(value = {var}, onValueChange = {{ {var} = it }}, valueRange = {float(p["min"])}f..{float(p["max"])}f, enabled = {str(p["enabled"]).lower()}, modifier = {m})'
@@ -176,6 +176,7 @@ class ComposeGenerator:
                 if n['type'] in {'TextField','SearchBar','Checkbox','Switch','Slider','RadioButton'}:
                     value=n['props'].get('checked',n['props'].get('value',''))
                     literal=str(value).lower() if type(value) is bool else f'{float(value)}f' if type(value) in (int,float) else quote(value)
+                    if n['props'].get('keyboard')=='password':declarations.append(f'var visible_{n["id"]} by rememberSaveable {{ mutableStateOf(false) }}')
                     declarations.append(f'var v_{n["id"]} by rememberSaveable {{ mutableStateOf({literal}) }}')
             drawers=[c for c in s['root']['children'] if c['type']=='Sidebar']
             if len(drawers)>1:raise ValueError('Use no máximo uma Sidebar por Screen.')
