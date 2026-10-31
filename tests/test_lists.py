@@ -23,6 +23,8 @@ class ListsTests(unittest.TestCase):
  def test_static_lazy_items_import_and_dynamic_diagnostics(self):
   code='@Composable fun Home(){ LazyVerticalGrid(columns = GridCells.Fixed(3)) { item(key="a") { Text("A") }; items(values) { Text(it) } } }'
   parser=ComposeParser({'Home.kt':code},resolve_resources({})[0]);doc=parser.parse();lazy=next(n for n in walk(doc['screens'][0]['root']) if n['type']=='LazyVerticalGrid');self.assertEqual(lazy['layout']['columns'],3);self.assertTrue(lazy['children']);self.assertGreater(parser.counts['code_only'],0)
+ def test_horizontal_staggered_recycler_uses_horizontal_api(self):
+  doc=new_document();node=new_node('RecyclerView',{'orientation':'horizontal','layoutManager':'staggered'});doc['screens'][0]['root']['children']=[node];files=generate(doc);code='\n'.join(v for k,v in files.items() if k.endswith('.kt'));self.assertIn('LazyHorizontalStaggeredGrid(',code);self.assertIn('horizontalItemSpacing = 8.dp',code);self.assertNotIn('verticalItemSpacing',code)
  def test_bad_recycler_configuration_rejected(self):
   doc=new_document();node=new_node('RecyclerView');node['props']['layoutManager']='arbitrary';doc['screens'][0]['root']['children']=[node]
   with self.assertRaises(ValueError):validate(doc)

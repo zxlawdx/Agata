@@ -17,7 +17,9 @@ def configuration(n):
 def compose_list(generator,n,omit):
     horizontal,mode=configuration(n);l=n['layout'];gap=l['gap'];modifier=generator.modifier({**n,'layout':{**l,'padding':0,'scroll':'none'}})
     if mode=='staggered':
-        function='LazyHorizontalStaggeredGrid' if horizontal else 'LazyVerticalStaggeredGrid';cells='rows' if horizontal else 'columns';args=f'{cells} = StaggeredGridCells.Fixed({l["columns"]}), horizontalArrangement = Arrangement.spacedBy({gap}.dp), verticalItemSpacing = {gap}.dp'
+        function='LazyHorizontalStaggeredGrid' if horizontal else 'LazyVerticalStaggeredGrid';cells='rows' if horizontal else 'columns'
+        spacing=f'horizontalItemSpacing = {gap}.dp, verticalArrangement = Arrangement.spacedBy({gap}.dp)' if horizontal else f'horizontalArrangement = Arrangement.spacedBy({gap}.dp), verticalItemSpacing = {gap}.dp'
+        args=f'{cells} = StaggeredGridCells.Fixed({l["columns"]}), '+spacing
     elif mode=='grid':
         function='LazyHorizontalGrid' if horizontal else 'LazyVerticalGrid';cells='rows' if horizontal else 'columns';args=f'{cells} = GridCells.Fixed({l["columns"]}), horizontalArrangement = Arrangement.spacedBy({gap}.dp), verticalArrangement = Arrangement.spacedBy({gap}.dp)'
     else:

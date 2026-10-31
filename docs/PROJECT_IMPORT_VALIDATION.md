@@ -1,6 +1,6 @@
 # Validação da entrega
 
-- 75 testes Python: domínio, persistência, gerenciador, importador, recursos, constraints, listas, preservação e exportações.
+- 76 testes Python: domínio, persistência, gerenciador, importador, recursos, constraints, listas, preservação e exportações.
 - 42 testes JavaScript: comandos, transações, snapping, seleção, árvores e controles.
 - Oito fluxos Playwright com Chromium e serviços Python isolados: smoke, Android, responsividade/pointer, constraints/tutorial, workflow, undo, importação e listas.
 - `compileall`, `npm run check:js` e `git diff --check`.
