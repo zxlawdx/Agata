@@ -8,7 +8,7 @@
  const on=(node,event,handler)=>node?.addEventListener(event,handler,{signal:abort.signal});
  const grid=q("agata-gallery-grid"),dialog=q("agata-gallery-dialog");
  const cache=new Map();
- let items=[],loaded=false,loading=null,selected=null,observer=null;
+ let items=[],loaded=false,loading=null,selected=null,observer=null,screenIndex=0,screenCount=0,modalVersion=0;
  const api=(method,...args)=>{
   const fn=window.pywebview?.api?.[method];
   if(typeof fn!=="function")return Promise.reject(Error("Bridge Vela indisponível."));
@@ -20,16 +20,16 @@
   if(className)el.className=className;
   return el;
  };
- const key=item=>item.platform+":"+item.id;
+ const key=(item,index=0)=>item.platform+":"+item.id+":"+index;
  const title=item=>item.platform==="web"?"Web · HTML/CSS/JS":"Android · Compose/XML";
  const detail=item=>item.name+" · "+item.category+" · "+(item.theme==="dark"?"Dark":"Light")+" · v"+item.version+" · licença "+item.license;
  const markError=(container,error)=>{
   container.replaceChildren(text("p","Prévia indisponível: "+(error.message||error),"agata-gallery-error"));
  };
- async function preview(item){
-  const id=key(item);
+ async function preview(item,index=0){
+  const id=key(item,index);
   if(!cache.has(id)){
-   cache.set(id,api("template_gallery_preview",item.id,item.platform).catch(error=>{
+   cache.set(id,api("template_gallery_preview",item.id,item.platform,index).catch(error=>{
     cache.delete(id);throw error;
    }));
   }
@@ -110,20 +110,40 @@
   if(typeof open!=="function"){status("Assistente de projetos indisponível.");return;}
   open(item.platform,item.id);
  }
+ function previewDevice(){
+  const mobile=q("agata-gallery-device").value==="mobile";
+  const frame=q("agata-gallery-frame");
+  frame.style.width=mobile?"min(390px,100%)":"100%";
+  frame.style.marginInline="auto";
+  q("agata-gallery-device-label").title=mobile?"Largura lógica 390px, prévia estática e isolada":"Prévia responsiva na largura disponível";
+ }
+ async function renderModal(item,index=0){
+  const version=++modalVersion;
+  q("agata-gallery-prev").disabled=true;
+  q("agata-gallery-next").disabled=true;
+  q("agata-gallery-counter").textContent="Carregando tela…";
+  try{
+   const data=await preview(item,index);
+   if(version!==modalVersion||!dialog.open||selected!==item)return;
+   screenCount=data.screens||1;
+   screenIndex=index;
+   q("agata-gallery-frame").srcdoc=data.html;
+   q("agata-gallery-counter").textContent=(data.screen_name||"Tela")+" · "+(index+1)+"/"+screenCount;
+   q("agata-gallery-prev").disabled=index===0;
+   q("agata-gallery-next").disabled=index>=screenCount-1;
+  }catch(e){if(version===modalVersion&&dialog.open)q("agata-gallery-counter").textContent=e.message;}
+ }
  async function show(item){
-  selected=item;
+  selected=item;screenIndex=0;screenCount=0;
   q("agata-gallery-title").textContent=item.name;
   q("agata-gallery-detail").textContent=detail(item);
-  q("agata-gallery-limit").textContent=item.platform==="android"?"Prévia esquemática; confirme no editor Android.":"Prévia HTML/CSS sem scripts; interatividade no projeto criado.";
+  q("agata-gallery-limit").textContent=item.platform==="android"?"Prévia esquemática de telas editáveis; confirme o resultado no Android Studio.":"Prévia responsiva HTML/CSS, sem scripts; interatividade apenas no projeto.";
+  q("agata-gallery-screens").hidden=item.platform!=="android";
+  q("agata-gallery-device-label").hidden=item.platform!=="web";
+  q("agata-gallery-device").value="desktop";previewDevice();
   q("agata-gallery-frame").removeAttribute("srcdoc");
   dialog.showModal();
-  try{
-   const data=await preview(item);
-   if(selected!==item||!dialog.open)return;
-   q("agata-gallery-frame").srcdoc=data.html;
-  }catch(e){
-   if(dialog.open)q("agata-gallery-detail").textContent=e.message;
-  }
+  await renderModal(item,0);
  }
  if("IntersectionObserver" in window){
   observer=new IntersectionObserver(records=>{
@@ -148,8 +168,11 @@
  on(q("agata-template-category"),"change",render);
  on(q("agata-template-theme"),"change",render);
  on(q("agata-gallery-use"),"click",()=>{if(selected)use(selected);});
+ on(q("agata-gallery-prev"),"click",()=>{if(selected&&screenIndex>0)renderModal(selected,screenIndex-1);});
+ on(q("agata-gallery-next"),"click",()=>{if(selected&&screenIndex<screenCount-1)renderModal(selected,screenIndex+1);});
+ on(q("agata-gallery-device"),"change",previewDevice);
  on(q("agata-gallery-close"),"click",()=>dialog.close());
- on(dialog,"close",()=>{selected=null;q("agata-gallery-frame").removeAttribute("srcdoc");});
+ on(dialog,"close",()=>{selected=null;modalVersion++;q("agata-gallery-frame").removeAttribute("srcdoc");});
  on(root,"agata:section-change",event=>{if(event.detail==="templates")load();});
  if(!q("agata-templates").hidden)load();
  const previous=window.VelaPage?.beforeUnmount;
