@@ -409,3 +409,61 @@
 #web-studio #ws-status{font-weight:700}
 #web-studio button:disabled{opacity:.5;cursor:not-allowed}
 #web-studio :is(button,input,select,textarea):focus-visible{outline:3px solid var(--ws-focus);outline-offset:2px}
+
+
+/* Workspace 2026 — the project viewport and authored CSS are unaffected by panel layout. */
+#web-studio .ws-layout{
+ display:grid;grid-template-columns:
+  minmax(0,var(--ws-left)) 7px minmax(0,1fr) 7px minmax(0,var(--ws-right));
+ gap:0;min-height:0;min-width:0;
+}
+#web-studio .ws-left{grid-column:1;grid-row:1;resize:none;min-width:0;max-width:none}
+#web-studio #ws-left-splitter{grid-column:2;grid-row:1}
+#web-studio .ws-center{grid-column:3;grid-row:1;min-width:0;min-height:0}
+#web-studio #ws-right-splitter{grid-column:4;grid-row:1}
+#web-studio .ws-right{grid-column:5;grid-row:1;resize:none;min-width:0;max-width:none}
+#web-studio .ws-panel-divider{background:var(--ws-bg);border-inline:1px solid var(--ws-border);
+ cursor:col-resize;touch-action:none;user-select:none;position:relative;min-width:7px}
+#web-studio .ws-panel-divider::before{content:"";position:absolute;top:50%;left:50%;
+ transform:translate(-50%,-50%);width:3px;height:40px;border-radius:4px;background:var(--ws-muted);opacity:.5}
+#web-studio .ws-panel-divider:hover,#web-studio .ws-panel-divider:focus-visible{background:var(--ws-selected)}
+#web-studio .ws-panel-divider:focus-visible{outline:3px solid var(--ws-focus);outline-offset:-3px}
+#web-studio[data-left="hidden"] .ws-layout{grid-template-columns:0 0 minmax(0,1fr) 7px minmax(0,var(--ws-right))}
+#web-studio[data-right="hidden"] .ws-layout{grid-template-columns:minmax(0,var(--ws-left)) 7px minmax(0,1fr) 0 0}
+#web-studio[data-left="hidden"][data-right="hidden"] .ws-layout{grid-template-columns:0 0 minmax(0,1fr) 0 0}
+#web-studio[data-left="hidden"] #ws-left-splitter,
+#web-studio[data-right="hidden"] #ws-right-splitter{display:none}
+#web-studio .ws-editors{min-width:0}
+#web-studio #ws-design{flex:0 0 var(--ws-design-percent,60%);width:var(--ws-design-percent,60%);
+ max-width:none;min-width:0;resize:none;overflow:auto}
+#web-studio #ws-code{flex:1 1 0;min-width:0;overflow:hidden}
+#web-studio #ws-center-splitter{flex:0 0 7px;align-self:stretch}
+#web-studio[data-mode="design"] #ws-center-splitter,
+#web-studio[data-mode="code"] #ws-center-splitter,
+#web-studio[data-mode="preview"] #ws-center-splitter{display:none}
+#web-studio[data-mode="design"] #ws-design{flex:1 1 auto;width:100%;max-width:none}
+#web-studio[data-mode="code"] #ws-code,#web-studio[data-mode="preview"] #ws-runtime{flex:1 1 auto}
+#web-studio .ws-zoom-controls{display:inline-flex;flex:none;gap:5px;align-items:center;white-space:nowrap}
+#web-studio .ws-zoom-controls #ws-zoom-mode{width:135px}
+#web-studio .ws-zoom-controls #ws-zoom-value{width:60px;text-align:center;font-variant-numeric:tabular-nums}
+#web-studio .ws-zoom-controls button{padding:5px 9px;font-weight:800;min-width:28px}
+#web-studio header,#web-studio nav{flex:0 0 auto;flex-wrap:nowrap;
+ min-height:43px;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin}
+#web-studio header > *,#web-studio nav > *{flex-shrink:0}
+#web-studio #ws-status{flex:0 1 200px;min-width:100px}
+#web-studio .ws-selection-tools{flex:0 0 auto}
+#web-studio :is(.ws-file-actions,.ws-code-tools){flex-wrap:nowrap;overflow-x:auto;scrollbar-width:thin}
+#web-studio .ws-file-actions button{flex-shrink:0}
+#web-studio #ws-focus-mode[aria-pressed="true"]{background:var(--ws-selected);font-weight:800}
+#web-studio[data-focus="true"] .ws-layout{grid-template-columns:0 0 minmax(0,1fr) 0 0}
+#web-studio[data-focus="true"] :is(.ws-left,.ws-right,#ws-left-splitter,#ws-right-splitter){display:none}
+@media(max-width:900px){
+ #web-studio .ws-layout,#web-studio[data-left="hidden"] .ws-layout,#web-studio[data-right="hidden"] .ws-layout{
+  display:grid;grid-template-columns:minmax(0,1fr)!important;
+ }
+ #web-studio .ws-center{grid-column:1;grid-row:1}
+ #web-studio :is(#ws-left-splitter,#ws-right-splitter){display:none}
+ #web-studio[data-mode="split"] #ws-design{flex-basis:var(--ws-design-percent,60%);min-width:0}
+ #web-studio #ws-center-splitter{width:7px}
+ #web-studio .ws-zoom-controls{gap:4px}
+}
