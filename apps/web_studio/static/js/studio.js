@@ -1008,6 +1008,13 @@
     on(q("wordwrap"),"change",editorPreference);
     on(q("search-layers"),"input",renderTree);
     on(q("position-mode"),"change",()=>{canvasInteraction?.setMode(q("position-mode").value);status("Modo "+q("position-mode").value+"; operações responsivas preservam Flex/Grid.");});
+    const canvasPopover=root.querySelector(".ws-canvas-popover");
+    on(canvasPopover,"toggle",()=>{
+      if(!canvasPopover.open)return;
+      const rect=canvasPopover.querySelector("summary").getBoundingClientRect();
+      root.style.setProperty("--ws-canvas-menu-top",Math.min(rect.bottom,innerHeight-380)+"px");
+      root.style.setProperty("--ws-canvas-menu-left",Math.max(8,Math.min(rect.left,innerWidth-236))+"px");
+    });
     on(q("grid-visible"),"change",()=>{canvasInteraction.grid=q("grid-visible").checked;canvasInteraction.apply();});
     on(q("grid-spacing"),"change",()=>canvasInteraction.setSpacing(q("grid-spacing").value));
     on(q("grid-snap"),"change",()=>{canvasInteraction.snap=q("grid-snap").checked;canvasInteraction.apply();});
