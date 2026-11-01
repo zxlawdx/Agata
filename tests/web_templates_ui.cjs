@@ -1,6 +1,7 @@
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || "playwright"),
   assert = require("node:assert/strict"),
-  fs = require("node:fs");
+  fs = require("node:fs"),
+  path = require("node:path");
 (async () => {
   const browser = await chromium.launch({
     executablePath: process.env.CHROMIUM_PATH,
@@ -13,6 +14,7 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE || "playwright"),
   page.setDefaultTimeout(40000);
   const errors = [],
     metrics = [];
+  const evidence=process.env.AGATA_EVIDENCE||"/tmp";fs.mkdirSync(evidence,{recursive:true});
   page.on("pageerror", (e) => errors.push(e.message));
   try {
     await page.goto(process.env.AGATA_TEST_URL);
@@ -75,14 +77,14 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE || "playwright"),
         );
         metrics.push({ template, width, openMs, ...dimensions });
         await frame.locator("body").screenshot({
-          path: "/tmp/agata-template-" + template + "-" + width + ".png",
+          path: path.join(evidence,"web-template-" + template + "-" + width + ".png"),
         });
       }
       console.log("Template responsive:", template);
     }
     assert.deepEqual(errors, []);
     fs.writeFileSync(
-      "/tmp/agata-web-template-metrics.json",
+      path.join(evidence,"web-template-metrics.json"),
       JSON.stringify({ browser: browser.version(), results: metrics }, null, 2),
     );
     console.log(
