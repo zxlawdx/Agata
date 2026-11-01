@@ -111,11 +111,26 @@
       <select id="ws-block-category" aria-label="Categoria de componentes"><option value="all">Todas as categorias</option></select>
       <div id="ws-blocks" role="region" aria-label="Biblioteca HTML e blocos"></div>
       <h3>Layers</h3>
-      <div id="ws-tree" role="tree"></div>
+      <input id="ws-search-layers" type="search" aria-label="Buscar layers" placeholder="Buscar na árvore…"/>
+      <div id="ws-tree" role="tree" aria-label="Hierarquia de elementos"></div>
     </aside>
     <div id="ws-left-splitter" class="ws-panel-divider" role="separator" tabindex="0" aria-label="Redimensionar Explorer" aria-orientation="vertical"></div>
     <main class="ws-center">
       <div class="ws-selection-tools" role="toolbar" aria-label="Editar componentes e layout">
+        <label class="ws-toolbar-heading">Interação <select id="ws-position-mode" aria-label="Movimentação de elementos"><option value="responsive">Responsivo</option><option value="free">Livre</option></select></label>
+        <button data-action="preparecontainer" title="Permitir posicionamento local sem desfazer Flex/Grid">Preparar contêiner</button>
+        <button data-action="freefront" title="Colocar seleção à frente">Trazer à frente</button>
+        <button data-action="freeback" title="Colocar seleção atrás">Enviar atrás</button>
+        <details class="ws-canvas-popover"><summary>Canvas e grade</summary><div>
+          <label><input type="checkbox" id="ws-grid-visible" checked>Grade azul</label>
+          <label>Espaçamento <input id="ws-grid-spacing" type="number" min="4" max="128" value="16"> px</label>
+          <label><input type="checkbox" id="ws-grid-snap" checked>Snap à grade</label>
+          <button data-action="resetpan">Reset pan</button>
+          <button data-action="centerpage">Centralizar página</button>
+          <button data-action="canvasfit">Fit largura</button>
+          <button data-action="fitscreen">Fit tela</button>
+          <button data-action="canvaszoom">100%</button>
+        </div></details>
         <span class="ws-toolbar-heading">Editar</span>
         <button data-action="parent">Selecionar pai</button
         ><button data-action="detachcomponent">Desvincular instância</button
@@ -137,7 +152,7 @@
         ><button data-action="group">Agrupar</button>
       </div>
       <div class="ws-editors">
-        <section id="ws-design" aria-label="Canvas visual">
+        <section id="ws-design" aria-label="Canvas visual" tabindex="0" title="Botão central ou Espaço + arrastar para mover; Ctrl + roda para zoom">
           <div id="ws-canvas"></div>
         </section>
         <div id="ws-center-splitter" class="ws-panel-divider ws-center-divider" role="separator" tabindex="0" aria-label="Redimensionar Canvas e Código" aria-orientation="vertical" aria-valuemin="23" aria-valuemax="77" aria-valuenow="60"></div>
@@ -292,6 +307,7 @@
         "js/layout.js",
         "js/workspace_layout.js",
         "js/adapters.js",
+        "js/canvas_interaction.js",
         "js/styles.js",
         "js/effects.js",
         "js/inspector.js",
