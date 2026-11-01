@@ -45,14 +45,18 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE || "playwright"),
       assert.equal(await page.locator("#ad-frames .ad-frame").count(), ["music-dark","social-modern","fintech-premium"].includes(key) ? 6 : 2);
       await page.click("[data-mode=preview]");
       await page.waitForTimeout(150);
-      await page.selectOption("#ad-preview-preset", "1600,1000");
-      await page.waitForTimeout(150);
       if (["music-dark","social-modern","fintech-premium"].includes(key)) {
-        await page.screenshot({
-          path: path.join(process.env.AGATA_EVIDENCE||"/tmp","android-premium-"+key+".png"),
-          fullPage:true
-        });
+        for(const [device,preset] of [["mobile-390","390,844"],["tablet-768","768,1024"],["desktop-1600","1600,1000"]]){
+          await page.selectOption("#ad-preview-preset",preset);
+          await page.waitForFunction(value=>document.querySelector("#ad-preview-width")?.value===value,preset.split(",")[0]);
+          await page.waitForTimeout(200);
+          await page.screenshot({
+            path:path.join(process.env.AGATA_EVIDENCE||"/tmp","android-premium-"+key+"-"+device+".png"),
+            fullPage:true
+          });
+        }
       }
+      await page.selectOption("#ad-preview-preset", "1600,1000");
       console.log("Premium UI:", key);
     }
     assert.deepEqual(errors, []);
