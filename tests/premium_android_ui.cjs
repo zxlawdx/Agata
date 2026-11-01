@@ -1,3 +1,4 @@
+const fs=require("node:fs"),path=require("node:path");
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || "playwright"),
   assert = require("node:assert/strict");
 (async () => {
@@ -11,6 +12,7 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE || "playwright"),
   });
   page.setDefaultTimeout(40000);
   const errors = [];
+  fs.mkdirSync(process.env.AGATA_EVIDENCE||"/tmp",{recursive:true});
   page.on("pageerror", (e) => errors.push(e.message));
   try {
     await page.goto(process.env.AGATA_TEST_URL);
@@ -44,7 +46,7 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE || "playwright"),
       await page.waitForTimeout(150);
       if (key === "music-dark")
         await page.screenshot({
-          path: "/tmp/agata-android-premium.png",
+          path: path.join(process.env.AGATA_EVIDENCE||"/tmp","android-premium-music.png"),
           fullPage: true,
         });
       console.log("Premium UI:", key);
