@@ -31,6 +31,7 @@
       clipboard = "";
     let layoutManager, zoomController, canvasInteraction;
     const collapsedLayers=new Set();
+    let draggedLayerId=null;
     const logs = [];
     let languageProblems = [];
     const gradientEditor = new global.AgataWebEffects.GradientEditor(root);
@@ -276,12 +277,19 @@
         };
         name.ondblclick=rename;
         name.draggable=true;
-        name.ondragstart=e=>e.dataTransfer.setData("application/agata-node",node.id);
+        name.ondragstart=e=>{
+          draggedLayerId=node.id;
+          e.dataTransfer.effectAllowed="move";
+          e.dataTransfer.setData("application/agata-node",node.id);
+          e.dataTransfer.setData("text/plain",node.id);
+        };
+        name.ondragend=()=>{draggedLayerId=null;};
         row.ondragover=e=>{e.preventDefault();e.dataTransfer.dropEffect="move";};
         row.ondrop=e=>{e.preventDefault();e.stopPropagation();try{
-          const moved=e.dataTransfer.getData("application/agata-node");
+          const moved=e.dataTransfer.getData("application/agata-node")||draggedLayerId;
           const block=e.dataTransfer.getData("application/agata-block");
           if(moved&&moved!==node.id){
+            draggedLayerId=null;
             const rect=row.getBoundingClientRect();
             const before=e.clientY<rect.top+rect.height*.5?node.id:node.parent?.children[node.parent.children.indexOf(node)+1]?.id||null;
             doc.move(moved,node.parent?.id||null,before);
