@@ -119,7 +119,14 @@
     const pref = prefs();
     layoutManager = new global.AgataWebWorkspaceLayout.WorkspaceLayoutManager(root,{
       onResize:()=>{code?.editor.layout();zoomController?.apply();},
-      onUpdate:()=>persistLayout()
+      onUpdate:()=>{
+        persistLayout();
+        if(zoomController && zoomController.mode!==layoutManager.state.zoomMode){
+          if(layoutManager.state.zoomMode==="custom")zoomController.setPercent(layoutManager.state.zoomPercent);
+          else zoomController.fit(layoutManager.state.zoomMode);
+          updateZoomDisplay();
+        }
+      }
     });
     if(pref.bottomOpen===false)root.querySelector("footer details").open=false;
     on(root.querySelector("footer details"),"toggle",persistLayout);
