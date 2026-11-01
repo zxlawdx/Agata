@@ -22,7 +22,7 @@
  };
  const key=item=>item.platform+":"+item.id;
  const title=item=>item.platform==="web"?"Web · HTML/CSS/JS":"Android · Compose/XML";
- const detail=item=>item.name+" · "+item.category+" · v"+item.version+" · licença "+item.license;
+ const detail=item=>item.name+" · "+item.category+" · "+(item.theme==="dark"?"Dark":"Light")+" · v"+item.version+" · licença "+item.license;
  const markError=(container,error)=>{
   container.replaceChildren(text("p","Prévia indisponível: "+(error.message||error),"agata-gallery-error"));
  };
@@ -57,9 +57,9 @@
   frame.setAttribute("referrerpolicy","no-referrer");frame.loading="lazy";
   thumb.append(frame);
   const meta=document.createElement("div");meta.className="agata-template-meta";
-  meta.append(text("small",title(item)),text("h3",item.name),text("p",item.category+" · "+item.tags.join(" · ")));
+  meta.append(text("small",title(item)),text("h3",item.name),text("p",item.category+" · "+(item.theme==="dark"?"Dark":"Light")+" · "+item.tags.join(" · ")));
   const line=document.createElement("div");line.className="agata-template-attribution";
-  line.append(text("span","Original Agata"),text("span",item.license+" · "+item.version));
+  line.append(text("span",item.author||"Agata Studio"),text("span",item.license+" · "+item.version));
   meta.append(line);
   const actions=document.createElement("div");actions.className="agata-template-actions";
   const show=text("button","Prévia");show.type="button";show.dataset.galleryAction="preview";
@@ -75,9 +75,11 @@
   if(!loaded)return;
   const platform=q("agata-template-platform").value;
   const category=q("agata-template-category").value;
+  const theme=q("agata-template-theme").value;
   const query=q("agata-template-search").value.trim().toLocaleLowerCase("pt-BR");
   const filtered=items.filter(item=>(platform==="all"||item.platform===platform)
    &&(category==="all"||item.category===category)
+   &&(theme==="all"||item.theme===theme)
    &&(item.name+" "+item.category+" "+item.tags.join(" ")).toLocaleLowerCase("pt-BR").includes(query));
   observer?.disconnect();
   grid.replaceChildren(...filtered.map(card));
@@ -144,6 +146,7 @@
  on(q("agata-template-search"),"input",render);
  on(q("agata-template-platform"),"change",render);
  on(q("agata-template-category"),"change",render);
+ on(q("agata-template-theme"),"change",render);
  on(q("agata-gallery-use"),"click",()=>{if(selected)use(selected);});
  on(q("agata-gallery-close"),"click",()=>dialog.close());
  on(dialog,"close",()=>{selected=null;q("agata-gallery-frame").removeAttribute("srcdoc");});
