@@ -759,6 +759,14 @@
         new global.AgataWebLayout.LayoutService(doc, (id) =>
           canvas.computed(id),
         ).autoLayout(selected, "grid"),
+      canvasfit: () => {
+        canvas.width(Number(q("width").value) || 1440);
+        status("Canvas ajustado à largura do painel.");
+      },
+      canvaszoom: () => {
+        canvas.editor.Canvas.setZoom(100);
+        status("Canvas em 100% (role horizontalmente para explorar).");
+      },
       gridguides: () => canvas.gridGuides(selected),
       rulers: () => canvas.rulers(),
       snap: () => {
