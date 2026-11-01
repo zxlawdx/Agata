@@ -70,7 +70,7 @@ def export_imported_android(project_id,backend,activate=False):
 bridge.export_imported_android=export_imported_android
 allowed = {'list_projects', 'create_project', 'get_project', 'save_sketch', 'export_artwork', 'get_interface', 'save_interface', 'generate_android', 'validate_interface', 'export_android','project_action','open_existing_project','inspect_project_import','upload_project_import','upload_project_sources','confirm_project_import','cancel_project_import','project_source','save_project_source','reanalyze_project','export_imported_android','choose_project_path'}
 
-allowed.update({'android_design_system','android_premium_component','web_catalog','create_web_project','get_web_project','save_web_project','import_web_project','export_web_project','web_preview','save_web_recovery'})
+allowed.update({'template_gallery_catalog','template_gallery_preview','android_design_system','android_premium_component','web_catalog','create_web_project','get_web_project','save_web_project','import_web_project','export_web_project','web_preview','save_web_recovery'})
 from apps.web_studio.services.projects import WebProjectService
 bridge.export_web_project=lambda project_id: WebProjectService(repository).export(project_id,Path(fixture_root.name)/'Exports')
 
