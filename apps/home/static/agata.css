@@ -183,3 +183,17 @@
  #agata-home .agata-gallery-dialog footer{flex-wrap:wrap}
  #agata-home #agata-gallery-use{width:100%}
 }
+
+
+/* Accessible multi-screen Android and desktop/mobile Web gallery previews. */
+#agata-home .agata-gallery-preview-controls{display:flex;justify-content:space-between;gap:12px;align-items:center;
+ flex-wrap:wrap;margin:0 0 10px}
+#agata-home #agata-gallery-screens{display:flex;align-items:center;gap:12px}
+#agata-home #agata-gallery-counter{min-width:115px;font-size:12px;font-weight:800;text-align:center}
+#agata-home .agata-gallery-preview-controls button{min-height:36px;padding:8px 12px;
+ border:2px solid var(--ink);border-radius:9px;background:var(--cyan);color:var(--ink);font-weight:800}
+#agata-home .agata-gallery-preview-controls button:disabled{opacity:.4;cursor:not-allowed}
+#agata-home #agata-gallery-device-label{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:750}
+#agata-home #agata-gallery-device{min-height:36px;padding:6px 9px;border:2px solid var(--ink);border-radius:9px;background:var(--cream);color:var(--ink)}
+#agata-home #agata-gallery-frame{transition:width .18s ease-out}
+@media(prefers-reduced-motion:reduce){#agata-home #agata-gallery-frame{transition:none}}
