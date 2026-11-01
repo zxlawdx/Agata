@@ -4,6 +4,7 @@ for (const test of [
   "tests/native_shell_ui.cjs",
   "tests/project_wizard_ui.cjs",
   "tests/template_gallery_ui.cjs",
+  "tests/web_code_sync_ui.cjs",
   "tests/web_studio_ui.cjs",
   "tests/web_studio_advanced_ui.cjs",
   "tests/web_monaco_ui.cjs",
