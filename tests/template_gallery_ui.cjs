@@ -62,7 +62,7 @@ const assert=require("node:assert/strict"),fs=require("node:fs"),path=require("n
   assert.equal(await page.locator("#agata-template").inputValue(),"music-dark");
   await page.locator("#agata-name").fill("Gallery Android Edited");
   await page.locator("#agata-confirm-create").click();
-  await page.locator("#ad-frames .ad-frame").waitFor();
+  await page.locator("#ad-frames .ad-frame").first().waitFor();
   assert(await page.locator("#ad-frames .ad-frame").count()>0);
   await page.screenshot({path:path.join(destination,"template-gallery-created-android.png"),fullPage:true});
   assert.deepEqual(errors,[]);
