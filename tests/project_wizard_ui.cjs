@@ -1,5 +1,5 @@
 /* E2E regressions from the October 2026 user bug report. */
-const assert = require("node:assert/strict");
+const assert = require("node:assert/strict"),fs=require("node:fs"),path=require("node:path");
 const {chromium} = require(process.env.PLAYWRIGHT_MODULE || "playwright");
 
 (async () => {
@@ -9,6 +9,7 @@ const {chromium} = require(process.env.PLAYWRIGHT_MODULE || "playwright");
  });
  const page = await browser.newPage({viewport:{width:1440,height:900}});
  page.setDefaultTimeout(40000);
+ const evidence=process.env.AGATA_EVIDENCE||"/tmp";fs.mkdirSync(evidence,{recursive:true});
  const errors=[];
  page.on("pageerror",e=>errors.push(e.message));
  try {
@@ -60,14 +61,17 @@ const {chromium} = require(process.env.PLAYWRIGHT_MODULE || "playwright");
   await page.locator("#ad-example").click();
   assert.equal(await page.locator("#ad-links .ad-connection").count(),0);
   assert.equal(await page.locator("#ad-connections").getAttribute("aria-pressed"),"false");
+  await page.screenshot({path:path.join(evidence,"android-navigation-hidden.png"),fullPage:true});
   await page.locator("#ad-connections").click();
   assert(await page.locator("#ad-links .ad-connection").count()>0);
   assert.equal(await page.locator("#ad-connections").getAttribute("aria-pressed"),"true");
+  await page.screenshot({path:path.join(evidence,"android-navigation-visible.png"),fullPage:true});
   await page.locator("#ad-connections").click();
   assert.equal(await page.locator("#ad-links .ad-connection").count(),0);
   await page.locator("#ad-constraint-mode").click();
   assert.equal(await page.locator("#ad-links .ad-connection").count(),0);
   assert.equal(await page.locator("#ad-constraint-mode").getAttribute("aria-pressed"),"true");
+  await page.screenshot({path:path.join(evidence,"android-constraints-separated.png"),fullPage:true});
   await page.locator("#ad-flow").click();
   assert.match(await page.locator("#ad-flow-map").innerText(),/Dashboard/);
   await page.locator("#ad-flow-map").getByRole("button",{name:"Fechar"}).click();
