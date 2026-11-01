@@ -118,7 +118,8 @@ def gallery_catalog():
             registered.append({
                 "id": key, "name": name, "platform": "android",
                 "category": "starter", "version": "1.0.0",
-                "license": "original", "tags": ["starter", "editable"],
+                "license": "original", "author": "Agata Studio", "theme": "light",
+                "tags": ["starter", "editable"],
                 "updateStrategy": "Copiado como novo projeto; mudanças não sobrescrevem edições.",
             })
     return registered
