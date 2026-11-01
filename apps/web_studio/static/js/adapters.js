@@ -558,6 +558,10 @@
       const frame = this.editor.Canvas.getFrameEl();
       if (frame) {
         frame.setAttribute("sandbox", "allow-same-origin");
+        // GrapesJS may replace the iframe document after setComponents or when
+        // changing device dimensions. Restore authored CSS on EVERY frame load;
+        // the project CSS never becomes a workspace/editor stylesheet.
+        this.applyAuthoredStyle();
         const head = frame.contentDocument?.head;
         if (head && !head.querySelector("[data-agata-csp]")) {
           const meta = frame.contentDocument.createElement("meta");
@@ -636,6 +640,17 @@
         this.interaction?.bindFrame();
       }
     }
+    applyAuthoredStyle() {
+      const document=this.editor.Canvas.getDocument();
+      if(!document?.head||typeof this.previewCss!=="string")return;
+      let style=document.getElementById("agata-authored-css");
+      if(!style){
+        style=document.createElement("style");
+        style.id="agata-authored-css";
+        document.head.append(style);
+      }
+      if(style.textContent!==this.previewCss)style.textContent=this.previewCss;
+    }
     render(file) {
       if (!file) return;
       this.file = file;
@@ -699,18 +714,10 @@
         }
         this.previousFile = file;
         this.previousHtml = html;
+        this.previewCss=css;
         this.editor.setStyle("");
         this.secure();
-        const document = this.editor.Canvas.getDocument();
-        if (document) {
-          let style = document.getElementById("agata-authored-css");
-          if (!style) {
-            style = document.createElement("style");
-            style.id = "agata-authored-css";
-            document.head.append(style);
-          }
-          if (style.textContent !== css) style.textContent = css;
-        }
+        this.applyAuthoredStyle();
         this.width(this.logicalWidth || 1440);
         this.editor.getWrapper().onAll((component) => {
           component.set({
