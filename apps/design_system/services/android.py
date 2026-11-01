@@ -323,6 +323,9 @@ def component(name, theme, props=None, target=None):
 
 
 def template_document(key):
+    if key in {"music-dark", "social-modern", "fintech-premium"}:
+        from .premium_experiences import build
+        return build(key)
     meta = get(key, "android")
     theme = tokens(key)
     d = new_document()
