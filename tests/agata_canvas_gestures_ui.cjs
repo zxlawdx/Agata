@@ -67,6 +67,14 @@ const assert=require("node:assert/strict"),fs=require("node:fs"),path=require("n
   assert.deepEqual(afterNavigation,original,"Pan, zoom and editor grid cannot alter project HTML or CSS");
   await page.locator("#ws-zoom-value").fill("100");
   await page.locator("#ws-zoom-value").dispatchEvent("change");
+  await page.mouse.move(center.x,center.y);
+  await page.keyboard.down("Control");
+  await page.mouse.wheel(0,-170);
+  await page.keyboard.up("Control");
+  await page.waitForFunction(()=>Number(document.querySelector("#ws-zoom-value")?.value)>100);
+  await shot("agata-zoom-ctrl-wheel");
+
+  await page.locator("#ws-zoom-value").dispatchEvent("change");
   await page.locator("#ws-grid-spacing").fill("12");
   await page.locator("#ws-grid-spacing").dispatchEvent("change");
   await page.locator("#ws-grid-snap").check();
@@ -99,6 +107,11 @@ const assert=require("node:assert/strict"),fs=require("node:fs"),path=require("n
   await shot("agata-free-drag-after");
   const moved=await page.evaluate(()=>window.AgataWebSession.text("css/overrides.css"));
   assert(moved!==original.css&&moved.includes("position: absolute"));
+  await page.locator("#ws-design").focus();
+  await page.keyboard.press("Control+z");
+  await page.waitForFunction(()=>!window.AgataWebSession.text("css/overrides.css").includes("position: absolute"));
+  await page.keyboard.press("Control+Shift+z");
+  await page.waitForFunction(()=>window.AgataWebSession.text("css/overrides.css").includes("position: absolute"));
   await page.locator('[data-action="save"]').click();
   await page.waitForFunction(()=>document.querySelector("#ws-status")?.textContent.includes("Salvo"));
   await page.evaluate(id=>window.Vela.navigate("/web",{project_id:id}),p.id);
