@@ -140,3 +140,46 @@
  #agata-home[data-ide-theme="system"] .agata-dialog :is(input,select){background:var(--paper);color:var(--ink)}
  #agata-home[data-ide-theme="system"] .agata-manager-actions :is(input,select,button){background:var(--paper);color:var(--ink)}
 }
+
+/* Source-backed template marketplace. Thumbnails are read-only iframes, not fake screenshots. */
+#agata-home .agata-gallery-lead{color:var(--ink);opacity:.8;line-height:1.5}
+#agata-home .agata-gallery-controls{display:flex;align-items:end;gap:12px;flex-wrap:wrap;margin:16px 0}
+#agata-home .agata-gallery-controls label{display:grid;gap:6px;min-width:150px;flex:0 1 210px;font-weight:750}
+#agata-home .agata-gallery-controls label:first-child{flex:1 1 260px}
+#agata-home .agata-gallery-controls :is(input,select){min-height:42px;border:2px solid var(--ink);border-radius:11px;background:var(--paper);color:var(--ink);padding:8px 10px}
+#agata-home .agata-gallery-status{font-size:12px;opacity:.85;margin:10px 0}
+#agata-home .agata-gallery-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:16px;align-items:stretch}
+#agata-home .agata-template-card{background:var(--paper);border:2px solid var(--ink);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;min-width:0;box-shadow:3px 4px 0 #2222}
+#agata-home .agata-template-thumb{position:relative;overflow:hidden;height:176px;background:var(--cyan);border-bottom:2px solid var(--ink)}
+#agata-home .agata-template-thumb iframe{border:0;position:absolute;top:0;left:0;pointer-events:none;background:white}
+#agata-home .agata-template-browser iframe{width:1024px;height:640px;transform:scale(.34);transform-origin:0 0}
+#agata-home .agata-template-phone{background:radial-gradient(circle at center,var(--pink),var(--cyan));}
+#agata-home .agata-template-phone iframe{width:390px;height:720px;left:50%;top:6px;transform:translateX(-50%) scale(.34);transform-origin:top left}
+#agata-home .agata-template-thumb[aria-busy=true]::after{content:"Preparando prévia…";position:absolute;inset:0;display:grid;place-items:center;background:var(--cream);color:var(--ink);font-weight:750}
+#agata-home .agata-template-meta{padding:13px 14px;flex:1}
+#agata-home .agata-template-meta small{font-weight:800;text-transform:uppercase;letter-spacing:.09em;font-size:10px}
+#agata-home .agata-template-meta h3{font-size:18px;line-height:1.3;margin:7px 0 4px}
+#agata-home .agata-template-meta p{font-size:12px;opacity:.82;margin:0 0 12px}
+#agata-home .agata-template-attribution{display:flex;gap:5px;flex-wrap:wrap;justify-content:space-between;font-size:10px;opacity:.8}
+#agata-home .agata-template-actions{display:flex;gap:8px;padding:10px 14px 14px}
+#agata-home .agata-template-actions button{flex:1;min-height:40px;border:2px solid var(--ink);border-radius:10px;background:var(--cream);font-weight:750}
+#agata-home .agata-template-actions button:last-child{background:var(--yellow)}
+#agata-home .agata-template-actions button:hover{transform:translateY(-1px)}
+#agata-home .agata-gallery-empty{grid-column:1/-1;padding:22px;text-align:center;background:var(--cream);border-radius:12px}
+#agata-home .agata-gallery-error{padding:15px;font-size:12px;overflow-wrap:anywhere}
+#agata-home .agata-gallery-dialog{width:min(950px,96vw);max-height:94vh;border:2px solid var(--ink);background:var(--cream);color:var(--ink);border-radius:20px;padding:16px;box-shadow:7px 9px 0 #0003}
+#agata-home .agata-gallery-dialog::backdrop{background:#101a28ae}
+#agata-home .agata-gallery-dialog header{display:flex;justify-content:space-between;gap:14px}
+#agata-home .agata-gallery-dialog header h2{margin:6px 0;font-size:23px}
+#agata-home .agata-gallery-dialog header p{font-size:12px;margin:0 0 12px}
+#agata-home .agata-gallery-dialog header button{height:38px;width:38px;border:2px solid var(--ink);border-radius:50%;background:var(--pink)}
+#agata-home .agata-gallery-large{height:min(67vh,620px);background:var(--paper);border:2px solid var(--ink);border-radius:13px;overflow:hidden}
+#agata-home #agata-gallery-frame{border:0;width:100%;height:100%;background:#fff}
+#agata-home .agata-gallery-dialog footer{display:flex;justify-content:space-between;gap:14px;align-items:center;margin-top:12px}
+#agata-home .agata-gallery-dialog footer span{font-size:11px;line-height:1.45}
+#agata-home #agata-gallery-use{border:2px solid var(--ink);border-radius:10px;background:var(--yellow);padding:12px;font-weight:800;flex-shrink:0}
+@media(max-width:760px){
+ #agata-home .agata-template-browser iframe{transform:scale(.30)}
+ #agata-home .agata-gallery-dialog footer{flex-wrap:wrap}
+ #agata-home #agata-gallery-use{width:100%}
+}
