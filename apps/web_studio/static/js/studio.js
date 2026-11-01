@@ -515,6 +515,7 @@
       canvas.onKeyDown = keyboard;
       canvas.onInsert = insertLibraryBlock;
       code.onNode = (id) => select(id);
+      code.editor.updateOptions({minimap:{enabled:q("minimap").checked},wordWrap:q("wordwrap").checked?"on":"off"});
       code.onDiagnostics = (items) => {
         languageProblems = items;
         diagnostics();
@@ -769,7 +770,12 @@
         status("Snap de tamanho: " + (canvas.snap ? "ativo" : "desativado"));
       },
       group: () => doc.group([...selection]),
-      format: () => code.format(),
+      format: async () => {
+        if(!activeFile)throw Error("Selecione um arquivo para formatar.");
+        await code.format();
+        status("Formatação solicitada: "+activeFile+" (desfaça com Ctrl+Z).");
+      },
+      goto:()=>code.gotoLine(),
       find: () => code.find(),
       source: () => code.locate(doc.node(selected)),
       diff: () => {
@@ -904,6 +910,18 @@
       const mode = e.target.closest("button[data-mode]");
       if (mode) setMode(mode.dataset.mode);
     });
+    const editorPreference=()=>{
+      const minimap=q("minimap").checked,wrap=q("wordwrap").checked;
+      code?.editor.updateOptions({minimap:{enabled:minimap},wordWrap:wrap?"on":"off"});
+      try{localStorage.setItem("agata-web-code-options",JSON.stringify({minimap,wrap}));}catch{}
+    };
+    try{
+      const options=JSON.parse(localStorage.getItem("agata-web-code-options")||"{}");
+      q("minimap").checked=options.minimap===true;
+      q("wordwrap").checked=options.wrap!==false;
+    }catch{}
+    on(q("minimap"),"change",editorPreference);
+    on(q("wordwrap"),"change",editorPreference);
     on(q("search-files"), "input", renderFiles);
     on(q("search-blocks"), "input", () =>
       renderBlocks(q("search-blocks").value),
