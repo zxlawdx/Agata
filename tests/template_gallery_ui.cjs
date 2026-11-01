@@ -14,6 +14,10 @@ const assert=require("node:assert/strict"),fs=require("node:fs"),path=require("n
   await page.waitForFunction(()=>document.querySelectorAll(".agata-template-card").length>=14);
   assert(await page.locator(".agata-template-card").count()>=14);
   await page.screenshot({path:path.join(destination,"template-gallery-all.png"),fullPage:true});
+  await page.locator("#agata-template-theme").selectOption("dark");
+  assert(await page.locator(".agata-template-card").count()>0);
+  assert.equal(await page.locator('.agata-template-card[data-template-id="premium-landing"]').count(),0);
+  await page.locator("#agata-template-theme").selectOption("all");
   await page.locator("#agata-template-platform").selectOption("web");
   assert.equal(await page.locator('.agata-template-card[data-platform="android"]').count(),0);
   const card=page.locator('.agata-template-card[data-template-id="premium-landing"]');
