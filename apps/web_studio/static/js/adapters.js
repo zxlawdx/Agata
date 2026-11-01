@@ -654,7 +654,10 @@
       }
     }
     applyAuthoredStyle() {
-      const document=this.editor.Canvas.getDocument();
+      // Use the ACTUAL iframe document: GrapesJS can temporarily expose a
+      // stale Canvas.getDocument() while switching devices or remounting Vela.
+      const frame=this.editor.Canvas.getFrameEl();
+      const document=frame?.contentDocument||this.editor.Canvas.getDocument();
       if(!document?.head||typeof this.previewCss!=="string")return;
       let style=document.getElementById("agata-authored-css");
       if(!style){
@@ -663,6 +666,19 @@
         document.head.append(style);
       }
       if(style.textContent!==this.previewCss)style.textContent=this.previewCss;
+    }
+    scheduleAuthoredStyle() {
+      if(this.styleRetry)cancelAnimationFrame(this.styleRetry);
+      let attempts=0;
+      const check=()=>{
+        if(this.styleDisposed)return;
+        this.applyAuthoredStyle();
+        const frame=this.editor.Canvas.getFrameEl();
+        const actual=frame?.contentDocument?.getElementById("agata-authored-css");
+        if(actual?.textContent===this.previewCss&&this.previewCss)return;
+        if(++attempts<120)this.styleRetry=requestAnimationFrame(check);
+      };
+      this.styleRetry=requestAnimationFrame(check);
     }
     render(file) {
       if (!file) return;
@@ -734,7 +750,7 @@
         this.width(this.logicalWidth || 1440);
         // Device selection can recreate the frame AFTER the synchronous CSS
         // injection. Reapply after GrapesJS has completed that DOM pass.
-        requestAnimationFrame(()=>this.applyAuthoredStyle());
+        this.scheduleAuthoredStyle();
         this.editor.getWrapper().onAll((component) => {
           component.set({
             removable: false,
@@ -938,6 +954,8 @@
     dispose() {
       global.removeEventListener("pointerup", this.finishResize);
       global.removeEventListener("mouseup", this.finishResize);
+      this.styleDisposed=true;
+      if(this.styleRetry)cancelAnimationFrame(this.styleRetry);
       this.styleBoundFrame?.removeEventListener("load",this.frameLoadCallback);
       this.editor.destroy();
     }
