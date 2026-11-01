@@ -79,6 +79,13 @@ const assert=require("node:assert/strict"),fs=require("node:fs"),path=require("n
    const n=window.AgataWebSession?.nodes.get(id);
    return n?.parent&&window.AgataWebSession.text("css/overrides.css").includes(n.parent.id);
   },h1);
+  await page.waitForFunction(id=>{
+    const frame=document.querySelector(".gjs-frame")?.contentDocument;
+    const n=window.AgataWebSession?.nodes.get(id);
+    if(!frame||!n?.parent)return false;
+    const parent=frame.querySelector('[data-agata-id="'+n.parent.id+'"]');
+    return parent&&frame.defaultView.getComputedStyle(parent).position==="relative";
+  },h1);
   await page.locator("#ws-position-mode").selectOption("free");
   const element=page.frameLocator(".gjs-frame").locator('[data-agata-id="'+h1+'"]');
   const e=await element.boundingBox();assert(e,"target element not in iframe");
