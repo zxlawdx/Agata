@@ -467,3 +467,16 @@
  #web-studio #ws-center-splitter{width:7px}
  #web-studio .ws-zoom-controls{gap:4px}
 }
+
+
+/* Contextual Inspector and editor controls. All advanced groups remain reachable. */
+#web-studio #ws-property-context{font-size:11px;color:var(--ws-muted);line-height:1.45;padding:8px;
+ background:var(--ws-elevated);border-radius:9px;margin:8px 0}
+#web-studio #ws-property-search{width:100%;min-height:34px;margin:5px 0 9px}
+#web-studio #ws-properties{display:flex;flex-direction:column;gap:1px}
+#web-studio #ws-properties > details{flex:0 0 auto;min-width:0}
+#web-studio #ws-properties details[hidden],#web-studio #ws-properties label[hidden]{display:none!important}
+#web-studio .ws-editor-setting{display:inline-flex;align-items:center;gap:5px;white-space:nowrap;
+ font-size:11px;padding:2px 5px;border-radius:7px;background:var(--ws-elevated)}
+#web-studio .ws-editor-setting input{margin:0;accent-color:var(--ws-accent)}
+#web-studio #ws-code .ws-code-tools{align-items:center;min-height:43px}
