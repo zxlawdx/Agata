@@ -238,9 +238,9 @@
     function renderTree(){
       const root=q("tree"),query=q("search-layers").value.trim().toLocaleLowerCase();
       const nodes=[...doc.nodes.values()].filter(n=>n.file===page||n.file.startsWith("components/"));
-      const children=new Map(),list=[];
+      const children=new Map(),list=[],nodeSet=new Set(nodes);
       for(const node of nodes){
-        const parent=nodes.includes(node.parent)?node.parent?.id:"root";
+        const parent=nodeSet.has(node.parent)?node.parent?.id:"root";
         if(!children.has(parent))children.set(parent,[]);
         children.get(parent).push(node);
       }
