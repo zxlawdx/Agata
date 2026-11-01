@@ -419,7 +419,11 @@
         showOffsets: true,
       });
       this.editor.UndoManager.stop();
-      this.editor.on("canvas:frame:load", () => this.secure());
+      this.editor.on("canvas:frame:load", () => {
+        this.secure();
+        this.applyAuthoredStyle();
+        requestAnimationFrame(()=>this.applyAuthoredStyle());
+      });
       this.editor.on("component:selected", (component) => {
         if (!this.suppress) {
           const id = component.getAttributes()["data-agata-id"];
@@ -557,6 +561,15 @@
     secure() {
       const frame = this.editor.Canvas.getFrameEl();
       if (frame) {
+        if(this.styleBoundFrame!==frame){
+          this.styleBoundFrame?.removeEventListener("load",this.frameLoadCallback);
+          this.styleBoundFrame=frame;
+          this.frameLoadCallback=()=>{
+            this.secure();
+            requestAnimationFrame(()=>this.applyAuthoredStyle());
+          };
+          frame.addEventListener("load",this.frameLoadCallback);
+        }
         frame.setAttribute("sandbox", "allow-same-origin");
         // GrapesJS may replace the iframe document after setComponents or when
         // changing device dimensions. Restore authored CSS on EVERY frame load;
@@ -719,6 +732,9 @@
         this.secure();
         this.applyAuthoredStyle();
         this.width(this.logicalWidth || 1440);
+        // Device selection can recreate the frame AFTER the synchronous CSS
+        // injection. Reapply after GrapesJS has completed that DOM pass.
+        requestAnimationFrame(()=>this.applyAuthoredStyle());
         this.editor.getWrapper().onAll((component) => {
           component.set({
             removable: false,
@@ -922,6 +938,7 @@
     dispose() {
       global.removeEventListener("pointerup", this.finishResize);
       global.removeEventListener("mouseup", this.finishResize);
+      this.styleBoundFrame?.removeEventListener("load",this.frameLoadCallback);
       this.editor.destroy();
     }
   }
