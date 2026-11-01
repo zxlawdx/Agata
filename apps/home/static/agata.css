@@ -197,3 +197,7 @@
 #agata-home #agata-gallery-device{min-height:36px;padding:6px 9px;border:2px solid var(--ink);border-radius:9px;background:var(--cream);color:var(--ink)}
 #agata-home #agata-gallery-frame{transition:width .18s ease-out}
 @media(prefers-reduced-motion:reduce){#agata-home #agata-gallery-frame{transition:none}}
+
+/* Mobile preview: width is the iframe's viewport, not an image scaled to look like mobile. */
+#agata-home .agata-gallery-large{background:#e9edf1;display:flex;align-items:stretch;justify-content:center}
+#agata-home #agata-gallery-frame{display:block;margin-inline:auto;max-width:100%;flex:none}
