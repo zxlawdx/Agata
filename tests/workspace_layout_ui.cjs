@@ -61,7 +61,8 @@ try{
  await page.locator('button[data-action="right"]').click();
  assert.equal(await page.locator(".ws-right").isVisible(),true);
  await page.evaluate(id=>window.Vela.navigate("/web",{project_id:id}),project.id);
- await page.waitForFunction(id=>window.AgataWebSession?.project?.id===id,project.id);
+ await page.waitForFunction(id=>window.AgataWebSession?.project?.id===id && document.querySelector("#web-studio")?.dataset.projectState==="ready",project.id);
+ await page.waitForFunction(()=>document.querySelector("#ws-zoom-mode")?.value==="fit-screen");
  assert.equal(await page.locator("#ws-zoom-mode").inputValue(),"fit-screen");
  const reopened=await page.locator("#ws-design").boundingBox();
  assert(reopened.width>baseline.width+30,"Split ratio not persisted across reopen");
