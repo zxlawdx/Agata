@@ -94,6 +94,18 @@
       "animation-iteration-count",
     ],
   };
+  const EDITOR_FOCUS={
+    text:{name:"Texto",hint:"Edite o conteúdo em Atributos e ajuste tipografia, cor, espaçamento e dimensões.",groups:["Typography","Spacing","Layout","Background","Borders"]},
+    button:{name:"Botão",hint:"Priorize rótulo, ação, cor, dimensões, borda e estados de interação.",groups:["Typography","Background","Borders","Layout","Effects"]},
+    media:{name:"Mídia",hint:"Revise alt/src em Atributos e ajuste tamanho, proporção e borda.",groups:["Layout","Borders","Effects","Spacing"]},
+    container:{name:"Contêiner",hint:"Priorize layout, tamanho, Flex/Grid, padding, gap e background.",groups:["Layout","Flexbox","Grid","Spacing","Background","Borders"]},
+  };
+  function focusFor(node){
+    if(["h1","h2","h3","h4","h5","h6","p","span","label","strong","em","small","li","a"].includes(node?.tag))return EDITOR_FOCUS.text;
+    if(["button","input","select","textarea"].includes(node?.tag))return EDITOR_FOCUS.button;
+    if(["img","svg","video","picture","canvas"].includes(node?.tag))return EDITOR_FOCUS.media;
+    return EDITOR_FOCUS.container;
+  }
   function create({
     q,
     on,
@@ -122,7 +134,17 @@
               : "")
         : "Selecione um elemento";
       q("attributes").replaceChildren();
-      if (!node) return;
+      if(!node){
+        q("property-context").textContent="Selecione um componente no canvas ou na árvore para ver suas propriedades.";
+        return;
+      }
+      const focus=focusFor(node);
+      q("property-context").textContent=focus.name+" · "+focus.hint;
+      for(const details of q("properties").querySelectorAll("details")){
+        const group=details.querySelector("summary")?.textContent||"";
+        const index=focus.groups.indexOf(group);
+        details.style.order=index<0?"90":String(20+index);
+      }
       for (const attr of [
         "id",
         "class",
@@ -254,6 +276,21 @@
       );
       stateLabel.append(stateSelect);
       q("properties").append(stateLabel);
+      const filter=()=>{
+        const query=q("property-search").value.toLocaleLowerCase().trim();
+        for(const details of q("properties").querySelectorAll("details")){
+          const fields=[...details.querySelectorAll("label")].filter(l=>l.querySelector("[data-css]"));
+          if(!fields.length)continue;
+          let count=0;
+          for(const field of fields){
+            const match=!query||field.textContent.toLocaleLowerCase().includes(query);
+            field.hidden=!match;if(match)count++;
+          }
+          details.hidden=count===0;
+          if(query&&count)details.open=true;
+        }
+      };
+      on(q("property-search"),"input",filter);
       for (const [name, properties] of Object.entries(GROUPS)) {
         const details = document.createElement("details"),
           summary = document.createElement("summary");
@@ -344,6 +381,7 @@
         }
         q("properties").append(details);
       }
+      filter();
     }
     return { render: renderInspector, build: buildInspector };
   }
