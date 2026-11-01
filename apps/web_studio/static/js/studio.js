@@ -29,7 +29,8 @@
       saving = false,
       disposed = false,
       clipboard = "";
-    let layoutManager, zoomController;
+    let layoutManager, zoomController, canvasInteraction;
+    const collapsedLayers=new Set();
     const logs = [];
     let languageProblems = [];
     const gradientEditor = new global.AgataWebEffects.GradientEditor(root);
@@ -224,42 +225,84 @@
       q("page").replaceChildren(...pages.map((f) => new Option(f, f)));
       q("page").value = page;
     }
-    function renderTree() {
-      const nodes = [...doc.nodes.values()].filter(
-        (n) => n.file === page || n.file.startsWith("components/"),
-      );
-      global.AgataWebLists.renderList(q("tree"), nodes, (n) => {
-        let depth = 0;
-        for (let p = n.parent; p; p = p.parent) depth++;
-        const b = button(
-          n.tag + (n.attributes.id ? " #" + n.attributes.id : ""),
-          () => select(n.id),
-        );
-        b.style.paddingLeft = depth * 10 + "px";
-        b.setAttribute("role", "treeitem");
-        b.setAttribute("aria-selected", String(selection.has(n.id)));
-        b.dataset.node = n.id;
-        b.onclick = (e) => select(n.id, e.ctrlKey || e.metaKey);
-        b.draggable = true;
-        b.ondragstart = (e) =>
-          e.dataTransfer.setData("application/agata-node", n.id);
-        b.ondragover = (e) => e.preventDefault();
-        b.ondrop = (e) => {
-          e.preventDefault();
-          try {
-            const id = e.dataTransfer.getData("application/agata-node");
-            if (id) doc.move(id, n.id);
-            else {
-              const block = e.dataTransfer.getData("application/agata-block");
-              const html = canvas.blocks.get(block);
-              if (html) doc.insert(page, n.id, html);
-            }
-          } catch (err) {
-            fail(err);
+    function layerName(n){
+      const saved=doc.metadata.layerNames?.[n.id];
+      if(saved)return saved;
+      const labels={header:"Header",footer:"Footer",main:"Main",nav:"Menu de navegação",section:"Seção",article:"Artigo",aside:"Barra lateral",h1:"Título principal",h2:"Título",h3:"Subtítulo",p:"Parágrafo",strong:"Texto em destaque",a:"Link",button:"Botão",img:"Imagem",ul:"Lista",li:"Item de lista",form:"Formulário",input:"Campo",div:"Container",span:"Texto",body:"Página",figure:"Ilustração",agata_include:"Componente"};
+      const tag=n.tag==="agata-include"?"agata_include":n.tag;
+      const id=n.attributes.id,nc=(n.attributes.class||"").split(" ")[0];
+      const desc=(id||nc||"").replace(/[-_]/g," ").trim();
+      const name=labels[tag]||n.tag.toUpperCase();
+      return desc?name+" · "+desc.slice(0,32):name;
+    }
+    function renderTree(){
+      const root=q("tree"),query=q("search-layers").value.trim().toLocaleLowerCase();
+      const nodes=[...doc.nodes.values()].filter(n=>n.file===page||n.file.startsWith("components/"));
+      const children=new Map(),list=[];
+      for(const node of nodes){
+        const parent=nodes.includes(node.parent)?node.parent?.id:"root";
+        if(!children.has(parent))children.set(parent,[]);
+        children.get(parent).push(node);
+      }
+      const matches=n=>(layerName(n)+" "+n.tag+" "+(n.attributes.id||"")).toLocaleLowerCase().includes(query);
+      const visible=n=>matches(n)||(children.get(n.id)||[]).some(visible);
+      const icon={header:"▣",footer:"▣",main:"▤",nav:"☷",section:"▤",article:"▤",h1:"T",h2:"T",h3:"T",p:"¶",strong:"T",span:"T",a:"↗",button:"▣",img:"▧",svg:"◇",div:"◫",body:"▤",ul:"☰",li:"•",form:"□"};
+      const build=(node,depth)=>{
+        if(list.length>=800||query&&!visible(node))return;
+        const kids=children.get(node.id)||[],hasChildren=kids.length>0;
+        const row=document.createElement("div");row.className="ws-layer-row";
+        row.style.setProperty("--layer-depth",String(Math.min(depth,18)));
+        row.dataset.layerId=node.id;row.setAttribute("role","treeitem");
+        row.setAttribute("aria-level",depth+1);
+        row.setAttribute("aria-selected",String(selection.has(node.id)));
+        if(hasChildren)row.setAttribute("aria-expanded",String(!collapsedLayers.has(node.id)||!!query));
+        const toggle=document.createElement("button");toggle.className="ws-layer-toggle";
+        toggle.textContent=hasChildren?(collapsedLayers.has(node.id)&&!query?"▸":"▾"):"·";
+        toggle.title=hasChildren?"Expandir/recolher filhos":"Sem filhos";
+        toggle.disabled=!hasChildren;
+        toggle.onclick=e=>{e.stopPropagation();if(collapsedLayers.has(node.id))collapsedLayers.delete(node.id);else collapsedLayers.add(node.id);renderTree();};
+        const name=document.createElement("button");name.className="ws-layer-name";
+        name.dataset.node=node.id;name.title="<"+node.tag+"> · "+node.file+":"+node.location.startLine;
+        const glyph=document.createElement("span");glyph.className="ws-layer-icon";
+        glyph.textContent=icon[node.tag]||"◇";
+        const label=document.createElement("span");label.textContent=layerName(node);
+        name.append(glyph,label);
+        name.onclick=e=>select(node.id,e.ctrlKey||e.metaKey);
+        name.ondblclick=async()=>{
+          const value=await ask("Renomear Layer (não altera HTML)","Nome visível na árvore",layerName(node));
+          if(value&&value.trim().length<=90){
+            doc.editMetadata("Renomear layer",m=>{(m.layerNames ||= {})[node.id]=value.trim();});
           }
         };
-        return b;
-      });
+        name.draggable=true;
+        name.ondragstart=e=>e.dataTransfer.setData("application/agata-node",node.id);
+        row.ondragover=e=>{e.preventDefault();e.dataTransfer.dropEffect="move";};
+        row.ondrop=e=>{e.preventDefault();e.stopPropagation();try{
+          const moved=e.dataTransfer.getData("application/agata-node");
+          const block=e.dataTransfer.getData("application/agata-block");
+          if(moved&&moved!==node.id){
+            const rect=row.getBoundingClientRect();
+            const before=e.clientY<rect.top+rect.height*.5?node.id:node.parent?.children[node.parent.children.indexOf(node)+1]?.id||null;
+            doc.move(moved,node.parent?.id||null,before);
+          }else if(block){
+            const html=canvas.blocks.get(block);if(html)doc.insert(page,node.id,html);
+          }
+        }catch(err){fail(err);}};
+        const locate=document.createElement("button");locate.className="ws-layer-locate";
+        locate.title="Localizar no canvas";locate.textContent="◎";
+        locate.onclick=e=>{e.stopPropagation();select(node.id);canvas.locate?.(node.id);};
+        row.append(toggle,name,locate);
+        const hidden=node.attributes.hidden!==undefined||node.attributes["aria-hidden"]==="true"||
+          /display\s*:\s*none/i.test(node.attributes.style||"");
+        if(hidden)row.dataset.hidden="true";
+        if(node.file.startsWith("components/"))row.dataset.shared="true";
+        list.push(row);
+        if(hasChildren&&(!collapsedLayers.has(node.id)||query))
+          for(const child of kids)build(child,depth+1);
+      };
+      for(const node of children.get("root")||[])build(node,0);
+      root.replaceChildren(...list);
+      if(list.length>=800)root.append("Exibindo os primeiros 800 layers. Use a busca para localizar outros.");
     }
     function select(id, append = false, context = null) {
       if (!doc.nodes.has(id)) return;
@@ -481,6 +524,7 @@
     }
     async function load(projectId) {
       if (doc) {
+        canvasInteraction?.dispose();
         code.dispose();
         canvas.dispose();
       }
@@ -507,11 +551,23 @@
         select,
         fail,
       );
+      canvasInteraction = new global.AgataWebCanvasInteraction.CanvasInteraction(root,canvas,{
+        getDocument:()=>doc,onSelect:select,onError:fail,onZoom:(percent)=>{
+          zoomController.mode="custom";zoomController.percent=percent;
+          layoutManager.state.zoomMode="custom";layoutManager.state.zoomPercent=percent;
+          layoutManager.persist();updateZoomDisplay();
+        }
+      });
+      canvas.interaction=canvasInteraction;
       zoomController=new global.AgataWebWorkspaceLayout.CanvasZoomController(
         canvas,()=>Number(q("width").value)||1440,()=>q("design"));
       zoomController.mode=layoutManager.state.zoomMode||"fit-width";
       zoomController.percent=layoutManager.state.zoomPercent||100;
       canvas.blocks = new Map();
+      canvasInteraction.setMode(q("position-mode").value);
+      canvasInteraction.grid=q("grid-visible").checked;
+      canvasInteraction.snap=q("grid-snap").checked;
+      canvasInteraction.setSpacing(q("grid-spacing").value);
       canvas.onKeyDown = keyboard;
       canvas.onInsert = insertLibraryBlock;
       code.onNode = (id) => select(id);
@@ -763,6 +819,17 @@
         ).autoLayout(selected, "grid"),
       canvasfit:()=>setZoom("fit-width"),
       canvaszoom:()=>setZoom("custom",100),
+      fitscreen:()=>setZoom("fit-screen"),
+      resetpan:()=>canvasInteraction?.resetPan(),
+      centerpage:()=>canvasInteraction?.center(),
+      preparecontainer:()=>{
+        const n=doc.node(selected),parent=n.parent;
+        if(!parent?.id)throw Error("Selecione um item dentro de um contêiner mapeado.");
+        doc.transaction("Preparar contêiner livre",()=>doc.style(parent.id,"position","relative"));
+        status("Contêiner preparado. O layout Flex/Grid permanece preservado; mover um item no modo Livre o retira do fluxo.");
+      },
+      freefront:()=>doc.style(selected,"z-index","10"),
+      freeback:()=>doc.style(selected,"z-index","0"),
       gridguides: () => canvas.gridGuides(selected),
       rulers: () => canvas.rulers(),
       snap: () => {
@@ -922,6 +989,11 @@
     }catch{}
     on(q("minimap"),"change",editorPreference);
     on(q("wordwrap"),"change",editorPreference);
+    on(q("search-layers"),"input",renderTree);
+    on(q("position-mode"),"change",()=>{canvasInteraction?.setMode(q("position-mode").value);status("Modo "+q("position-mode").value+"; operações responsivas preservam Flex/Grid.");});
+    on(q("grid-visible"),"change",()=>{canvasInteraction.grid=q("grid-visible").checked;canvasInteraction.apply();});
+    on(q("grid-spacing"),"change",()=>canvasInteraction.setSpacing(q("grid-spacing").value));
+    on(q("grid-snap"),"change",()=>{canvasInteraction.snap=q("grid-snap").checked;canvasInteraction.apply();});
     on(q("search-files"), "input", renderFiles);
     on(q("search-blocks"), "input", () =>
       renderBlocks(q("search-blocks").value),
@@ -1096,6 +1168,7 @@
         layoutManager?.dispose();
         designObserver.disconnect();
         code?.dispose();
+        canvasInteraction?.dispose();
         canvas?.dispose();
         if (previous) await previous();
       },
