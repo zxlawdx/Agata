@@ -31,6 +31,8 @@ def catalog(platform=None):
             "category": category,
             "version": "1.0.0",
             "license": "original",
+            "author": "Agata Studio",
+            "theme": "dark" if key in {"music-dark", "fintech-premium", "glass-blur", "social-web", "creative-portfolio"} else "light",
             "tags": [category, "editable", "responsive"],
             "assets": [],
             "designTokens": tokens(
