@@ -268,12 +268,13 @@
         const label=document.createElement("span");label.textContent=layerName(node);
         name.append(glyph,label);
         name.onclick=e=>select(node.id,e.ctrlKey||e.metaKey);
-        name.ondblclick=async()=>{
+        const rename=async()=>{
           const value=await ask("Renomear Layer (não altera HTML)","Nome visível na árvore",layerName(node));
           if(value&&value.trim().length<=90){
             doc.editMetadata("Renomear layer",m=>{(m.layerNames ||= {})[node.id]=value.trim();});
           }
         };
+        name.ondblclick=rename;
         name.draggable=true;
         name.ondragstart=e=>e.dataTransfer.setData("application/agata-node",node.id);
         row.ondragover=e=>{e.preventDefault();e.dataTransfer.dropEffect="move";};
@@ -291,7 +292,10 @@
         const locate=document.createElement("button");locate.className="ws-layer-locate";
         locate.title="Localizar no canvas";locate.textContent="◎";
         locate.onclick=e=>{e.stopPropagation();select(node.id);canvas.locate?.(node.id);};
-        row.append(toggle,name,locate);
+        const edit=document.createElement("button");edit.className="ws-layer-rename";
+        edit.title="Renomear Layer sem alterar tag HTML";edit.textContent="✎";
+        edit.onclick=e=>{e.stopPropagation();rename();};
+        row.append(toggle,name,edit,locate);
         const hidden=node.attributes.hidden!==undefined||node.attributes["aria-hidden"]==="true"||
           /display\s*:\s*none/i.test(node.attributes.style||"");
         if(hidden)row.dataset.hidden="true";
