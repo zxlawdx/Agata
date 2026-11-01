@@ -43,6 +43,13 @@ const assert=require("node:assert/strict"),fs=require("node:fs"),path=require("n
   assert((await page.locator("#agata-gallery-frame").getAttribute("srcdoc")).includes("Premium"));
   await page.locator("#agata-gallery-device").selectOption("mobile");
   assert.equal(await page.locator("#agata-gallery-frame").evaluate(el=>el.style.width),"min(390px, 100%)");
+  await page.waitForFunction(()=>{
+    const el=document.querySelector("#agata-gallery-frame");
+    const width=el?.getBoundingClientRect().width||0;
+    return width>=380 && width<=395;
+  },null,{timeout:6000});
+  assert.equal(await page.frameLocator("#agata-gallery-frame").locator("body").evaluate(()=>innerWidth),390,
+    "Mobile selector must change the browser viewport, not merely a CSS label");
   await page.screenshot({path:path.join(destination,"template-gallery-preview-web-mobile.png"),fullPage:true});
   await page.locator("#agata-gallery-device").selectOption("desktop");
   await page.screenshot({path:path.join(destination,"template-gallery-preview-web.png"),fullPage:true});
