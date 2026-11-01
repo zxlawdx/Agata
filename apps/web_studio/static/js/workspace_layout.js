@@ -11,7 +11,7 @@ class WorkspaceLayoutManager {
     this.abort=new AbortController();
     this.key="agata-web-layout-v2:"+(root.dataset.projectId||"unbound");
     this.drag=null;this.mode="split";this.focus=false;
-    this.state={left:"visible",right:"visible",leftWidth:245,rightWidth:290,splitRatio:.60,
+    this.state={left:"visible",right:"visible",leftWidth:245,rightWidth:290,splitRatio:.50,
       zoomMode:"fit-width",zoomPercent:100};
     try{
       const value=JSON.parse(localStorage.getItem(this.key)||"{}");
@@ -24,7 +24,7 @@ class WorkspaceLayoutManager {
       on(node,"keydown",event=>{const key=axis==="split"?"ArrowLeft":"ArrowRight";
         if(!["ArrowLeft","ArrowRight","Home"].includes(event.key))return;
         event.preventDefault();
-        if(event.key==="Home")this.set(axis,axis==="split"?.60:axis==="left"?245:290);
+        if(event.key==="Home")this.set(axis,axis==="split"?.50:axis==="left"?245:290);
         else this.set(axis,(axis==="split"?this.state.splitRatio*1000:this.state[axis+"Width"])+
           (event.key===key?16:-16),axis==="split");
       });
@@ -41,7 +41,7 @@ class WorkspaceLayoutManager {
   setMode(mode){this.mode=mode;this.apply();}
   persist(){try{localStorage.setItem(this.key,JSON.stringify(this.state));}catch{}}
   reset(){
-    Object.assign(this.state,{left:"visible",right:"visible",leftWidth:245,rightWidth:290,splitRatio:.60,
+    Object.assign(this.state,{left:"visible",right:"visible",leftWidth:245,rightWidth:290,splitRatio:.50,
       zoomMode:"fit-width",zoomPercent:100});
     this.focus=false;this.root.dataset.focus="false";this.apply();this.persist();this.onUpdate();
   }
