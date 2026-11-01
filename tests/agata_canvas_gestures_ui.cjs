@@ -89,34 +89,6 @@ const assert=require("node:assert/strict"),fs=require("node:fs"),path=require("n
   await page.locator("#ws-grid-spacing").fill("12");
   await page.locator("#ws-grid-spacing").dispatchEvent("change");
   await page.locator("#ws-grid-snap").check();
-  // Actual HTML5 Layers drag on a Flex container must reorder source,
-  // never silently produce absolute CSS.
-  const flow=await page.evaluate(()=>{
-    const d=window.AgataWebSession;
-    const main=[...d.nodes.values()].find(n=>n.file==="index.html"&&n.tag==="main"&&n.children.filter(x=>x.id&&d.nodes.has(x.id)).length>=3);
-    if(!main)return null;
-    const ids=main.children.filter(x=>x.id&&d.nodes.has(x.id)).map(x=>x.id);
-    return {parent:main.id,a:ids[0],b:ids[1],afterB:ids[2]};
-  });
-  assert(flow,"Template must contain at least three editable children in its main Flex layout");
-  const display=await page.frameLocator(".gjs-frame").locator('[data-agata-id="'+flow.parent+'"]').evaluate(el=>getComputedStyle(el).display);
-  assert(display.includes("flex"),"Real responsive reorder requires Flex parent");
-  const cssBeforeOrder=await page.evaluate(()=>window.AgataWebSession.files.has("css/overrides.css")?window.AgataWebSession.text("css/overrides.css"):null);
-  const from=page.locator('#ws-tree [data-node="'+flow.a+'"]');
-  const to=page.locator('#ws-tree [data-layer-id="'+flow.b+'"]');
-  await from.dragTo(to,{targetPosition:{x:80,y:24}});
-  console.log("LAYER REORDER DIAGNOSTICS",await page.evaluate(({parent,a,b})=>({
-    status:document.querySelector("#ws-status")?.textContent,
-    order:window.AgataWebSession.nodes.get(parent)?.children.map(n=>n.id).slice(0,5),
-    a,b
-  }),flow));
-  await page.waitForFunction(({parent,a,b})=>{
-    const ids=window.AgataWebSession.nodes.get(parent)?.children.map(x=>x.id)||[];
-    return ids.indexOf(a)>ids.indexOf(b);
-  },flow);
-  const cssAfterOrder=await page.evaluate(()=>window.AgataWebSession.files.has("css/overrides.css")?window.AgataWebSession.text("css/overrides.css"):null);
-  assert.equal(cssAfterOrder,cssBeforeOrder,"Semantic Flex reorder must not change authored CSS");
-  await shot("agata-flex-reorder");
   const h1=await page.evaluate(()=>[...window.AgataWebSession.nodes.values()].find(n=>n.file==="index.html"&&n.tag==="h1")?.id);
   assert(h1);
   await page.locator('#ws-tree [data-node="'+h1+'"]').click();
@@ -185,6 +157,35 @@ const assert=require("node:assert/strict"),fs=require("node:fs"),path=require("n
    "Canvas must retain authored typography after CSS overrides and reopen: "+
    JSON.stringify({initialAppearance,reopenedAppearance}));
   await shot("agata-free-drag-reopened");
+  // Actual HTML5 Layers drag on a Flex container must reorder source,
+  // never silently produce absolute CSS.
+  const flow=await page.evaluate(()=>{
+    const d=window.AgataWebSession;
+    const main=[...d.nodes.values()].find(n=>n.file==="index.html"&&n.tag==="main"&&n.children.filter(x=>x.id&&d.nodes.has(x.id)).length>=3);
+    if(!main)return null;
+    const ids=main.children.filter(x=>x.id&&d.nodes.has(x.id)).map(x=>x.id);
+    return {parent:main.id,a:ids[0],b:ids[1],afterB:ids[2]};
+  });
+  assert(flow,"Template must contain at least three editable children in its main Flex layout");
+  const display=await page.frameLocator(".gjs-frame").locator('[data-agata-id="'+flow.parent+'"]').evaluate(el=>getComputedStyle(el).display);
+  assert(display.includes("flex"),"Real responsive reorder requires Flex parent");
+  const cssBeforeOrder=await page.evaluate(()=>window.AgataWebSession.files.has("css/overrides.css")?window.AgataWebSession.text("css/overrides.css"):null);
+  const from=page.locator('#ws-tree [data-node="'+flow.a+'"]');
+  const to=page.locator('#ws-tree [data-layer-id="'+flow.b+'"]');
+  await from.dragTo(to,{targetPosition:{x:80,y:24}});
+  console.log("LAYER REORDER DIAGNOSTICS",await page.evaluate(({parent,a,b})=>({
+    status:document.querySelector("#ws-status")?.textContent,
+    order:window.AgataWebSession.nodes.get(parent)?.children.map(n=>n.id).slice(0,5),
+    a,b
+  }),flow));
+  await page.waitForFunction(({parent,a,b})=>{
+    const ids=window.AgataWebSession.nodes.get(parent)?.children.map(x=>x.id)||[];
+    return ids.indexOf(a)>ids.indexOf(b);
+  },flow);
+  const cssAfterOrder=await page.evaluate(()=>window.AgataWebSession.files.has("css/overrides.css")?window.AgataWebSession.text("css/overrides.css"):null);
+  assert.equal(cssAfterOrder,cssBeforeOrder,"Semantic Flex reorder must not change authored CSS");
+  await shot("agata-flex-reorder");
+
   assert.deepEqual(errors,[]);
   console.log("Agata canvas tested: five middle pan movements, space pan, 35/100/150 zoom, dot grid, synced Layers, free CSS drag, persistence and immutable HTML.");
  }finally{await browser.close();}
