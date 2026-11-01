@@ -48,6 +48,14 @@
     const collapsedLayers = new Set();
     const E = () => window.AgataElementTree;
     const on = (element, event, callback) => element?.addEventListener(event, callback, {signal: abort.signal});
+    const applyTheme = value => {
+      root.dataset.ideTheme = ["system","light","dark"].includes(value) ? value : "system";
+      get("ys-ide-theme").value = root.dataset.ideTheme;
+      localStorage.setItem("agata-ide-theme", root.dataset.ideTheme);
+    };
+    applyTheme(localStorage.getItem("agata-ide-theme") || "system");
+    on(get("ys-ide-theme"), "change", () => applyTheme(get("ys-ide-theme").value));
+
     const notifications=window.AgataNotifications.create(get("ys-message"));
     const message = (text,error=false) => notifications.show(text,{error});
     const alertError = error => message(escapeError(error), true);
