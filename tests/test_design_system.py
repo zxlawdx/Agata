@@ -58,6 +58,9 @@ class DesignSystemTests(unittest.TestCase):
                        if n["type"] == "NavigationRail")
             self.assertEqual(nav["props"]["background"],
                              d["design_system"]["tokens"]["colors"]["surface"])
+            self.assertTrue(all(item["children"][0]["props"]["color"] ==
+                                d["design_system"]["tokens"]["colors"]["textPrimary"]
+                                for item in nav["children"]))
             icons = [item["children"][0]["props"]["icon"] for item in nav["children"]]
             self.assertGreaterEqual(len(set(icons)), 3)
             self.assertTrue(all(item["events"]["onClick"]["target"] in
