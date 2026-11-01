@@ -156,16 +156,19 @@ const assert=require("node:assert/strict"),fs=require("node:fs"),path=require("n
   assert(savedHtml.includes('data-agata-overrides'),"Free mode must persist a linked CSS override");
   assert(savedHtml.includes("<h1"),"Original editable page structure must survive");
   await page.frameLocator(".gjs-frame").locator("h1").waitFor();
-  await page.waitForFunction(size=>{
+  await page.waitForFunction(expected=>{
     const frame=document.querySelector(".gjs-frame");
     const heading=frame?.contentDocument?.querySelector("h1");
-    return heading&&parseFloat(frame.contentWindow.getComputedStyle(heading).fontSize)>28;
-  },initialAppearance.size);
+    if(!heading)return false;
+    const css=frame.contentWindow.getComputedStyle(heading);
+    return css.fontFamily===expected.family && Math.abs(parseFloat(css.fontSize)-expected.size)<2;
+  },initialAppearance,{timeout:12000});
   const reopenedAppearance=await page.frameLocator(".gjs-frame").locator("h1").evaluate(el=>({
     family:getComputedStyle(el).fontFamily,size:parseFloat(getComputedStyle(el).fontSize)
   }));
   assert(reopenedAppearance.size>28&&reopenedAppearance.family===initialAppearance.family,
-   "Canvas must retain authored typography after CSS overrides and reopen");
+   "Canvas must retain authored typography after CSS overrides and reopen: "+
+   JSON.stringify({initialAppearance,reopenedAppearance}));
   await shot("agata-free-drag-reopened");
   assert.deepEqual(errors,[]);
   console.log("Agata canvas tested: five middle pan movements, space pan, 35/100/150 zoom, dot grid, synced Layers, free CSS drag, persistence and immutable HTML.");
