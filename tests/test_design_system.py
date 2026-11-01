@@ -51,6 +51,19 @@ class DesignSystemTests(unittest.TestCase):
                     ]
                 )
 
+    def test_premium_navigation_uses_distinct_icons_and_tokenized_background(self):
+        for key in ["music-dark", "social-modern", "fintech-premium"]:
+            d = template_document(key)
+            nav = next(n for n in walk(d["screens"][0]["root"])
+                       if n["type"] == "NavigationRail")
+            self.assertEqual(nav["props"]["background"],
+                             d["design_system"]["tokens"]["colors"]["surface"])
+            icons = [item["children"][0]["props"]["icon"] for item in nav["children"]]
+            self.assertGreaterEqual(len(set(icons)), 3)
+            self.assertTrue(all(item["events"]["onClick"]["target"] in
+                                {s["id"] for s in d["screens"]}
+                                for item in nav["children"]))
+
     def test_premium_component_contract(self):
         for name in COMPONENTS:
             with self.subTest(component=name):
