@@ -127,9 +127,9 @@ class AgataBridge(BaseBridge):
         from apps.template_registry.preview import gallery_catalog
         return gallery_catalog()
 
-    def template_gallery_preview(self, template_id: str, platform: str):
+    def template_gallery_preview(self, template_id: str, platform: str, screen_index: int = 0):
         from apps.template_registry.preview import preview
-        return preview(template_id, platform)
+        return preview(template_id, platform, screen_index)
 
     def web_catalog(self):
         from apps.web_studio.services.projects import WebProjectService
