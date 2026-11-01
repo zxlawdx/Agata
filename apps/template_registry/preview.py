@@ -78,9 +78,9 @@ def _android_preview(template_id):
         '<!doctype html><html lang="pt-BR"><head><meta charset="utf-8">'
         '<meta name="viewport" content="width=device-width,initial-scale=1">'
         '<style>:root{' + css + '}' + _STYLE + '</style></head><body>'
-        '<main class="device"><p class="preview-caption">%s · prévia esquemática editável</p>%s</main>'
-        '</body></html>'
-    ) % (escape(first["name"]), inner)
+        '<main class="device"><p class="preview-caption">' + escape(first["name"]) +
+        ' · prévia esquemática editável</p>' + inner + '</main></body></html>'
+    )
     return {"html": html, "kind": "android-model", "screens": len(document["screens"])}
 
 
