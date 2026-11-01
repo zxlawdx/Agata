@@ -12,7 +12,7 @@ class CanvasInteraction {
   this.onSelect=onSelect;this.onError=onError;this.onZoom=onZoom;
   this.getSelection=getSelection||(()=>new Set());
   this.mode="responsive";this.space=false;this.active=null;this.grid=true;
-  this.spacing=16;this.snap=true;this.rulers=false;this.guides=true;
+  this.spacing=20;this.snap=true;this.rulers=false;this.guides=true;
   this.abort=new AbortController();this.frameAbort=null;
   this.host=root.querySelector("#ws-design");this.bindOuter();
   this.apply();
