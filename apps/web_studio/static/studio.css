@@ -394,3 +394,18 @@
   #web-studio .ws-theme-label{font-size:0}
   #web-studio .ws-welcome-actions button{width:100%}
 }
+
+/* IHC: visible task groups, navigable single-row tools and semantic component categories. */
+#web-studio .ws-selection-tools{flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;align-items:center;min-height:48px;gap:5px;scrollbar-width:thin}
+#web-studio .ws-selection-tools button{white-space:nowrap;flex:none;min-height:33px}
+#web-studio .ws-toolbar-heading{font-size:11px;letter-spacing:.08em;text-transform:uppercase;opacity:.7;padding:7px 9px 7px 4px;font-weight:800;border-right:1px solid var(--ws-border);flex:none}
+#web-studio #ws-block-category{width:100%;margin:7px 0 8px;min-height:35px}
+#web-studio #ws-blocks{display:block;max-height:min(43vh,430px);overflow:auto}
+#web-studio .ws-block-group{margin:0 0 12px;border-bottom:1px solid var(--ws-border);padding-bottom:10px}
+#web-studio .ws-block-group h4{margin:7px 0 9px;font-size:11px;color:var(--ws-muted);letter-spacing:.06em}
+#web-studio .ws-block-group-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+#web-studio .ws-block-group-grid button{min-height:36px;text-align:left;overflow-wrap:anywhere;cursor:grab}
+#web-studio :is(.ws-file-actions,.ws-code-tools){align-items:center}
+#web-studio #ws-status{font-weight:700}
+#web-studio button:disabled{opacity:.5;cursor:not-allowed}
+#web-studio :is(button,input,select,textarea):focus-visible{outline:3px solid var(--ws-focus);outline-offset:2px}
