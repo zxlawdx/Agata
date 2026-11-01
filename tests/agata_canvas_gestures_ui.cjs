@@ -156,6 +156,16 @@ const assert=require("node:assert/strict"),fs=require("node:fs"),path=require("n
   assert(savedHtml.includes('data-agata-overrides'),"Free mode must persist a linked CSS override");
   assert(savedHtml.includes("<h1"),"Original editable page structure must survive");
   await page.frameLocator(".gjs-frame").locator("h1").waitFor();
+  console.log("REOPEN FRAME CSS",await page.evaluate(()=>{
+    const frame=document.querySelector(".gjs-frame");
+    const target=frame?.contentDocument?.querySelector("h1");
+    return {
+      sourceFiles:[...window.AgataWebSession.files.keys()].filter(k=>k.endsWith(".css")),
+      authoredStyleLength:frame?.contentDocument?.getElementById("agata-authored-css")?.textContent?.length||0,
+      titleCss:target?{fontFamily:frame.contentWindow.getComputedStyle(target).fontFamily,fontSize:frame.contentWindow.getComputedStyle(target).fontSize}:null,
+      stylesheets:frame?.contentDocument?.styleSheets?.length||0
+    };
+  }));
   await page.waitForFunction(expected=>{
     const frame=document.querySelector(".gjs-frame");
     const heading=frame?.contentDocument?.querySelector("h1");
