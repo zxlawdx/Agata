@@ -21,7 +21,7 @@ class DesignSystemTests(unittest.TestCase):
         for key, _, _ in ANDROID:
             with self.subTest(template=key):
                 document = template_document(key)
-                self.assertEqual(len(document["screens"]), 2)
+                self.assertEqual(len(document["screens"]), 6 if key in {"music-dark", "social-modern", "fintech-premium"} else 2)
                 self.assertTrue(
                     any(
                         n["events"].get("onClick", {}).get("action") == "navigate"
