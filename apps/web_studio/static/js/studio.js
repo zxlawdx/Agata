@@ -556,7 +556,7 @@
         fail,
       );
       canvasInteraction = new global.AgataWebCanvasInteraction.CanvasInteraction(root,canvas,{
-        getDocument:()=>doc,onSelect:select,onError:fail,onZoom:(percent)=>{
+        getDocument:()=>doc,getSelection:()=>selection,onSelect:select,onError:fail,onZoom:(percent)=>{
           zoomController.mode="custom";zoomController.percent=percent;
           layoutManager.state.zoomMode="custom";layoutManager.state.zoomPercent=percent;
           layoutManager.persist();updateZoomDisplay();
