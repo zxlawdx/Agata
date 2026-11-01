@@ -118,7 +118,7 @@
     on(q("ide-theme"), "change", () => setIdeTheme(q("ide-theme").value));
     const pref = prefs();
     layoutManager = new global.AgataWebWorkspaceLayout.WorkspaceLayoutManager(root,{
-      onResize:()=>{code?.editor.layout();zoomController?.apply();},
+      onResize:()=>{code?.editor.layout();if(zoomController){zoomController.apply();updateZoomDisplay();}},
       onUpdate:()=>{
         persistLayout();
         if(zoomController && zoomController.mode!==layoutManager.state.zoomMode){
@@ -130,7 +130,7 @@
     });
     if(pref.bottomOpen===false)root.querySelector("footer details").open=false;
     on(root.querySelector("footer details"),"toggle",persistLayout);
-    const designObserver=new ResizeObserver(()=>{code?.editor.layout();zoomController?.apply();});
+    const designObserver=new ResizeObserver(()=>{code?.editor.layout();if(zoomController){zoomController.apply();updateZoomDisplay();}});
     designObserver.observe(q("design"));
     const updateZoomDisplay=()=>{
       if(!zoomController)return;
