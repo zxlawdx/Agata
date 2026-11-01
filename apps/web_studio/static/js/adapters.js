@@ -633,6 +633,7 @@
             if (this.dropTarget) this.dropTarget.style.outline = "";
           };
         }
+        this.interaction?.bindFrame();
       }
     }
     render(file) {
@@ -734,10 +735,8 @@
         });
       else device.set("width", value + "px");
       this.editor.Devices.select(device);
-      const available = this.editor.getContainer().clientWidth - 30;
-      this.editor.Canvas.setZoom(
-        Math.min(100, Math.max(20, (available / value) * 100)),
-      );
+      // Width is a CSS media-query viewport. Only CanvasZoomController may
+      // change visual zoom; re-render must never silently reset 35% or 150%.
     }
     select(id, append = false, includeId = null) {
       const component = this.editor
