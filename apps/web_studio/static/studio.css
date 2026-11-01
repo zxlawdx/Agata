@@ -543,3 +543,14 @@
 #web-studio .ws-layer-rename{flex:0 0 23px;border:0;padding:2px;background:transparent;font-size:13px;min-width:0}
 #web-studio .ws-selection-tools:has(.ws-canvas-popover[open]){overflow:visible;flex-wrap:wrap}
 #web-studio .ws-selection-tools .ws-canvas-popover[open]>div{z-index:9000}
+
+
+/* Selected layer must not look like a hover on an unrelated node. */
+#web-studio .ws-layer-row:hover{background:color-mix(in srgb,var(--ws-selected) 25%,transparent)}
+#web-studio .ws-layer-row[aria-selected="true"],
+#web-studio .ws-layer-row[aria-selected="true"]:hover{
+ background:var(--ws-selected);border-left:3px solid var(--ws-accent);font-weight:800;
+}
+#web-studio .ws-layer-shared{margin-top:8px;border-top:1px solid var(--ws-border);padding:5px 0}
+#web-studio .ws-layer-shared>summary{cursor:pointer;font-size:11px;font-weight:800;padding:8px 4px}
+#web-studio .ws-layer-shared:not([open]) .ws-layer-row{display:none}
