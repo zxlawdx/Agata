@@ -41,6 +41,10 @@ const assert=require("node:assert/strict"),fs=require("node:fs"),path=require("n
   await page.locator("#agata-gallery-dialog").waitFor({state:"visible"});
   await page.waitForFunction(()=>document.querySelector("#agata-gallery-frame")?.srcdoc?.includes("Premium"));
   assert((await page.locator("#agata-gallery-frame").getAttribute("srcdoc")).includes("Premium"));
+  await page.locator("#agata-gallery-device").selectOption("mobile");
+  assert.equal(await page.locator("#agata-gallery-frame").evaluate(el=>el.style.width),"min(390px, 100%)");
+  await page.screenshot({path:path.join(destination,"template-gallery-preview-web-mobile.png"),fullPage:true});
+  await page.locator("#agata-gallery-device").selectOption("desktop");
   await page.screenshot({path:path.join(destination,"template-gallery-preview-web.png"),fullPage:true});
   await page.locator("#agata-gallery-use").click();
   await page.locator("#agata-create-dialog").waitFor({state:"visible"});
@@ -65,6 +69,15 @@ const assert=require("node:assert/strict"),fs=require("node:fs"),path=require("n
   await page.waitForFunction(()=>document.querySelector("#agata-gallery-frame")?.srcdoc?.includes("node-"));
   const androidMarkup=await page.locator("#agata-gallery-frame").getAttribute("srcdoc");
   assert(androidMarkup.includes("node-"));
+  assert((await page.locator("#agata-gallery-counter").textContent()).includes("1/6"));
+  await page.locator("#agata-gallery-next").click();
+  await page.waitForFunction(()=>document.querySelector("#agata-gallery-counter")?.textContent?.includes("2/6"));
+  const secondary=await page.locator("#agata-gallery-frame").getAttribute("srcdoc");
+  assert(secondary.includes("Search") && secondary!==androidMarkup);
+  await page.screenshot({path:path.join(destination,"template-gallery-android-second-screen.png"),fullPage:true});
+  await page.locator("#agata-gallery-prev").click();
+  await page.waitForFunction(()=>document.querySelector("#agata-gallery-counter")?.textContent?.includes("1/6"));
+
   await page.screenshot({path:path.join(destination,"template-gallery-preview-android.png"),fullPage:true});
   await page.locator("#agata-gallery-use").click();
   assert.equal(await page.locator("#agata-platform").inputValue(),"android");
