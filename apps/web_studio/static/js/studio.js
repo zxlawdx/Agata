@@ -285,7 +285,38 @@
           doc.move(moved,node.parent?.id||null,after?next:node.id);
           return true;
         };
-        row.draggable=true;
+        // Browser-native HTML5 DragEvent is inconsistent for nested buttons in
+        // WebView2/pywebview. Pointer drag is the primary reorder path.
+        row.draggable=false;
+        name.onpointerdown=e=>{
+          if(e.button!==0||e.pointerType==="touch")return;
+          name.setPointerCapture(e.pointerId);
+          name._layerDrag={x:e.clientX,y:e.clientY,moved:false};
+        };
+        name.onpointermove=e=>{
+          const gesture=name._layerDrag;if(!gesture)return;
+          if(Math.hypot(e.clientX-gesture.x,e.clientY-gesture.y)>6){
+            gesture.moved=true;
+            row.dataset.dragging="true";
+          }
+        };
+        name.onpointerup=e=>{
+          const gesture=name._layerDrag;
+          name._layerDrag=null;delete row.dataset.dragging;
+          if(!gesture?.moved)return;
+          e.preventDefault();e.stopPropagation();
+          const drop=document.elementFromPoint(e.clientX,e.clientY)?.closest(".ws-layer-row");
+          const target=drop&&doc.nodes.get(drop.dataset.layerId);
+          if(!target||target.id===node.id)return;
+          try{
+            const rect=drop.getBoundingClientRect();
+            const siblings=target.parent?.children||[];
+            const next=siblings[siblings.indexOf(target)+1]?.id||null;
+            doc.move(node.id,target.parent?.id||null,
+              e.clientY>=rect.top+rect.height*.5?next:target.id);
+          }catch(error){fail(error);}
+        };
+        name.onpointercancel=()=>{name._layerDrag=null;delete row.dataset.dragging;};
         row.ondragstart=e=>{
           draggedLayerId=node.id;
           e.dataTransfer.effectAllowed="move";
