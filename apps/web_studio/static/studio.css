@@ -480,3 +480,61 @@
  font-size:11px;padding:2px 5px;border-radius:7px;background:var(--ws-elevated)}
 #web-studio .ws-editor-setting input{margin:0;accent-color:var(--ws-accent)}
 #web-studio #ws-code .ws-code-tools{align-items:center;min-height:43px}
+
+
+/* Agata canvas surface: never injected into the authored site/iframe or export. */
+#web-studio{--ws-canvas-blue:#77cee0;--ws-grid-dot:rgba(18,83,117,.30);
+ --ws-grid-size:16px;--ws-canvas-shadow:0 9px 25px rgba(16,50,72,.22)}
+#web-studio[data-ide-theme="dark"]{--ws-canvas-blue:#235a6a;--ws-grid-dot:rgba(173,234,251,.32);
+ --ws-canvas-shadow:0 8px 32px rgba(0,0,0,.44)}
+#web-studio #ws-design{background:var(--ws-canvas-blue)!important;position:relative;
+ overscroll-behavior:contain;min-height:0;min-width:0}
+#web-studio #ws-design .gjs-cv-canvas{
+ background-color:var(--ws-canvas-blue)!important;
+ background-image:radial-gradient(circle at center,var(--ws-grid-dot) 1.15px,transparent 1.6px)!important;
+ background-size:var(--ws-grid-size) var(--ws-grid-size)!important;
+ background-position:0 0!important;
+}
+#web-studio[data-canvas-grid="false"] #ws-design .gjs-cv-canvas{background-image:none!important}
+#web-studio #ws-design .gjs-frame{outline:1px solid rgba(9,67,93,.32);
+ box-shadow:var(--ws-canvas-shadow);background:#fff}
+#web-studio[data-panning="true"] #ws-design,
+#web-studio[data-panning="true"] #ws-design *,
+#web-studio[data-panning="true"] #ws-design .gjs-frame{cursor:grabbing!important;user-select:none!important}
+#web-studio[data-pan-ready="true"]:not([data-panning="true"]) #ws-design,
+#web-studio[data-pan-ready="true"]:not([data-panning="true"]) #ws-design *{cursor:grab!important}
+#web-studio .ws-canvas-popover{position:relative;flex:none}
+#web-studio .ws-canvas-popover > summary{border:1px solid var(--ws-border);border-radius:8px;
+ min-height:34px;padding:8px;cursor:pointer;background:var(--ws-control)}
+#web-studio .ws-canvas-popover > div{position:absolute;top:100%;left:0;z-index:1001;
+ width:220px;max-height:340px;overflow:auto;box-shadow:0 4px 15px #0004;
+ display:flex;flex-direction:column;gap:7px;padding:10px;border:1px solid var(--ws-border);
+ border-radius:8px;background:var(--ws-panel)}
+#web-studio .ws-canvas-popover label{display:flex;justify-content:space-between;align-items:center;gap:8px}
+#web-studio .ws-canvas-popover input[type=number]{width:58px}
+#web-studio .ws-canvas-popover button{min-height:32px}
+#web-studio #ws-search-layers{width:100%;position:sticky;top:0;z-index:2;margin:5px 0}
+#web-studio #ws-tree{display:flex;flex-direction:column;gap:1px;padding:3px;overflow-x:hidden;
+ max-height:45vh;overflow-y:auto}
+#web-studio .ws-layer-row{display:flex;align-items:center;gap:2px;
+ padding-left:calc(var(--layer-depth)*13px);max-width:100%;min-height:30px;border-radius:7px}
+#web-studio .ws-layer-row[aria-selected="true"]{background:var(--ws-selected);font-weight:750}
+#web-studio .ws-layer-row:hover{background:var(--ws-hover)}
+#web-studio .ws-layer-toggle,#web-studio .ws-layer-locate{flex:0 0 23px;border:0;
+ padding:2px;background:transparent;font-size:13px;min-width:0}
+#web-studio .ws-layer-name{display:flex;flex:1;min-width:0;align-items:center;gap:8px;
+ border:0;background:transparent;text-align:left;padding:5px 2px;cursor:pointer}
+#web-studio .ws-layer-name span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#web-studio .ws-layer-icon{flex:0 0 16px;text-align:center;color:var(--ws-accent);font-weight:bold}
+#web-studio .ws-layer-row[data-hidden="true"]{opacity:.48}
+#web-studio .ws-layer-row[data-shared="true"] .ws-layer-icon{color:var(--ws-muted)}
+#web-studio .ws-layer-row:focus-within{outline:1px solid var(--ws-focus)}
+#web-studio .ws-editors[data-mode="split"]{min-width:0}
+#web-studio[data-mode="split"] #ws-design{min-width:min(360px,48%);max-width:calc(100% - min(370px,48%) - 7px)}
+#web-studio[data-mode="split"] #ws-code{min-width:min(370px,48%);flex-basis:0}
+#web-studio .ws-selection-tools{max-width:100%;overflow-x:auto;scrollbar-width:thin}
+#web-studio .ws-selection-tools button,#web-studio .ws-selection-tools label{white-space:nowrap;flex-shrink:0}
+@media(max-width:1250px){
+ #web-studio .ws-left,#web-studio .ws-right{font-size:12px}
+ #web-studio .ws-zoom-controls{min-width:max-content}
+}
