@@ -31,6 +31,8 @@
     ><button data-mode="preview">Preview</button
     ><button data-action="left">Explorer</button
     ><button data-action="right">Inspector</button
+    ><button id="ws-focus-mode" type="button" aria-pressed="false" title="Ocultar painéis secundários">Foco</button
+    ><button id="ws-layout-reset" type="button" title="Restaurar proporções e painéis">Redefinir layout</button
     ><label
       >Viewport
       <select id="ws-viewport">
@@ -49,7 +51,12 @@
       max="3840"
       value="1440"
       aria-label="Largura em pixels"
-    /><select id="ws-page" aria-label="Página"></select
+    /><label class="ws-zoom-controls">Zoom
+      <button id="ws-zoom-minus" type="button" aria-label="Diminuir zoom do canvas">−</button>
+      <select id="ws-zoom-mode" aria-label="Modo de zoom do canvas"><option value="fit-width">Ajustar largura</option><option value="fit-screen">Ajustar tela</option><option value="custom">Personalizado</option></select>
+      <input id="ws-zoom-value" type="number" min="20" max="300" step="5" value="100" aria-label="Zoom do canvas em porcentagem">
+      <button id="ws-zoom-plus" type="button" aria-label="Aumentar zoom do canvas">+</button>
+    </label><select id="ws-page" aria-label="Página"></select
     ><button data-action="entry">Definir inicial</button
     ><label><input id="ws-reduced" type="checkbox" />Reduzir movimento</label
     ><label><input id="ws-network" type="checkbox" />HTTPS no preview</label
@@ -106,6 +113,7 @@
       <h3>Layers</h3>
       <div id="ws-tree" role="tree"></div>
     </aside>
+    <div id="ws-left-splitter" class="ws-panel-divider" role="separator" tabindex="0" aria-label="Redimensionar Explorer" aria-orientation="vertical"></div>
     <main class="ws-center">
       <div class="ws-selection-tools" role="toolbar" aria-label="Editar componentes e layout">
         <span class="ws-toolbar-heading">Editar</span>
@@ -132,6 +140,7 @@
         <section id="ws-design" aria-label="Canvas visual">
           <div id="ws-canvas"></div>
         </section>
+        <div id="ws-center-splitter" class="ws-panel-divider ws-center-divider" role="separator" tabindex="0" aria-label="Redimensionar Canvas e Código" aria-orientation="vertical" aria-valuemin="23" aria-valuemax="77" aria-valuenow="60"></div>
         <section id="ws-code">
           <div id="ws-tabs" role="tablist"></div>
           <div class="ws-code-tools">
@@ -152,6 +161,7 @@
         </section>
       </div>
     </main>
+    <div id="ws-right-splitter" class="ws-panel-divider" role="separator" tabindex="0" aria-label="Redimensionar Inspector" aria-orientation="vertical"></div>
     <aside class="ws-right">
       <h3>Inspector</h3>
       <output id="ws-selection">Selecione um elemento</output>
@@ -275,6 +285,7 @@
         "js/catalog.js",
         "js/events.js",
         "js/layout.js",
+        "js/workspace_layout.js",
         "js/adapters.js",
         "js/styles.js",
         "js/effects.js",
