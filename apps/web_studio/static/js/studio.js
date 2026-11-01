@@ -228,7 +228,7 @@
     function layerName(n){
       const saved=doc.metadata.layerNames?.[n.id];
       if(saved)return saved;
-      const labels={header:"Header",footer:"Footer",main:"Main",nav:"Menu de navegação",section:"Seção",article:"Artigo",aside:"Barra lateral",h1:"Título principal",h2:"Título",h3:"Subtítulo",p:"Parágrafo",strong:"Texto em destaque",a:"Link",button:"Botão",img:"Imagem",ul:"Lista",li:"Item de lista",form:"Formulário",input:"Campo",div:"Container",span:"Texto",body:"Página",figure:"Ilustração",agata_include:"Componente"};
+      const labels={html:"Página Inicial",head:"Metadados",body:"Conteúdo",header:"Header",footer:"Footer",main:"Main",nav:"Menu de navegação",section:"Seção",article:"Artigo",aside:"Barra lateral",h1:"Título principal",h2:"Título",h3:"Subtítulo",p:"Parágrafo",strong:"Texto em destaque",a:"Link",button:"Botão",img:"Imagem",ul:"Lista",li:"Item de lista",form:"Formulário",input:"Campo",div:"Container",span:"Texto",body:"Página",figure:"Ilustração",agata_include:"Componente"};
       const tag=n.tag==="agata-include"?"agata_include":n.tag;
       const id=n.attributes.id,nc=(n.attributes.class||"").split(" ")[0];
       const desc=(id||nc||"").replace(/[-_]/g," ").trim();
@@ -304,7 +304,20 @@
         if(hasChildren&&(!collapsedLayers.has(node.id)||query))
           for(const child of kids)build(child,depth+1);
       };
-      for(const node of children.get("root")||[])build(node,0);
+      const roots=children.get("root")||[];
+      for(const node of roots.filter(n=>n.file===page))build(node,0);
+      const startShared=list.length;
+      for(const node of roots.filter(n=>n.file.startsWith("components/")))build(node,0);
+      const shared=list.splice(startShared);
+      if(shared.length){
+        const group=document.createElement("details");
+        group.className="ws-layer-shared";
+        group.open=!!query||selection.size>0&&shared.some(item=>selection.has(item.dataset.layerId));
+        const summary=document.createElement("summary");
+        summary.textContent="Componentes compartilhados ("+shared.length+" layers)";
+        group.append(summary,...shared);
+        list.push(group);
+      }
       root.replaceChildren(...list);
       if(list.length>=800)root.append("Exibindo os primeiros 800 layers. Use a busca para localizar outros.");
     }
