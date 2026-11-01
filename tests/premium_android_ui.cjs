@@ -39,6 +39,9 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE || "playwright"),
         p.id,
       );
       await page.waitForSelector("#ad-frames .ad-frame");
+      const skipTour=page.getByRole("button",{name:"Agora não",exact:true});
+      if(await skipTour.isVisible().catch(()=>false))await skipTour.click();
+
       assert.equal(await page.locator("#ad-frames .ad-frame").count(), ["music-dark","social-modern","fintech-premium"].includes(key) ? 6 : 2);
       await page.click("[data-mode=preview]");
       await page.waitForTimeout(150);
