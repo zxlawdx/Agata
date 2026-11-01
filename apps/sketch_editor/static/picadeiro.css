@@ -116,3 +116,28 @@
 #agata-sketch .ys-message{max-width:min(600px,90%);display:flex;gap:8px;align-items:center}
 #agata-sketch .agata-toast-text{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0}
 #agata-sketch .ys-message[data-error=true]{border-color:#a93131}
+
+/* Agata appearance only: exported drawing retains its own background and colors. */
+#agata-sketch .ys-theme-setting{display:flex;align-items:center;gap:5px;font-size:11px;white-space:nowrap}
+#agata-sketch .ys-theme-setting select{max-width:100px;min-height:30px;border:2px solid var(--ink);border-radius:8px;background:var(--cream);color:var(--ink);padding:3px 5px}
+#agata-sketch[data-ide-theme="dark"]{
+ --ink:#f3ecdf;--cream:#182430;--cyan:#27576a;--blue:#307ea3;
+ --pink:#573b50;--mint:#295846;--yellow:#79602c;--lilac:#50446b;
+ color:var(--ink);background:var(--cream);
+}
+@media(prefers-color-scheme:dark){
+ #agata-sketch[data-ide-theme="system"]{
+  --ink:#f3ecdf;--cream:#182430;--cyan:#27576a;--blue:#307ea3;
+  --pink:#573b50;--mint:#295846;--yellow:#79602c;--lilac:#50446b;
+  color:var(--ink);background:var(--cream);
+ }
+}
+#agata-sketch[data-ide-theme="dark"] :is(.ys-hint,.ys-note,.ys-tool-description,.ys-field){color:var(--ink)}
+#agata-sketch[data-ide-theme="dark"] :is(input,select,textarea){color:var(--ink);background:var(--cream)}
+#agata-sketch[data-ide-theme="dark"] .ys-btn-quiet{background:var(--cream)}
+@media(prefers-color-scheme:dark){
+ #agata-sketch[data-ide-theme="system"] :is(.ys-hint,.ys-note,.ys-tool-description,.ys-field){color:var(--ink)}
+ #agata-sketch[data-ide-theme="system"] :is(input,select,textarea){color:var(--ink);background:var(--cream)}
+ #agata-sketch[data-ide-theme="system"] .ys-btn-quiet{background:var(--cream)}
+}
+@media(max-width:850px){#agata-sketch .ys-theme-setting{font-size:0}}

@@ -9,6 +9,7 @@ window.AgataUIRenderer=(()=>{
   const p=n.props,l=window.AgataLayout.resolve(n.layout,options.width,options.height),preview=!!options.preview;
   const childOptions={...options,parentType:n.type,parentLayout:l};
   const e=el('div','ui-node ui-'+n.type);e.dataset.nodeId=n.id;e.dataset.type=n.type;e.style.fontSize=16*(options.fontScale||1)+'px';
+  if(preview&&n.motion&&!options.reducedMotion&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches){const presets={fade:[{opacity:0},{opacity:1}],scale:[{opacity:0,transform:'scale(.94)'},{opacity:1,transform:'none'}],slide:[{opacity:0,transform:'translateY(16px)'},{opacity:1,transform:'none'}],expand:[{opacity:0,clipPath:'inset(0 0 100% 0)'},{opacity:1,clipPath:'inset(0)'}]};if(presets[n.motion.preset])e.animate?.(presets[n.motion.preset],{duration:n.motion.duration,easing:'ease-out'});}
   if(options.selected?.has(n.id))e.classList.add('ui-selected');
   e.style.padding=l.padding+'px';e.style.gap=l.gap+'px';e.style.boxSizing='border-box';
   for(const k of ['width','height'])e.style[k]=l[k]==='fill'?'100%':l[k]==='wrap'?'fit-content':l[k]+'px';

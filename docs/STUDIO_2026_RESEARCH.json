@@ -1,0 +1,137 @@
+{
+  "checked": "2026-10-31",
+  "repositories": [
+    {
+      "repo": "android/compose-samples",
+      "url": "https://github.com/android/compose-samples",
+      "license": "Apache-2.0",
+      "pushed_at": "2026-10-28T03:06:42Z",
+      "archived": false,
+      "language": "Kotlin",
+      "default_branch": "main",
+      "size_kb": 211707,
+      "description": "Official Jetpack Compose samples."
+    },
+    {
+      "repo": "android/nowinandroid",
+      "url": "https://github.com/android/nowinandroid",
+      "license": "Apache-2.0",
+      "pushed_at": "2026-10-31T12:47:19Z",
+      "archived": false,
+      "language": "Kotlin",
+      "default_branch": "main",
+      "size_kb": 140613,
+      "description": "A fully functional Android app built entirely with Kotlin and Jetpack Compose"
+    },
+    {
+      "repo": "MythicalSHUB/SpatialFlow",
+      "url": "https://github.com/MythicalSHUB/SpatialFlow",
+      "license": "Apache-2.0",
+      "pushed_at": "2026-10-29T14:52:09Z",
+      "archived": false,
+      "language": "Kotlin",
+      "default_branch": "master",
+      "size_kb": 144115,
+      "description": "SpatialFlow delivers a next-generation music experience on Android, blending online streaming, high-fidelity local playback, intelligent audio processing, and Material 3 Expressive design into a fast, elegant, and immersive music ecosystem."
+    },
+    {
+      "repo": "soupashh-ship-it/OmniTune",
+      "url": "https://github.com/soupashh-ship-it/OmniTune",
+      "license": "GPL-3.0",
+      "pushed_at": "2026-10-02T05:44:02Z",
+      "archived": false,
+      "language": "Kotlin",
+      "default_branch": "main",
+      "size_kb": 114301,
+      "description": "A modern open-source music player for Android with Compose UI, synced lyrics, offline downloads, playlists and background playback."
+    },
+    {
+      "repo": "GrapesJS/grapesjs",
+      "url": "https://github.com/GrapesJS/grapesjs",
+      "license": "NOASSERTION",
+      "pushed_at": "2026-10-21T16:08:00Z",
+      "archived": false,
+      "language": "TypeScript",
+      "default_branch": "dev",
+      "size_kb": 114149,
+      "description": "Free and Open source Web Builder Framework. Next generation tool for building templates without coding"
+    },
+    {
+      "repo": "webstudio-is/webstudio",
+      "url": "https://github.com/webstudio-is/webstudio",
+      "license": "AGPL-3.0",
+      "pushed_at": "2026-10-31T15:24:51Z",
+      "archived": false,
+      "language": "TypeScript",
+      "default_branch": "main",
+      "size_kb": 152556,
+      "description": "Open source website builder and Webflow alternative. Webstudio is an advanced visual builder that connects to any headless CMS, supports all CSS properties, and can be hosted anywhere, including with us."
+    },
+    {
+      "repo": "prevwong/craft.js",
+      "url": "https://github.com/prevwong/craft.js",
+      "license": "MIT",
+      "pushed_at": "2025-02-14T09:25:28Z",
+      "archived": false,
+      "language": "TypeScript",
+      "default_branch": "main",
+      "size_kb": 19526,
+      "description": "🚀 A React Framework for building extensible drag and drop page editors"
+    },
+    {
+      "repo": "microsoft/monaco-editor",
+      "url": "https://github.com/microsoft/monaco-editor",
+      "license": "MIT",
+      "pushed_at": "2026-10-31T03:27:27Z",
+      "archived": false,
+      "language": "JavaScript",
+      "default_branch": "main",
+      "size_kb": 140609,
+      "description": "A browser based code editor"
+    },
+    {
+      "repo": "daybrush/moveable",
+      "url": "https://github.com/daybrush/moveable",
+      "license": "MIT",
+      "pushed_at": "2024-06-03T07:57:45Z",
+      "archived": false,
+      "language": "TypeScript",
+      "default_branch": "master",
+      "size_kb": 80957,
+      "description": "Moveable! Draggable! Resizable! Scalable! Rotatable! Warpable! Pinchable! Groupable! Snappable!"
+    },
+    {
+      "repo": "midudev/codi.link",
+      "url": "https://github.com/midudev/codi.link",
+      "license": "NOASSERTION",
+      "pushed_at": "2026-10-20T10:23:00Z",
+      "archived": false,
+      "language": "JavaScript",
+      "default_branch": "main",
+      "size_kb": 3835,
+      "description": "HTML, CSS, JS sandbox."
+    },
+    {
+      "repo": "BuilderIO/builder",
+      "url": "https://github.com/BuilderIO/builder",
+      "license": "MIT",
+      "pushed_at": "2026-10-30T15:24:46Z",
+      "archived": false,
+      "language": "TypeScript",
+      "default_branch": "main",
+      "size_kb": 344356,
+      "description": "Visual Development for React, Vue, Svelte, Qwik, and more"
+    },
+    {
+      "repo": "shadcn-ui/ui",
+      "url": "https://github.com/shadcn-ui/ui",
+      "license": "MIT",
+      "pushed_at": "2026-10-31T16:37:06Z",
+      "archived": false,
+      "language": "TypeScript",
+      "default_branch": "main",
+      "size_kb": 73730,
+      "description": "Composable, accessible components with thoughtful defaults. Build your own component library with code you can customize, extend, and make your own."
+    }
+  ]
+}

@@ -23,20 +23,54 @@
         <div id="agata-project-list" class="agata-project-list" aria-live="polite"><p class="agata-empty">Carregando projetos…</p></div>
       </section>
 
-      <section id="agata-templates" class="agata-templates" hidden>
-        <div class="agata-heading"><div><small>COMECE COM UMA RESOLUÇÃO PRONTA</small><h2>Modelos de prancheta</h2></div></div>
-        <div class="agata-preset-grid">
-          <button type="button" data-preset="android"><span>📱</span><b>Android</b><small>390 × 844 px · Esboço</small></button>
-          <button type="button" data-preset="web"><span>▣</span><b>Website</b><small>1280 × 800 px · Desenho</small></button>
-          <button type="button" data-preset="svg"><span>✳</span><b>Ícone SVG</b><small>512 × 512 px · Vetores</small></button>
-          <button type="button" data-preset="tablet"><span>▤</span><b>Tablet</b><small>768 × 1024 px · Esboço</small></button>
+      <section id="agata-templates" class="agata-templates" hidden aria-labelledby="agata-gallery-heading">
+        <header class="agata-heading">
+          <div><small>DESIGN COMEÇA AQUI</small><h2 id="agata-gallery-heading">Galeria de templates ✦</h2>
+          <p class="agata-gallery-lead">Modelos originais com componentes editáveis e arquivos reais, não screenshots para copiar.</p></div>
+        </header>
+        <div class="agata-gallery-controls" role="search" aria-label="Filtrar templates">
+          <label>Pesquisar modelos<input id="agata-template-search" type="search" placeholder="Música, dashboard, loja…" autocomplete="off"></label>
+          <label>Plataforma<select id="agata-template-platform"><option value="all">Todas</option><option value="android">Android</option><option value="web">Web</option></select></label>
+          <label>Categoria<select id="agata-template-category"><option value="all">Todas as categorias</option></select></label>
+          <label>Tema<select id="agata-template-theme"><option value="all">Claro e escuro</option><option value="light">Claro</option><option value="dark">Escuro</option></select></label>
         </div>
-        <p class="agata-honest-note">Estes modelos configuram o tamanho e o tipo de prancheta. Uma biblioteca completa de componentes virá em outra etapa.</p>
+        <p id="agata-gallery-status" class="agata-gallery-status" role="status" aria-live="polite">Carregando modelos…</p>
+        <div id="agata-gallery-grid" class="agata-gallery-grid" aria-live="polite"></div>
+        <details class="agata-gallery-quick" open><summary>Pranchetas em branco · Android, Web, SVG e Sketch</summary>
+          <div class="agata-preset-grid">
+            <button type="button" data-preset="android"><span>📱</span><b>Android</b><small>390 × 844 px · Interface Android</small></button>
+            <button type="button" data-preset="web"><span>▣</span><b>Web</b><small>HTML/CSS/JS modular</small></button>
+            <button type="button" data-preset="svg"><span>✳</span><b>SVG</b><small>512 × 512 px · Vetores</small></button>
+            <button type="button" data-preset="tablet"><span>▤</span><b>Tablet</b><small>768 × 1024 px · Android</small></button>
+            <button type="button" data-preset="sketch"><span>✎</span><b>Esboço</b><small>Prancheta independente</small></button>
+          </div>
+        </details>
+        <p class="agata-honest-note">As miniaturas Web exibem a estrutura HTML/CSS original sem executar scripts. Android mostra uma prévia esquemática dos nós, não uma renderização nativa do Android SDK.</p>
       </section>
+
     </main>
   </div>
 
+  <dialog id="agata-gallery-dialog" class="agata-gallery-dialog" aria-labelledby="agata-gallery-title">
+    <header><div><small>PRÉVIA DO MODELO</small><h2 id="agata-gallery-title">Template</h2><p id="agata-gallery-detail"></p></div><button type="button" id="agata-gallery-close" aria-label="Fechar prévia">×</button></header>
+    <div class="agata-gallery-preview-controls" aria-label="Navegação pela prévia">
+      <div id="agata-gallery-screens">
+        <button type="button" id="agata-gallery-prev" aria-label="Tela anterior">‹ Anterior</button>
+        <output id="agata-gallery-counter" aria-live="polite">Tela 1</output>
+        <button type="button" id="agata-gallery-next" aria-label="Próxima tela">Próxima ›</button>
+      </div>
+      <label id="agata-gallery-device-label">Visualização Web
+        <select id="agata-gallery-device" aria-label="Largura da prévia Web">
+          <option value="desktop">Desktop</option>
+          <option value="mobile">Mobile 390px</option>
+        </select>
+      </label>
+    </div>
+    <div class="agata-gallery-large"><iframe id="agata-gallery-frame" title="Prévia isolada de template" sandbox="" referrerpolicy="no-referrer"></iframe></div>
+    <footer><span id="agata-gallery-limit"></span><button id="agata-gallery-use" type="button">✦ Usar este modelo</button></footer>
+  </dialog>
   {{ project_modal }}
 </div>
 <script src="{{ static('home/agata.js') }}"></script>
 <script src="{{ static('home/project_manager.js') }}"></script>
+<script src="{{ static('home/template_gallery.js') }}"></script>

@@ -1,0 +1,352 @@
+<link rel="stylesheet" href="{{ static('web_studio/vendor/grapes.css') }}" />
+<link rel="stylesheet" href="{{ static('web_studio/vendor/monaco.css') }}" />
+<link rel="stylesheet" href="{{ static('web_studio/studio.css') }}" />
+<section
+  id="web-studio"
+  data-project-state="loading"
+  data-project-id="{{ project_id }}"
+  data-assets="{{ static('web_studio/studio.css') }}"
+>
+  <header>
+    <button data-action="home">Agata</button><strong>Web Studio</strong
+    ><label class="ws-theme-label">Tema do Agata
+      <select id="ws-ide-theme" aria-label="Tema da IDE">
+        <option value="system">Sistema</option><option value="light">Claro</option><option value="dark">Escuro</option>
+      </select>
+    </label
+    ><select id="ws-project-template" aria-label="Template"></select
+    ><button data-action="create">Novo</button
+    ><button data-action="import">Importar</button
+    ><button data-action="save">Salvar</button
+    ><button data-action="saveas">Salvar como</button
+    ><button data-action="undo" aria-label="Desfazer">↶</button
+    ><button data-action="redo" aria-label="Refazer">↷</button
+    ><button data-action="export">Exportar ZIP</button
+    ><output id="ws-status" role="status">Carregando…</output>
+  </header>
+  <nav aria-label="Workspace">
+    <button data-mode="design">Design</button
+    ><button data-mode="code">Código</button
+    ><button data-mode="split" aria-pressed="true">Dividido</button
+    ><button data-mode="preview">Preview</button
+    ><button data-action="left">Explorer</button
+    ><button data-action="right">Inspector</button
+    ><button id="ws-focus-mode" type="button" aria-pressed="false" title="Ocultar painéis secundários">Foco</button
+    ><button id="ws-layout-reset" type="button" title="Restaurar proporções e painéis">Redefinir layout</button
+    ><label
+      >Viewport
+      <select id="ws-viewport">
+        <option value="375">Mobile 375</option>
+        <option value="390">Mobile 390</option>
+        <option value="768">Tablet 768</option>
+        <option value="1024">Laptop 1024</option>
+        <option value="1440" selected>Desktop 1440</option>
+        <option value="1920">Wide 1920</option>
+        <option value="custom">Personalizado</option>
+      </select></label
+    ><input
+      id="ws-width"
+      type="number"
+      min="240"
+      max="3840"
+      value="1440"
+      aria-label="Largura em pixels"
+    /><label class="ws-zoom-controls">Zoom
+      <button id="ws-zoom-minus" type="button" aria-label="Diminuir zoom do canvas">−</button>
+      <select id="ws-zoom-mode" aria-label="Modo de zoom do canvas"><option value="fit-width">Ajustar largura</option><option value="fit-screen">Ajustar tela</option><option value="custom">Personalizado</option></select>
+      <input id="ws-zoom-value" type="number" min="5" max="300" step="5" value="100" aria-label="Zoom do canvas em porcentagem">
+      <button id="ws-zoom-plus" type="button" aria-label="Aumentar zoom do canvas">+</button>
+    </label><select id="ws-page" aria-label="Página"></select
+    ><button data-action="entry">Definir inicial</button
+    ><label><input id="ws-reduced" type="checkbox" />Reduzir movimento</label
+    ><label><input id="ws-network" type="checkbox" />HTTPS no preview</label
+    ><label><input id="ws-autosave" type="checkbox" checked />Autosave</label
+    ><input
+      id="ws-autosave-interval"
+      type="number"
+      min="5"
+      max="300"
+      value="30"
+      aria-label="Intervalo autosave em segundos"
+    />
+  </nav>
+  <section id="ws-welcome" class="ws-welcome" aria-labelledby="ws-welcome-title" hidden>
+    <div class="ws-welcome-panel">
+      <span class="ws-welcome-mark" aria-hidden="true">✿</span>
+      <small>AGATA · WEB STUDIO</small>
+      <h2 id="ws-welcome-title">Sua próxima ideia começa aqui!</h2>
+      <p id="ws-welcome-message">Crie um projeto Web ou importe seus arquivos HTML, CSS e JavaScript para editar.</p>
+      <p id="ws-welcome-template" role="status">Selecione um modelo acima e clique em Criar.</p>
+      <div class="ws-welcome-actions">
+        <button type="button" data-action="create">✦ Usar modelo selecionado</button>
+        <button type="button" data-action="import">↓ Importar projeto Web</button>
+        <button type="button" data-action="home">Voltar ao Workspace</button>
+      </div>
+      <p class="ws-welcome-note">O modelo só se torna editável após a criação do projeto. Nenhum arquivo é criado ao selecioná-lo.</p>
+    </div>
+  </section>
+  <div class="ws-layout">
+    <aside class="ws-left">
+      <h3>Project Explorer</h3>
+      <input
+        id="ws-search-files"
+        placeholder="Buscar arquivo"
+        aria-label="Buscar arquivo"
+      />
+      <div class="ws-file-actions">
+        <button data-action="newfile">+ Arquivo</button
+        ><button data-action="folder">+ Pasta</button
+        ><button data-action="rename">Renomear/mover</button
+        ><button data-action="duplicatefile">Duplicar</button
+        ><button data-action="deletefile">Excluir</button
+        ><button data-action="asset">Importar asset</button>
+      </div>
+      <div id="ws-files"></div>
+      <h3>Elementos e blocos</h3>
+      <input
+        id="ws-search-blocks"
+        placeholder="Buscar componente"
+        aria-label="Buscar componente"
+      />
+      <select id="ws-block-category" aria-label="Categoria de componentes"><option value="all">Todas as categorias</option></select>
+      <div id="ws-blocks" role="region" aria-label="Biblioteca HTML e blocos"></div>
+      <h3>Layers</h3>
+      <input id="ws-search-layers" type="search" aria-label="Buscar layers" placeholder="Buscar na árvore…"/>
+      <div id="ws-tree" role="tree" aria-label="Hierarquia de elementos"></div>
+    </aside>
+    <div id="ws-left-splitter" class="ws-panel-divider" role="separator" tabindex="0" aria-label="Redimensionar Explorer" aria-orientation="vertical"></div>
+    <main class="ws-center">
+      <div class="ws-selection-tools" role="toolbar" aria-label="Editar componentes e layout">
+        <label class="ws-toolbar-heading">Interação <select id="ws-position-mode" aria-label="Movimentação de elementos"><option value="responsive">Responsivo</option><option value="free">Livre</option></select></label>
+        <button data-action="preparecontainer" title="Permitir posicionamento local sem desfazer Flex/Grid">Preparar contêiner</button>
+        <button data-action="freefront" title="Colocar seleção à frente">Trazer à frente</button>
+        <button data-action="freeback" title="Colocar seleção atrás">Enviar atrás</button>
+        <details class="ws-canvas-popover"><summary>Canvas e grade</summary><div>
+          <label><input type="checkbox" id="ws-grid-visible" checked>Grade azul</label>
+          <label>Espaçamento <input id="ws-grid-spacing" type="number" min="4" max="128" value="20"> px</label>
+          <label><input type="checkbox" id="ws-grid-snap" checked>Snap à grade</label>
+          <button data-action="resetpan">Reset pan</button>
+          <button data-action="centerpage">Centralizar página</button>
+          <button data-action="fitscreen">Fit tela</button>
+        </div></details>
+        <span class="ws-toolbar-heading">Editar</span>
+        <button data-action="parent">Selecionar pai</button
+        ><button data-action="detachcomponent">Desvincular instância</button
+        ><button data-action="copy">Copiar</button
+        ><button data-action="paste">Colar</button
+        ><button data-action="duplicate">Duplicar</button
+        ><button data-action="delete">Excluir</button
+        ><button data-action="up">Subir</button
+        ><button data-action="down">Descer</button
+        ><span class="ws-toolbar-heading">Layout</span><button data-action="center">Centralizar</button
+        ><button data-action="centerh">Centralizar H</button
+        ><button data-action="centerv">Centralizar V</button
+        ><button data-action="distribute">Distribuir</button
+        ><button data-action="autoflex">Auto Flex</button
+        ><button data-action="autogrid">Auto Grid</button
+        ><span class="ws-toolbar-heading">Canvas</span><button data-action="canvasfit" title="Ajustar canvas à largura">Ajustar</button><button data-action="canvaszoom" title="Zoom 100%">100%</button><span class="ws-toolbar-heading">Guias</span><button data-action="gridguides">Guias Grid</button
+        ><button data-action="rulers">Réguas</button
+        ><button data-action="snap">Snap de tamanho</button
+        ><button data-action="group">Agrupar</button>
+      </div>
+      <div class="ws-editors">
+        <section id="ws-design" aria-label="Canvas visual" tabindex="0" title="Botão central ou Espaço + arrastar para mover; Ctrl + roda para zoom">
+          <div id="ws-canvas"></div>
+        </section>
+        <div id="ws-center-splitter" class="ws-panel-divider ws-center-divider" role="separator" tabindex="0" aria-label="Redimensionar Canvas e Código" aria-orientation="vertical" aria-valuemin="23" aria-valuemax="77" aria-valuenow="60"></div>
+        <section id="ws-code">
+          <div id="ws-tabs" role="tablist"></div>
+          <div class="ws-code-tools">
+            <button data-action="format" title="Formatar documento atual (ação explícita)">Formatar</button
+            ><button data-action="goto" title="Ir para linha (Ctrl+G)">Ir para linha</button
+            ><label class="ws-editor-setting" title="Mostrar mapa minimizado do código">Minimap <input id="ws-minimap" type="checkbox"></label
+            ><label class="ws-editor-setting" title="Quebrar linhas longas visualmente">Wrap <input id="ws-wordwrap" type="checkbox" checked></label
+            ><button data-action="find">Buscar/substituir</button
+            ><button data-action="diff">Comparar salvo</button
+            ><button data-action="source">Localizar seleção</button>
+          </div>
+          <div id="ws-monaco"></div>
+        </section>
+        <section id="ws-runtime">
+          <iframe
+            id="ws-preview"
+            title="Preview isolado"
+            sandbox="allow-scripts allow-forms"
+            referrerpolicy="no-referrer"
+          ></iframe>
+        </section>
+      </div>
+    </main>
+    <div id="ws-right-splitter" class="ws-panel-divider" role="separator" tabindex="0" aria-label="Redimensionar Inspector" aria-orientation="vertical"></div>
+    <aside class="ws-right">
+      <h3>Inspector</h3>
+      <output id="ws-selection">Selecione um elemento</output>
+      <p id="ws-property-context" class="ws-context-help" role="status">Selecione um componente no canvas ou na árvore para ver suas propriedades.</p>
+      <input id="ws-property-search" type="search" placeholder="Buscar propriedade CSS…" aria-label="Buscar propriedades do Inspector">
+      <div id="ws-attributes"></div>
+      <div id="ws-properties"></div>
+      <details>
+        <summary>Gradiente</summary>
+        <label
+          >Tipo
+          <select id="ws-gradient-kind">
+            <option>linear</option>
+            <option>radial</option>
+            <option>conic</option>
+          </select></label
+        ><label
+          >Ângulo
+          <input id="ws-gradient-angle" value="135" type="number" /></label
+        ><label
+          >Stops CSS
+          <textarea id="ws-gradient-stops">
+#16152b 0%, #4741a8 55%, #a051c8 100%</textarea
+          ></label
+        ><button data-action="gradient">Aplicar gradiente</button>
+      </details>
+      <details>
+        <summary>Animação</summary>
+        <label>Nome <input id="ws-animation-name" value="float" /></label
+        ><label
+          >Duração (s)
+          <input
+            id="ws-animation-duration"
+            type="number"
+            value="4"
+            min="0.1"
+            step="0.1" /></label
+        ><label
+          >Keyframes CSS
+          <textarea id="ws-animation-frames">
+0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); }</textarea
+          ></label
+        ><button data-action="animation">Aplicar animação</button>
+      </details>
+      <details>
+        <summary>Eventos</summary>
+        <label
+          >Ação
+          <select id="ws-event-action">
+            <option value="navigate">Navegar</option>
+            <option value="dialog">Abrir dialog</option>
+            <option value="toggle">Alternar visibilidade</option>
+          </select></label
+        ><label
+          >Destino / seletor
+          <input id="ws-event-target" value="/pages/about.html" /></label
+        ><button data-action="event">Configurar click</button>
+      </details>
+      <details>
+        <summary>Design tokens</summary>
+        <label
+          >CSS custom properties
+          <textarea id="ws-tokens" rows="8"></textarea></label
+        ><button data-action="tokens">Aplicar tokens</button>
+      </details>
+      <h3>Estilo calculado e origem</h3>
+      <pre id="ws-computed"></pre>
+    </aside>
+  </div>
+  <footer>
+    <details open>
+      <summary>Console / Diagnósticos / Problemas</summary>
+      <pre id="ws-console" aria-live="polite"></pre>
+      <pre id="ws-problems" aria-live="polite"></pre>
+    </details>
+  </footer>
+  <input id="ws-upload" type="file" hidden multiple />
+  <dialog id="ws-dialog">
+    <form method="dialog">
+      <h3 id="ws-dialog-title"></h3>
+      <label id="ws-dialog-label"></label
+      ><input id="ws-dialog-input" required />
+      <div>
+        <button value="cancel" formnovalidate>Cancelar</button
+        ><button value="ok">Continuar</button>
+      </div>
+    </form>
+  </dialog>
+</section>
+<script>
+  (async () => {
+    const root = document.getElementById("web-studio");
+    root.inert = true;
+    try {
+      const base = new URL(".", new URL(root.dataset.assets, document.baseURI))
+        .href;
+      root.dataset.assets = base;
+      window.MonacoEnvironment = {
+        getWorkerUrl: (_, label) =>
+          base +
+          "vendor/workers/" +
+          ({
+            html: "html",
+            handlebars: "html",
+            razor: "html",
+            css: "css",
+            scss: "css",
+            less: "css",
+            json: "json",
+            javascript: "typescript",
+            typescript: "typescript",
+          }[label] || "editor") +
+          ".js",
+      };
+      for (const file of [
+        "vendor/parsers.js",
+        "vendor/monaco.js",
+        "vendor/grapes.js",
+        "js/document.js",
+        "js/references.js",
+        "js/library.js",
+        "js/virtual_list.js",
+        "js/catalog.js",
+        "js/events.js",
+        "js/layout.js",
+        "js/workspace_layout.js",
+        "js/adapters.js",
+        "js/canvas_interaction.js",
+        "js/styles.js",
+        "js/effects.js",
+        "js/inspector.js",
+        "js/studio.js",
+      ]) {
+        const cache = (window.AgataWebAssetLoads ||= new Map());
+        const url = base + file;
+        if (!cache.has(url))
+          cache.set(
+            url,
+            new Promise((ok, fail) => {
+              const script = document.createElement("script");
+              script.src = url;
+              script.onload = ok;
+              script.onerror = () => fail(Error("Falha ao carregar " + file));
+              document.head.append(script);
+            }).catch((error) => {
+              cache.delete(url);
+              throw error;
+            }),
+          );
+        await cache.get(url);
+        if (!root.isConnected) return;
+      }
+      await window.AgataWebStudio.mount(root);
+      root.inert = false;
+    } catch (e) {
+      root.inert = false;
+      root.dataset.projectState = "error";
+      root.querySelector(".ws-layout").hidden = true;
+      const welcome = root.querySelector("#ws-welcome");
+      welcome.hidden = false;
+      root.querySelector("#ws-welcome-title").textContent = "O Web Studio não pôde iniciar";
+      root.querySelector("#ws-welcome-message").textContent = e.message || String(e);
+      root.querySelector("#ws-welcome-template").textContent = "Verifique a instalação e tente abrir novamente.";
+      for (const action of welcome.querySelectorAll("[data-action]")) {
+        action.hidden = action.dataset.action !== "home";
+      }
+      welcome.querySelector('[data-action="home"]').addEventListener('click', () => window.Vela.navigate('/home'));
+      root.querySelector("#ws-status").textContent = e.message || String(e);
+      console.error(e);
+    }
+  })();
+</script>

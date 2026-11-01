@@ -1,0 +1,232 @@
+{
+  "generated": "2026-10-31",
+  "packages": [
+    {
+      "name": "grapesjs",
+      "version": "0.23.8",
+      "license": "BSD-3-Clause",
+      "license_file": "licenses/grapesjs.txt"
+    },
+    {
+      "name": "monaco-editor",
+      "version": "0.57.0",
+      "license": "MIT",
+      "license_file": "licenses/monaco-editor.txt"
+    },
+    {
+      "name": "parse5",
+      "version": "8.0.1",
+      "license": "MIT",
+      "license_file": "licenses/parse5.txt"
+    },
+    {
+      "name": "css-tree",
+      "version": "3.2.1",
+      "license": "MIT",
+      "license_file": "licenses/css-tree.txt"
+    },
+    {
+      "name": "es-module-lexer",
+      "version": "3.0.4",
+      "license": "MIT",
+      "license_file": "licenses/es-module-lexer.txt"
+    },
+    {
+      "name": "backbone",
+      "version": "1.4.1",
+      "license": "MIT",
+      "license_file": "licenses/backbone.txt"
+    },
+    {
+      "name": "backbone-undo",
+      "version": "0.2.6",
+      "license": "MIT",
+      "license_file": "licenses/backbone-undo.txt"
+    },
+    {
+      "name": "underscore",
+      "version": "1.13.8",
+      "license": "MIT",
+      "license_file": "licenses/underscore.txt"
+    },
+    {
+      "name": "entities",
+      "version": "8.1.0",
+      "license": "BSD-2-Clause",
+      "license_file": "licenses/entities.txt"
+    },
+    {
+      "name": "mdn-data",
+      "version": "2.27.1",
+      "license": "CC0-1.0",
+      "license_file": "licenses/mdn-data.txt"
+    },
+    {
+      "name": "source-map-js",
+      "version": "1.2.2",
+      "license": "BSD-3-Clause",
+      "license_file": "licenses/source-map-js.txt"
+    },
+    {
+      "name": "dompurify",
+      "version": "3.4.17",
+      "license": "(MPL-2.0 OR Apache-2.0)",
+      "license_file": "licenses/dompurify.txt"
+    },
+    {
+      "name": "marked",
+      "version": "14.0.0",
+      "license": "MIT",
+      "license_file": "licenses/marked.txt"
+    },
+    {
+      "name": "html-entities",
+      "version": "1.4.0",
+      "license": "MIT",
+      "license_file": "licenses/html-entities.txt"
+    },
+    {
+      "name": "promise-polyfill",
+      "version": "8.3.0",
+      "license": "MIT",
+      "license_file": "licenses/promise-polyfill.txt"
+    },
+    {
+      "name": "codemirror",
+      "version": "5.63.0",
+      "license": "MIT",
+      "license_file": "licenses/codemirror.txt"
+    },
+    {
+      "name": "codemirror-formatting",
+      "version": "1.0.0",
+      "license": "MIT",
+      "license_file": "licenses/codemirror-formatting.txt"
+    }
+  ],
+  "files": {
+    "fonts/codicon-LTRFOK3N.ttf": {
+      "sha256": "77f902557231f95c4c71ae517d09a1a842753656f5f665086b3e5ad8095538da",
+      "bytes": 153228
+    },
+    "grapes.css": {
+      "sha256": "fb55e939b3349c280d68c0617dc87e56baa3eab55ea56a1855db9f5efcc7268d",
+      "bytes": 61053
+    },
+    "grapes.js": {
+      "sha256": "69fb7276354a4181f82c0081c56b96e6d6664aeb040599a9a2896b48ee055392",
+      "bytes": 1152706
+    },
+    "licenses/backbone-undo.txt": {
+      "sha256": "7f74a82daa612263a2819e4fa8be4d532a466db23d6ee63f452b5d12a11b446a",
+      "bytes": 1059
+    },
+    "licenses/backbone.txt": {
+      "sha256": "3a9bdf3d9bd0f4305453364bfcb036cee1fa8a20291f2e5fb5381d8194bc2d26",
+      "bytes": 1079
+    },
+    "licenses/codemirror-formatting.txt": {
+      "sha256": "df62546b9ab80133aab04d36669c2cc170160c2b582d663630e0169ffefb1559",
+      "bytes": 1477
+    },
+    "licenses/codemirror.txt": {
+      "sha256": "a3f2fe2ac6b471aa80c737c5d283dd049bdc903a73835ee6d4d2cac02fdd53bf",
+      "bytes": 1107
+    },
+    "licenses/css-tree.txt": {
+      "sha256": "719a251ceca49c057ea90a1152af6546b767ec88e6d573bb6324454267b32c22",
+      "bytes": 1065
+    },
+    "licenses/dompurify.txt": {
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "bytes": 11358
+    },
+    "licenses/entities.txt": {
+      "sha256": "cb992345949ccd6e8394b2cd6c465f7b897c864f845937dbf64e8997f389e164",
+      "bytes": 1260
+    },
+    "licenses/es-module-lexer.txt": {
+      "sha256": "8a4b6c44eebfb026d23719a348145a661a555568dbfdc11618ff2d0dd9306b00",
+      "bytes": 1085
+    },
+    "licenses/grapesjs.txt": {
+      "sha256": "1a7603ac82661e3ec4f0ad015e37f68ab62c85c725f07659b81760edb459ff8d",
+      "bytes": 1485
+    },
+    "licenses/html-entities.txt": {
+      "sha256": "f8bcf3c7ea910a266c97007a3b93a11a4a9d735c2d1a86b71132a4dffd7cf8e8",
+      "bytes": 1054
+    },
+    "licenses/marked.txt": {
+      "sha256": "8e3a3f82f59a60958f56ca08f445647c32a4733dc7ca6c2c46f6eb898471ab9c",
+      "bytes": 2942
+    },
+    "licenses/mdn-data.txt": {
+      "sha256": "36ffd9dc085d529a7e60e1276d73ae5a030b020313e6c5408593a6ae2af39673",
+      "bytes": 6555
+    },
+    "licenses/monaco-ThirdPartyNotices.txt": {
+      "sha256": "790537262fc78a764e121e6b92b959bcd3f5c310b47d9d9b9e92e17fe0af5336",
+      "bytes": 63064
+    },
+    "licenses/monaco-editor.txt": {
+      "sha256": "33e4ff1a06ef62ba21788ea162564ee8165269a24a9ce6ef301837447eab0ac6",
+      "bytes": 1098
+    },
+    "licenses/parse5.txt": {
+      "sha256": "8c535800331e1e4439835555b3f9edc7fe9dee2fab0d8bbbd5a982e8b8343d4d",
+      "bytes": 1109
+    },
+    "licenses/promise-polyfill.txt": {
+      "sha256": "453a712c58161b74efa998578aaf10fd7ad8204120730de38ca04d7f47f3ea46",
+      "bytes": 1090
+    },
+    "licenses/source-map-js.txt": {
+      "sha256": "6cb0631f71c7749763fd3dd1d5bee52dd1070ec17f2edc1710079ad070bd2fbd",
+      "bytes": 1526
+    },
+    "licenses/underscore.txt": {
+      "sha256": "92905fb54f5d168a27e6d5dc7c2197020add11842be4c70689d084bae3bfe37a",
+      "bytes": 1139
+    },
+    "monaco.css": {
+      "sha256": "e61b2cc3c349b4331efc77f39dc3b932f4097a22e8470f136f34c27eb17b9514",
+      "bytes": 175377
+    },
+    "monaco.js": {
+      "sha256": "03797e94969c80dbbf6638806b128dd1331e4b2edc990d81efc1147579369ba0",
+      "bytes": 4112276
+    },
+    "parsers.js": {
+      "sha256": "dd1fed54dc9e42105d000b3099120249d1ecede81c135938503c91ad2c95b694",
+      "bytes": 375022
+    },
+    "workers/css.js": {
+      "sha256": "488be937390a90b4fc98945c82eceb99ea441e527d5862ddbfe95f96a0bea101",
+      "bytes": 1084879
+    },
+    "workers/editor.js": {
+      "sha256": "343a76e295f2748a21e5e0ed4aa8edb55168a16abe021bdb2ec57e2b7cb5f9ee",
+      "bytes": 307308
+    },
+    "workers/html.js": {
+      "sha256": "5387cddc6530309929c573c08245902207cfa0827c33b48716659e4b539317c8",
+      "bytes": 755706
+    },
+    "workers/json.js": {
+      "sha256": "e46fe878a2a0e4683a69d67f95c73518957918ea19c54492ee9516f5a6e437dc",
+      "bytes": 437660
+    },
+    "workers/typescript.js": {
+      "sha256": "650c15655ddbbe9b592a00fe86adde695133a16958518a1061f5c358eb6f017a",
+      "bytes": 7038434
+    }
+  },
+  "total_bytes": 15754201,
+  "bundledDomPurify": "3.4.17 (Monaco internal import redirected by esbuild adapter)",
+  "notes": [
+    "Offline build; no React/Vue frontend added.",
+    "GrapesJS backbone-undo is transitive/deprecated; Agata uses its own patch-command history.",
+    "No Webstudio, OmniTune, codi.link or proprietary SDK code/assets included."
+  ]
+}

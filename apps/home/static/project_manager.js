@@ -2,11 +2,31 @@
 (()=>{const root=document.getElementById('agata-home');if(!root)return;const abort=new AbortController(),$=id=>root.querySelector('#'+id),api=window.pywebview.api,on=(e,t,f)=>e.addEventListener(t,f,{signal:abort.signal}),el=(t,text)=>{const n=document.createElement(t);if(text)n.textContent=text;return n;};
  const error=e=>{$('agata-error').hidden=false;$('agata-error').textContent=e.message||e;};
  window.AgataProjectSettings=()=>({namespace:$('agata-package').value,min_sdk:Number($('agata-min-sdk').value),target_sdk:Number($('agata-target-sdk').value),ui_framework:$('agata-ui-framework').value,theme:$('agata-theme').value,orientation:$('agata-orientation').value});
- const refresh=()=>window.AgataHomeRefresh?.();const open=async p=>{await api.project_action(p.id,'touch');await Vela.navigate(p.open_editor==='sketch'?'/sketch':'/android',{project_id:p.id});};
+ const refresh=()=>window.AgataHomeRefresh?.();const open=async p=>{await api.project_action(p.id,'touch');await Vela.navigate(p.open_editor==='web'?'/web':p.open_editor==='sketch'?'/sketch':'/android',{project_id:p.id});};
  function dialog(title){const d=el('dialog');d.className='agata-dialog agata-manager-dialog';d.append(el('h2',title));root.append(d);const close=el('button','Fechar');close.type='button';const cleanup=()=>{if(d.dataset.importToken){api.cancel_project_import(d.dataset.importToken).catch(()=>{});delete d.dataset.importToken;}};close.onclick=()=>{cleanup();d.close();d.remove();};d.addEventListener('cancel',()=>{cleanup();d.remove();});d.append(close);d.showModal();return d;}
  function items(projects){const select=$('agata-manage-project');select.replaceChildren();for(const p of projects){const o=el('option',p.name+(p.unavailable?' · Indisponível':''));o.value=p.id;select.append(o);}}
  items(window.AgataProjectItems||[]);on(root,'agata:projects-updated',e=>items(e.detail));on($('agata-project-search'),'input',()=>window.AgataHomeSearch?.());
- let wizardStep=1;on($('agata-wizard-next'),'click',()=>{if(wizardStep===1){$('agata-wizard-settings').open=true;$('agata-wizard-next').textContent='Próxima etapa: revisar projeto →';wizardStep=2;}else{const review=$('agata-wizard-review');review.hidden=false;review.textContent='3 · Revisão: '+$('agata-name').value+' · '+$('agata-template').selectedOptions[0].text+' · '+JSON.stringify(window.AgataProjectSettings())+' · '+($('agata-location').value||'Local padrão');$('agata-wizard-next').textContent='Revisar configurações';}});
+ let wizardStep=1;
+ on(root,'agata:wizard-reset',()=>{
+  wizardStep=1;
+  $('agata-wizard-settings').open=false;
+  $('agata-wizard-review').hidden=true;
+  $('agata-wizard-review').textContent='';
+  $('agata-wizard-next').textContent='Próxima etapa: configurações →';
+ });
+ on($('agata-wizard-next'),'click',()=>{
+  if($('agata-platform').value!=='android')return;
+  if(wizardStep===1){
+   $('agata-wizard-settings').open=true;
+   $('agata-wizard-next').textContent='Próxima etapa: revisar projeto →';
+   wizardStep=2;
+  }else{
+   const review=$('agata-wizard-review');
+   review.hidden=false;
+   review.textContent='3 · Revisão Android: '+$('agata-name').value+' · '+$('agata-template').selectedOptions[0].text+' · '+JSON.stringify(window.AgataProjectSettings())+' · '+($('agata-location').value||'Local padrão');
+   $('agata-wizard-next').textContent='Revisar configurações';
+  }
+ });
  on($('agata-choose-location'),'click',async()=>{try{const path=await api.choose_project_path('folder');if(path)$('agata-location').value=path+'/'+($('agata-name').value.trim().replace(/[^\p{L}\p{N}_-]/gu,'-')||'MeuApp');}catch(e){error(e);}});
  on($('agata-open-existing'),'click',()=>{const d=dialog('Abrir projeto Agata existente'),input=el('input');input.placeholder='Caminho da pasta ou project.json';input.setAttribute('aria-label','Caminho do projeto existente');const browse=el('button','Escolher pasta');browse.onclick=async()=>{try{input.value=await api.choose_project_path('folder')||'';}catch(e){error(e);}};const confirm=el('button','Abrir');confirm.onclick=async()=>{try{const p=await api.open_existing_project(input.value);d.close();d.remove();await open(p);}catch(e){error(e);}};d.append(input,browse,confirm);});
  async function preview(data,d){if(d.dataset.importToken)await api.cancel_project_import(d.dataset.importToken).catch(()=>{});d.dataset.importToken=data.token;d.querySelector('[data-preview]')?.remove();const section=el('section');section.dataset.preview='';section.id='agata-import-preview';section.append(el('h3','Prévia da importação'),el('p',`${data.name} · ${data.framework} · ${data.kind}`),el('p',`Screens: ${data.screen_count} · Componentes: ${data.component_count} · Recursos: ${data.resource_count}`),el('p',`Fully Editable: ${data.classification.fully_editable} · Partially Editable: ${data.classification.partially_editable} · Code Only: ${data.classification.code_only}`));

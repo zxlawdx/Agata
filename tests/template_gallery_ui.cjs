@@ -1,0 +1,100 @@
+/* Browser evidence: source-backed previews, filtering, platform creation, and editor startup. */
+const {chromium}=require(process.env.PLAYWRIGHT_MODULE||"playwright");
+const assert=require("node:assert/strict"),fs=require("node:fs"),path=require("node:path");
+(async()=>{
+ const browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH,headless:true,args:["--no-sandbox","--disable-dev-shm-usage"]});
+ const page=await browser.newPage({viewport:{width:1440,height:900}});
+ page.setDefaultTimeout(40000);
+ const errors=[];page.on("pageerror",e=>errors.push(e.message));
+ const destination=process.env.AGATA_EVIDENCE||"/tmp/agata-studio-evidence";
+ fs.mkdirSync(destination,{recursive:true});
+ try{
+  await page.goto(process.env.AGATA_TEST_URL);
+  await page.locator('[data-section="templates"]').click();
+  await page.waitForFunction(()=>document.querySelectorAll(".agata-template-card").length>=14);
+  assert(await page.locator(".agata-template-card").count()>=14);
+  await page.waitForFunction(()=>{
+   const cards=[...document.querySelectorAll(".agata-template-card")];
+   const visible=cards.filter(card=>{const rect=card.getBoundingClientRect();return rect.top<innerHeight&&rect.bottom>0;});
+   return visible.length>0&&visible.every(card=>card.querySelector("iframe")?.srcdoc?.length>100);
+  },null,{timeout:15000});
+  await page.screenshot({path:path.join(destination,"template-gallery-all.png"),fullPage:true});
+  await page.locator("#agata-template-theme").selectOption("dark");
+  assert(await page.locator(".agata-template-card").count()>0);
+  assert.equal(await page.locator('.agata-template-card[data-template-id="premium-landing"]').count(),0);
+  await page.locator("#agata-template-theme").selectOption("all");
+  await page.locator("#agata-template-platform").selectOption("web");
+  assert.equal(await page.locator('.agata-template-card[data-platform="android"]').count(),0);
+  const card=page.locator('.agata-template-card[data-template-id="premium-landing"]');
+  await card.scrollIntoViewIfNeeded();
+  await page.waitForFunction(()=>{
+   const c=document.querySelector('.agata-template-card[data-template-id="premium-landing"]');
+   return !!c?.querySelector("iframe")?.srcdoc && c.dataset.templateId==="premium-landing";
+  });
+  const html=await card.locator("iframe").getAttribute("srcdoc");
+  assert(html.includes("<main"));
+  assert(html.includes("<style>"));
+  assert(!html.includes('<script type="module"'));
+  await page.locator("#agata-template-search").fill("Premium Landing");
+  assert.equal(await page.locator(".agata-template-card").count(),1);
+  await card.getByRole("button",{name:/Prévia/}).click();
+  await page.locator("#agata-gallery-dialog").waitFor({state:"visible"});
+  await page.waitForFunction(()=>document.querySelector("#agata-gallery-frame")?.srcdoc?.includes("Premium"));
+  assert((await page.locator("#agata-gallery-frame").getAttribute("srcdoc")).includes("Premium"));
+  await page.locator("#agata-gallery-device").selectOption("mobile");
+  assert.equal(await page.locator("#agata-gallery-frame").evaluate(el=>el.style.width),"min(390px, 100%)");
+  await page.waitForFunction(()=>{
+    const el=document.querySelector("#agata-gallery-frame");
+    const width=el?.getBoundingClientRect().width||0;
+    return width>=380 && width<=395;
+  },null,{timeout:6000});
+  assert.equal(await page.frameLocator("#agata-gallery-frame").locator("body").evaluate(()=>innerWidth),390,
+    "Mobile selector must change the browser viewport, not merely a CSS label");
+  await page.screenshot({path:path.join(destination,"template-gallery-preview-web-mobile.png"),fullPage:true});
+  await page.locator("#agata-gallery-device").selectOption("desktop");
+  await page.screenshot({path:path.join(destination,"template-gallery-preview-web.png"),fullPage:true});
+  await page.locator("#agata-gallery-use").click();
+  await page.locator("#agata-create-dialog").waitFor({state:"visible"});
+  assert.equal(await page.locator("#agata-platform").inputValue(),"web");
+  assert.equal(await page.locator("#agata-template").inputValue(),"premium-landing");
+  assert(!(await page.locator("#agata-wizard-settings").isVisible()));
+  await page.locator("#agata-name").fill("Gallery Web Edited");
+  await page.locator("#agata-confirm-create").click();
+  await page.waitForFunction(()=>window.AgataWebSession?.project?.name==="Gallery Web Edited");
+  await page.locator("#ws-files button[data-file='index.html']").waitFor();
+  await page.locator("#ws-monaco .monaco-editor").waitFor();
+  await page.frameLocator(".gjs-frame").locator("main").waitFor({state:"attached"});
+  assert(await page.locator("#ws-blocks button").count()>50,"HTML/block palette should be ready");
+  assert(await page.locator("#ws-properties [data-css]").count()>0,"CSS inspector should be ready");
+  await page.screenshot({path:path.join(destination,"template-gallery-created-web.png"),fullPage:true});
+  await page.evaluate(()=>window.Vela.navigate("/home"));
+  await page.locator('[data-section="templates"]').click();
+  await page.locator("#agata-template-platform").selectOption("android");
+  const android=page.locator('.agata-template-card[data-template-id="music-dark"]');
+  await android.scrollIntoViewIfNeeded();
+  await android.getByRole("button",{name:/Prévia/}).click();
+  await page.waitForFunction(()=>document.querySelector("#agata-gallery-frame")?.srcdoc?.includes("node-"));
+  const androidMarkup=await page.locator("#agata-gallery-frame").getAttribute("srcdoc");
+  assert(androidMarkup.includes("node-"));
+  assert((await page.locator("#agata-gallery-counter").textContent()).includes("1/6"));
+  await page.locator("#agata-gallery-next").click();
+  await page.waitForFunction(()=>document.querySelector("#agata-gallery-counter")?.textContent?.includes("2/6"));
+  const secondary=await page.locator("#agata-gallery-frame").getAttribute("srcdoc");
+  assert(secondary.includes("Search") && secondary!==androidMarkup);
+  await page.screenshot({path:path.join(destination,"template-gallery-android-second-screen.png"),fullPage:true});
+  await page.locator("#agata-gallery-prev").click();
+  await page.waitForFunction(()=>document.querySelector("#agata-gallery-counter")?.textContent?.includes("1/6"));
+
+  await page.screenshot({path:path.join(destination,"template-gallery-preview-android.png"),fullPage:true});
+  await page.locator("#agata-gallery-use").click();
+  assert.equal(await page.locator("#agata-platform").inputValue(),"android");
+  assert.equal(await page.locator("#agata-template").inputValue(),"music-dark");
+  await page.locator("#agata-name").fill("Gallery Android Edited");
+  await page.locator("#agata-confirm-create").click();
+  await page.locator("#ad-frames .ad-frame").first().waitFor();
+  assert(await page.locator("#ad-frames .ad-frame").count()>0);
+  await page.screenshot({path:path.join(destination,"template-gallery-created-android.png"),fullPage:true});
+  assert.deepEqual(errors,[]);
+  console.log("Gallery E2E passed: sources, filters, Web/Android wizard, Monaco, blocks, Inspector, canvas.");
+ }finally{await browser.close();}
+})().catch(e=>{console.error(e);process.exitCode=1});

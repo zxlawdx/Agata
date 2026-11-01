@@ -1,0 +1,12 @@
+{
+  "python_tests": 106,
+  "javascript_tests": 54,
+  "browser_suites": 19,
+  "npm_audit_vulnerabilities": 0,
+  "android_native_build_verified": false,
+  "limitations": [
+    "Android browser previews are approximations; SDK compilation pending",
+    "Advanced snapping, native blur, audio engine and full master specification remain partial"
+  ],
+  "evidence": "Chromium Playwright, local offline assets"
+}

@@ -25,3 +25,6 @@ STATIC_ROOT = "staticfiles"
 
 # All runtime assets are committed; collectstatic never needs Node or Tailwind.
 ASSETS = {"tailwind": False}
+
+# Native capability bootstrap is delivered by the trusted Vela HTTP shell.
+SHELL_MODE = "http"

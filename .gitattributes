@@ -5,3 +5,6 @@ apps/android_designer/static/vendor/codemirror.js -text
 apps/android_designer/static/vendor/licenses/*.txt text eol=lf
 apps/android_designer/resources/gradle/gradle-wrapper.jar -text
 apps/android_designer/resources/gradle/gradlew text eol=lf
+
+# Web offline bundles and license inventory are content-addressed.
+apps/web_studio/static/vendor/** -text

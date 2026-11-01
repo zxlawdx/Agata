@@ -122,3 +122,52 @@ class AgataBridge(BaseBridge):
     def export_imported_android(self, project_id: str, backend: str, activate=False):
         from apps.workspace.services.project_import.export import imported_export
         return imported_export(project_repository(),project_id,backend,activate)
+
+    def template_gallery_catalog(self):
+        from apps.template_registry.preview import gallery_catalog
+        return gallery_catalog()
+
+    def template_gallery_preview(self, template_id: str, platform: str, screen_index: int = 0):
+        from apps.template_registry.preview import preview
+        return preview(template_id, platform, screen_index)
+
+    def web_catalog(self):
+        from apps.web_studio.services.projects import WebProjectService
+        return WebProjectService(project_repository()).catalog()
+
+    def create_web_project(self, name, template='saas-dashboard'):
+        from apps.web_studio.services.projects import WebProjectService
+        return WebProjectService(project_repository()).create(name, template)
+
+    def get_web_project(self, project_id):
+        from apps.web_studio.services.projects import WebProjectService
+        return WebProjectService(project_repository()).load(project_id)
+
+    def save_web_project(self, project_id, payload):
+        from apps.web_studio.services.projects import WebProjectService
+        return WebProjectService(project_repository()).save(project_id, payload)
+
+    def import_web_project(self, path, name=None):
+        from apps.web_studio.services.projects import WebProjectService
+        return WebProjectService(project_repository()).import_path(path, name)
+
+    def export_web_project(self, project_id):
+        from apps.web_studio.services.projects import WebProjectService
+        return WebProjectService(project_repository()).export(project_id)
+
+    def web_preview(self, files, entry='index.html', network=False, session=None):
+        from apps.web_studio.services.preview import RUNTIME
+        return RUNTIME.prepare(files, entry, network, session)
+
+    def save_web_recovery(self, project_id, payload):
+        from apps.web_studio.services.storage import WebWorkspace
+        return WebWorkspace(project_repository(), project_id).save_recovery(payload)
+
+    def android_design_system(self, document, overrides=None):
+        from apps.design_system.services.android import resolve_tokens
+        return resolve_tokens(document, overrides)
+
+    def android_premium_component(self, name, style='material-expressive', props=None):
+        from apps.design_system.services.android import component
+        from apps.design_system.services.tokens import tokens
+        return component(name, tokens(style), props)
