@@ -257,9 +257,9 @@ def build(key):
                     +sections(index),gap=16,padding=4)
         content["layout"].update(weight=1,scroll="vertical")
         body=col([content,navigation(index,False)],gap=8)
-        body["layout"].update(height="fill",weight=1)
+        body["layout"].update(height="fill",weight=1,maxWidth=720)
         outer=row([navigation(index,True),body],gap=12)
-        outer["layout"].update(height="fill")
+        outer["layout"].update(height="fill",arrangement="center")
         root["children"]=[outer]
         screen["root"]=root
         screen["metadata"]={"sampleData":True,"experience":spec["app"],"platform":"android"}
