@@ -38,6 +38,18 @@ class TemplateGalleryTests(unittest.TestCase):
                 self.assertIn("node-", data["html"])
                 self.assertIn("prévia esquemática", data["html"])
 
+    def test_android_template_screen_navigation_is_read_only_and_bounded(self):
+        first = preview("music-dark", "android", 0)
+        second = preview("music-dark", "android", 1)
+        self.assertEqual(first["screens"], 6)
+        self.assertEqual(first["screen_name"], "Home")
+        self.assertEqual(second["screen_name"], "Search")
+        self.assertNotEqual(first["html"], second["html"])
+        with self.assertRaises(ValueError):
+            preview("music-dark", "android", 6)
+        with self.assertRaises(ValueError):
+            preview("music-dark", "android", -1)
+
     def test_invalid_template_is_rejected_without_fallback(self):
         for identifier, platform in [("missing", "web"), ("premium-landing", "android")]:
             with self.assertRaises(ValueError):
