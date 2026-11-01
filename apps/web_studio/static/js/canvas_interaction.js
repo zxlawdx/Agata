@@ -7,9 +7,10 @@
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const editTarget=e=>e.target?.closest?.("input,textarea,select,[contenteditable=true],.monaco-editor");
 class CanvasInteraction {
- constructor(root,adapter,{getDocument,onSelect,onError,onZoom}){
+ constructor(root,adapter,{getDocument,getSelection,onSelect,onError,onZoom}){
   this.root=root;this.canvas=adapter;this.getDocument=getDocument;
   this.onSelect=onSelect;this.onError=onError;this.onZoom=onZoom;
+  this.getSelection=getSelection||(()=>new Set());
   this.mode="responsive";this.space=false;this.active=null;this.grid=true;
   this.spacing=16;this.snap=true;this.rulers=false;this.guides=true;
   this.abort=new AbortController();this.frameAbort=null;
@@ -86,14 +87,26 @@ class CanvasInteraction {
     this.onError(Error("Posicionamento livre requer container de referência. Use 'Preparar contêiner' explicitamente; Flex/Grid não é convertido automaticamente."));
     return;
   }
-  this.onSelect(id,false);
+  const ids=this.getSelection().has(id)?[...this.getSelection()]:[id];
+  this.onSelect(id,ids.length>1);
   const parentRect=parent.getBoundingClientRect(),elRect=element.getBoundingClientRect();
   const zoom=Math.max(.05,this.canvas.editor.Canvas.getZoom()/100);
   const x=style.position==="absolute"?parseFloat(style.left)||0:(elRect.x-parentRect.x)/zoom;
   const y=style.position==="absolute"?parseFloat(style.top)||0:(elRect.y-parentRect.y)/zoom;
   try{e.target.setPointerCapture?.(e.pointerId);}catch{}
+  const items=ids.map(nodeId=>{
+    const dom=element.ownerDocument.querySelector('[data-agata-id="'+nodeId+'"]');
+    const node=doc.nodes.get(nodeId);
+    if(!dom||node?.parent?.id!==n.parent.id)return null;
+    const box=dom.getBoundingClientRect(),css=dom.ownerDocument.defaultView.getComputedStyle(dom);
+    return {id:nodeId,element:dom,start:{
+      x:css.position==="absolute"?parseFloat(css.left)||0:(box.x-parentRect.x)/zoom,
+      y:css.position==="absolute"?parseFloat(css.top)||0:(box.y-parentRect.y)/zoom
+    }};
+  }).filter(Boolean);
+  if(!items.length)return;
   this.active={type:"free",id:e.pointerId,point:p,start:{x,y},node:id,target:e.target,
-    element,zoom, moved:false};
+    items,element,zoom,moved:false};
   this.stop(e);this.cursor();
  }
  move(e,inside){
@@ -104,8 +117,13 @@ class CanvasInteraction {
    const x=a.start.x+dx/a.zoom,y=a.start.y+dy/a.zoom;
    const snap=v=>this.snap?Math.round(v/this.spacing)*this.spacing:Math.round(v);
    a.next={x:Math.max(0,snap(x)),y:Math.max(0,snap(y))};
-   a.element.style.position="absolute";a.element.style.left=a.next.x+"px";
-   a.element.style.top=a.next.y+"px";a.moved=true;
+   for(const item of a.items){
+     const next={x:Math.max(0,snap(item.start.x+dx/a.zoom)),
+                 y:Math.max(0,snap(item.start.y+dy/a.zoom))};
+     item.next=next;item.element.style.position="absolute";
+     item.element.style.left=next.x+"px";item.element.style.top=next.y+"px";
+   }
+   a.moved=true;
    this.stop(e);
   }
  }
@@ -120,10 +138,12 @@ class CanvasInteraction {
    if(!node.parent?.id)throw Error("Contêiner não mapeado");
    const parent=this.canvas.computed(node.parent.id);
    if(parent?.position==="static")throw Error("Prepare primeiro o contêiner para posicionamento livre.");
-   doc.transaction("Mover elemento livre",()=>{
-    doc.style(a.node,"position","absolute");
-    doc.style(a.node,"left",a.next.x+"px");
-    doc.style(a.node,"top",a.next.y+"px");
+   doc.transaction(a.items.length>1?"Mover seleção livre":"Mover elemento livre",()=>{
+    for(const item of a.items){
+      doc.style(item.id,"position","absolute");
+      doc.style(item.id,"left",item.next.x+"px");
+      doc.style(item.id,"top",item.next.y+"px");
+    }
    });
   }catch(err){this.onError(err);this.canvas.render(this.canvas.file);}
  }
