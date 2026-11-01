@@ -10,7 +10,7 @@ class WorkspaceLayoutManager {
     this.root=root;this.onResize=onResize||(()=>{});this.onUpdate=onUpdate||(()=>{});
     this.abort=new AbortController();
     this.key="agata-web-layout-v2:"+(root.dataset.projectId||"unbound");
-    this.drag=null;this.mode="split";this.focus=false;
+    this.drag=null;this.mode="split";this.focus=false;this.forcePanels={left:false,right:false};
     this.state={left:"visible",right:"visible",leftWidth:245,rightWidth:290,splitRatio:.50,
       zoomMode:"fit-width",zoomPercent:100};
     try{
@@ -43,7 +43,7 @@ class WorkspaceLayoutManager {
   reset(){
     Object.assign(this.state,{left:"visible",right:"visible",leftWidth:245,rightWidth:290,splitRatio:.50,
       zoomMode:"fit-width",zoomPercent:100});
-    this.focus=false;this.root.dataset.focus="false";this.apply();this.persist();this.onUpdate();
+    this.focus=false;this.forcePanels={left:false,right:false};this.root.dataset.focus="false";this.apply();this.persist();this.onUpdate();
   }
   toggleFocus(){
     this.focus=!this.focus;this.root.dataset.focus=String(this.focus);
@@ -53,7 +53,9 @@ class WorkspaceLayoutManager {
   }
   toggle(side){
     if(!["left","right"].includes(side))return;
-    this.state[side]=this.state[side]==="hidden"?"visible":"hidden";
+    const shown=this.root.dataset[side]==="visible";
+    this.forcePanels[side]=!shown;
+    this.state[side]=shown?"hidden":"visible";
     this.apply();this.persist();this.onUpdate();
   }
   set(axis,value,isRatio=false){
@@ -95,8 +97,12 @@ class WorkspaceLayoutManager {
   apply(){
     if(!this.root.isConnected)return;
     const small=innerWidth<=900;
-    const leftOn=this.state.left==="visible"&&!this.focus;
-    const rightOn=this.state.right==="visible"&&!this.focus&&this.mode!=="preview";
+    // 1366x768 at 125% Windows scaling can expose only ~1093 CSS pixels.
+    // Automatically collapse secondary panels but allow an explicit user reopen.
+    const autoRight=innerWidth<1300&&this.mode==="split"&&!this.forcePanels.right;
+    const autoLeft=innerWidth<900&&this.mode==="split"&&!this.forcePanels.left;
+    const leftOn=this.state.left==="visible"&&!this.focus&&!autoLeft;
+    const rightOn=this.state.right==="visible"&&!this.focus&&this.mode!=="preview"&&!autoRight;
     this.root.dataset.left=leftOn?"visible":"hidden";
     this.root.dataset.right=rightOn?"visible":"hidden";
     this.root.dataset.focus=String(this.focus);
@@ -108,7 +114,7 @@ class WorkspaceLayoutManager {
     this.root.style.setProperty("--ws-design-percent",(this.state.splitRatio*100).toFixed(1)+"%");
     for(const side of ["left","right"]){
       const btn=this.root.querySelector('[data-action="'+side+'"]');
-      if(btn){btn.setAttribute("aria-expanded",String(this.state[side]==="visible"&&!this.focus));}
+      if(btn){btn.setAttribute("aria-expanded",String(this.root.dataset[side]==="visible"));}
     }
     const center=this.root.querySelector("#ws-center-splitter");
     if(center){
