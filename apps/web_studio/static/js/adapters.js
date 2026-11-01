@@ -506,7 +506,7 @@
             peers = [...(element?.parentElement?.children || [])].filter(
               (e) => e !== element,
             );
-          if (this.snap !== false) {
+          if (this.snap !== false && this.interaction?.snap !== false) {
             const threshold = 6 / (this.editor.Canvas.getZoom() / 100);
             for (const property of ["width", "height"]) {
               const value = parseFloat(style[property]);
@@ -516,7 +516,7 @@
               )
                 continue;
               const choices = [
-                Math.round(value / 8) * 8,
+                Math.round(value / (this.interaction?.spacing || 8)) * (this.interaction?.spacing || 8),
                 ...peers.map((e) =>
                   parseFloat(
                     e.ownerDocument.defaultView.getComputedStyle(e)[property],
