@@ -530,8 +530,8 @@
 #web-studio .ws-layer-row[data-shared="true"] .ws-layer-icon{color:var(--ws-muted)}
 #web-studio .ws-layer-row:focus-within{outline:1px solid var(--ws-focus)}
 #web-studio .ws-editors[data-mode="split"]{min-width:0}
-#web-studio[data-mode="split"] #ws-design{min-width:min(360px,48%);max-width:calc(100% - min(370px,48%) - 7px)}
-#web-studio[data-mode="split"] #ws-code{min-width:min(370px,48%);flex-basis:0}
+#web-studio[data-mode="split"] #ws-design{min-width:min(320px,46%);max-width:calc(100% - min(350px,46%) - 7px)}
+#web-studio[data-mode="split"] #ws-code{min-width:min(350px,46%);flex-basis:0}
 #web-studio .ws-selection-tools{max-width:100%;overflow-x:auto;scrollbar-width:thin}
 #web-studio .ws-selection-tools button,#web-studio .ws-selection-tools label{white-space:nowrap;flex-shrink:0}
 @media(max-width:1250px){
