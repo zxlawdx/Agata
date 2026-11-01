@@ -101,12 +101,14 @@
         placeholder="Buscar componente"
         aria-label="Buscar componente"
       />
-      <div id="ws-blocks"></div>
+      <select id="ws-block-category" aria-label="Categoria de componentes"><option value="all">Todas as categorias</option></select>
+      <div id="ws-blocks" role="region" aria-label="Biblioteca HTML e blocos"></div>
       <h3>Layers</h3>
       <div id="ws-tree" role="tree"></div>
     </aside>
     <main class="ws-center">
-      <div class="ws-selection-tools">
+      <div class="ws-selection-tools" role="toolbar" aria-label="Editar componentes e layout">
+        <span class="ws-toolbar-heading">Editar</span>
         <button data-action="parent">Selecionar pai</button
         ><button data-action="detachcomponent">Desvincular instância</button
         ><button data-action="copy">Copiar</button
@@ -115,13 +117,13 @@
         ><button data-action="delete">Excluir</button
         ><button data-action="up">Subir</button
         ><button data-action="down">Descer</button
-        ><button data-action="center">Centralizar</button
+        ><span class="ws-toolbar-heading">Layout</span><button data-action="center">Centralizar</button
         ><button data-action="centerh">Centralizar H</button
         ><button data-action="centerv">Centralizar V</button
         ><button data-action="distribute">Distribuir</button
         ><button data-action="autoflex">Auto Flex</button
         ><button data-action="autogrid">Auto Grid</button
-        ><button data-action="gridguides">Guias Grid</button
+        ><span class="ws-toolbar-heading">Guias</span><button data-action="gridguides">Guias Grid</button
         ><button data-action="rulers">Réguas</button
         ><button data-action="snap">Snap de tamanho</button
         ><button data-action="group">Agrupar</button>
