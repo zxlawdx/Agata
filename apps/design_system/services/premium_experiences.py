@@ -70,11 +70,38 @@ def build(key):
         n["name"]="Card · "+(title[:65] if title else "Conteúdo")
         return n
     def art(name,accent="accent",height=135):
-        shape=node("Shape")
-        shape["props"].update(kind="rect",fill=colors[accent],stroke=colors["surface"],radius=22)
-        shape["layout"].update(width="fill",height=height)
-        shape["name"]="Arte vetorial editável · "+name
-        return shape
+        """Original, editable layered vector art, rendered as SVG in the quick preview
+        and generated from Shape nodes in Compose. Never external copyrighted covers.
+        """
+        canvas=node("DrawingCanvas",{
+            "background":colors["surfaceVariant"],
+            "viewportWidth":400,"viewportHeight":height
+        })
+        canvas["layout"].update(width="fill",height=height)
+        canvas["name"]="Poster vetorial editável · "+name
+        def shape(kind,x,y,width,h,fill,opacity=1,radius=20,rotation=0):
+            s=node("Shape",{"kind":kind,"fill":fill,"stroke":fill,
+                            "strokeWidth":0,"radius":radius,"opacity":opacity,"rotation":rotation})
+            s["layout"].update(x=x,y=y,width=width,height=h)
+            s["name"]="Camada de arte · "+kind
+            return s
+        base=colors[accent]
+        alt=colors["primary"] if accent!="primary" else colors["accent"]
+        muted=colors["secondary"]
+        canvas["children"]=[
+            shape("roundedRect",8,8,384,height-16,base,radius=24),
+            shape("ellipse",236,-18,175,175,alt,.78),
+            shape("ellipse",288,24,100,100,colors["surface"],.42),
+            shape("roundedRect",32,height*.34,215,max(38,height*.58),
+                  colors["background"],.60,radius=24,rotation=-11),
+            shape("ellipse",55,height*.38,95,95,muted,.86),
+            shape("ellipse",84,height*.50,32,32,colors["surface"],.75),
+            shape("roundedRect",188,height*.70,135,14,
+                  colors["surface"],.80,radius=9),
+            shape("roundedRect",188,height*.81,96,8,
+                  colors["surface"],.60,radius=6),
+        ]
+        return canvas
     def button(label,target=None):
         n=node("Button")
         n["children"][-1]["props"]["text"]=label
