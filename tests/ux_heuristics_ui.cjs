@@ -49,9 +49,9 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||"playwright");
   await page.locator("#ws-ide-theme").selectOption("dark");
   assert(await page.locator("#ws-monaco .monaco-editor").evaluate(el=>el.classList.contains("vs-dark")));
   for(const mode of ["design","code","split","preview"]){
-   await page.locator('[data-mode="'+mode+'"]').click();
-   assert.equal(await page.locator('[data-mode="'+mode+'"]').getAttribute("aria-pressed"),"true");
-   assert.equal(await page.locator('[data-mode][aria-pressed="true"]').count(),1);
+   await page.locator('button[data-mode="'+mode+'"]').click();
+   assert.equal(await page.locator('button[data-mode="'+mode+'"]').getAttribute("aria-pressed"),"true");
+   assert.equal(await page.locator('button[data-mode][aria-pressed="true"]').count(),1);
   }
   await page.locator('[data-mode="split"]').click();
   await page.locator('#ws-files button[data-file="index.html"]').click();
