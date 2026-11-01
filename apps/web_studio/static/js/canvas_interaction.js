@@ -58,8 +58,9 @@ class CanvasInteraction {
   else{this.host.scrollLeft=x;this.host.scrollTop=y;}}
  point(e,inside){
   if(!inside)return{x:e.clientX,y:e.clientY};
-  const r=this.canvas.editor.Canvas.getFrameEl().getBoundingClientRect();
-  return{x:r.x+e.clientX,y:r.y+e.clientY};
+  const frame=this.canvas.editor.Canvas.getFrameEl(),r=frame.getBoundingClientRect();
+  const sx=r.width/Math.max(1,frame.clientWidth),sy=r.height/Math.max(1,frame.clientHeight);
+  return{x:r.x+e.clientX*sx,y:r.y+e.clientY*sy};
  }
  stop(e){if(e.cancelable)e.preventDefault();e.stopPropagation();e.stopImmediatePropagation?.();}
  start(e,inside){
