@@ -245,7 +245,7 @@
       this.suppress = false;
       this.monaco = global.AgataMonacoVendor;
       this.editor = this.monaco.editor.create(host, {
-        theme: "vs-dark",
+        theme: (() => { const selected = localStorage.getItem("agata-ide-theme") || "system"; return selected === "light" || (selected === "system" && !matchMedia("(prefers-color-scheme: dark)").matches) ? "vs" : "vs-dark"; })(),
         automaticLayout: true,
         minimap: { enabled: true },
         fontSize: 13,
