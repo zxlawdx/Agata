@@ -69,39 +69,87 @@ def build(key):
         n["children"]+=list(children or [])
         n["name"]="Card · "+(title[:65] if title else "Conteúdo")
         return n
-    def art(name,accent="accent",height=135):
-        """Original, editable layered vector art, rendered as SVG in the quick preview
-        and generated from Shape nodes in Compose. Never external copyrighted covers.
+    def art(name, accent="accent", height=135):
+        """Original editable vector illustrations, never screenshots/third-party art.
+
+        The three visual languages intentionally differ:
+        Sonora = concentric sound & tempo;
+        Mosaic = editorial illustrated landscape;
+        Nexa = geometric financial card.
         """
-        canvas=node("DrawingCanvas",{
-            "background":colors["surfaceVariant"],
-            "viewportWidth":400,"viewportHeight":height
+        canvas = node("DrawingCanvas", {
+            "background": colors["surfaceVariant"],
+            "viewportWidth": 400, "viewportHeight": height
         })
-        canvas["layout"].update(width="fill",height=height)
-        canvas["name"]="Poster vetorial editável · "+name
+        canvas["layout"].update(width="fill", height=height)
+        canvas["name"] = "Arte original em vetor · " + name
+
         def shape(kind,x,y,width,h,fill,opacity=1,radius=20,rotation=0):
             s=node("Shape",{"kind":kind,"fill":fill,"stroke":fill,
-                            "strokeWidth":0,"radius":radius,"opacity":opacity,"rotation":rotation})
+                             "strokeWidth":0,"radius":radius,
+                             "opacity":opacity,"rotation":rotation})
             s["layout"].update(x=x,y=y,width=width,height=h)
-            s["name"]="Camada de arte · "+kind
+            s["name"]="Forma editável · "+name+" · "+kind
             return s
-        base=colors[accent]
-        alt=colors["primary"] if accent!="primary" else colors["accent"]
-        muted=colors["secondary"]
-        canvas["children"]=[
-            shape("roundedRect",8,8,384,height-16,base,radius=24),
-            shape("ellipse",236,0,175,175,alt,.78),
-            shape("ellipse",288,24,100,100,colors["surface"],.42),
-            shape("roundedRect",32,height*.34,215,max(38,height*.58),
-                  colors["background"],.60,radius=24,rotation=-11),
-            shape("ellipse",55,height*.38,95,95,muted,.86),
-            shape("ellipse",84,height*.50,32,32,colors["surface"],.75),
-            shape("roundedRect",188,height*.70,135,14,
-                  colors["surface"],.80,radius=9),
-            shape("roundedRect",188,height*.81,96,8,
-                  colors["surface"],.60,radius=6),
-        ]
+
+        def curve(x,y,width,h,fill,commands,opacity=1):
+            s=shape("path",x,y,width,h,fill,opacity)
+            s["props"]["path"]=commands
+            return s
+
+        primary=colors[accent]
+        contrast=colors["primary"] if accent!="primary" else colors["accent"]
+        secondary=colors["secondary"]
+        surface=colors["surface"]
+        seed=sum(ord(ch) for ch in name)%37
+        layers=[shape("roundedRect",8,8,384,height-16,primary,radius=26)]
+
+        if key=="music-dark":
+            # Offset vinyl/sonic rings and an original traversing wave, no album artwork.
+            layers.extend([
+                shape("ellipse",175,6,160,160,contrast,.85),
+                shape("ellipse",197,23,119,119,colors["background"],.84),
+                shape("ellipse",218,40,78,78,secondary,.90),
+                shape("ellipse",239,57,37,37,surface,.88),
+                curve(25,max(12,height*.4),352,max(48,height*.40),surface,
+                      [["M",0,38],["C",68,0,124,72,192,34],
+                       ["C",264,0,310,55,352,8]],.87),
+                shape("ellipse",36+seed,max(12,height*.18),18,18,surface,.90),
+                shape("ellipse",98+seed,max(18,height*.68),10,10,surface,.75),
+                shape("roundedRect",30,max(16,height*.75),115,7,contrast,.85,radius=5),
+            ])
+        elif key=="social-modern":
+            # Editorial landscapes with original geometry and changing composition.
+            layers.extend([
+                shape("ellipse",260-seed,15,95,95,secondary,.94),
+                curve(8,max(25,height*.32),375,max(72,height*.62),contrast,
+                      [["M",0,65],["C",70,8,130,22,180,42],
+                       ["C",260,92,310,4,375,35],["L",375,115],["L",0,115],["Z"]],.94),
+                curve(8,max(30,height*.50),375,max(48,height*.45),colors["background"],
+                      [["M",0,65],["C",80,5,120,60,200,28],
+                       ["C",280,2,330,80,375,38],["L",375,100],["L",0,100],["Z"]],.74),
+                shape("roundedRect",42+seed,max(20,height*.32),31,66,surface,.85,radius=7),
+                shape("roundedRect",85+seed,max(22,height*.39),28,48,surface,.80,radius=7),
+                shape("ellipse",154+seed,max(14,height*.23),16,16,surface,.90),
+            ])
+        else:
+            # Refined anonymous credit-card geometry; no bank/trademark or real credentials.
+            layers.extend([
+                shape("ellipse",234,5,166,166,contrast,.76),
+                shape("ellipse",282,28,116,116,surface,.24),
+                curve(10,max(14,height*.38),365,max(50,height*.55),secondary,
+                      [["M",0,70],["C",95,5,150,90,234,36],
+                       ["C",280,3,333,14,365,1],["L",365,110],["L",0,110],["Z"]],.44),
+                shape("roundedRect",33,max(18,height*.28),54,36,surface,.88,radius=8),
+                shape("roundedRect",41,max(20,height*.29),38,29,contrast,.64,radius=7),
+                shape("roundedRect",36,max(28,height*.70),126,13,surface,.88,radius=6),
+                shape("roundedRect",36,max(42,height*.82),73,8,surface,.64,radius=5),
+                shape("ellipse",307,max(22,height*.72),31,31,surface,.66),
+                shape("ellipse",326,max(22,height*.72),31,31,contrast,.70),
+            ])
+        canvas["children"]=layers
         return canvas
+
     def button(label,target=None):
         n=node("Button")
         n["children"][-1]["props"]["text"]=label
