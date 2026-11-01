@@ -483,8 +483,8 @@
 
 
 /* Agata canvas surface: never injected into the authored site/iframe or export. */
-#web-studio{--ws-canvas-blue:#77cee0;--ws-grid-dot:rgba(18,83,117,.30);
- --ws-grid-size:16px;--ws-canvas-shadow:0 9px 25px rgba(16,50,72,.22)}
+#web-studio{--ws-canvas-blue:var(--ws-selected);--ws-grid-dot:rgba(18,83,117,.30);
+ --ws-grid-size:20px;--ws-canvas-shadow:0 9px 25px rgba(16,50,72,.22)}
 #web-studio[data-ide-theme="dark"]{--ws-canvas-blue:#235a6a;--ws-grid-dot:rgba(173,234,251,.32);
  --ws-canvas-shadow:0 8px 32px rgba(0,0,0,.44)}
 #web-studio #ws-design{background:var(--ws-canvas-blue)!important;position:relative;
