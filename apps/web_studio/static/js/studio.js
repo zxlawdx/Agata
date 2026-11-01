@@ -104,7 +104,14 @@
       root.dataset.ideTheme = ideThemes.has(value) ? value : "system";
       q("ide-theme").value = root.dataset.ideTheme;
       localStorage.setItem("agata-ide-theme", root.dataset.ideTheme);
+      const dark = root.dataset.ideTheme === "dark" ||
+        (root.dataset.ideTheme === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+      if (code?.monaco?.editor) code.monaco.editor.setTheme(dark ? "vs-dark" : "vs");
     };
+    const systemTheme = matchMedia("(prefers-color-scheme: dark)");
+    on(systemTheme, "change", () => {
+      if (root.dataset.ideTheme === "system") setIdeTheme("system");
+    });
     setIdeTheme(localStorage.getItem("agata-ide-theme") || "system");
     on(q("ide-theme"), "change", () => setIdeTheme(q("ide-theme").value));
     const pref = prefs();
