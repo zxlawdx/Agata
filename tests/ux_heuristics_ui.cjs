@@ -33,7 +33,7 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||"playwright");
   assert(await page.locator("#ws-block-category option").count()>5);
   assert(await page.locator("#ws-blocks button").count()>30);
   assert(await page.locator("#ws-properties [data-css]").count()>0);
-  await page.locator('[data-mode="split"]').click();
+  await page.locator('button[data-mode="split"]').click();
   await page.locator("#ws-monaco .monaco-editor").waitFor({state:"visible"});
   await page.frameLocator(".gjs-frame").locator("main").waitFor({state:"attached"});
   await page.locator('[data-action="canvaszoom"]').click();
@@ -53,7 +53,7 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||"playwright");
    assert.equal(await page.locator('button[data-mode="'+mode+'"]').getAttribute("aria-pressed"),"true");
    assert.equal(await page.locator('button[data-mode][aria-pressed="true"]').count(),1);
   }
-  await page.locator('[data-mode="split"]').click();
+  await page.locator('button[data-mode="split"]').click();
   await page.locator('#ws-files button[data-file="index.html"]').click();
   await page.screenshot({path:path.join(evidence,"web-studio-ihc-dark.png"),fullPage:true});
   await page.locator("#ws-ide-theme").selectOption("light");
