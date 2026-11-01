@@ -105,6 +105,11 @@ const assert=require("node:assert/strict"),fs=require("node:fs"),path=require("n
   const from=page.locator('#ws-tree [data-node="'+flow.a+'"]');
   const to=page.locator('#ws-tree [data-layer-id="'+flow.b+'"]');
   await from.dragTo(to,{targetPosition:{x:80,y:24}});
+  console.log("LAYER REORDER DIAGNOSTICS",await page.evaluate(({parent,a,b})=>({
+    status:document.querySelector("#ws-status")?.textContent,
+    order:window.AgataWebSession.nodes.get(parent)?.children.map(n=>n.id).slice(0,5),
+    a,b
+  }),flow));
   await page.waitForFunction(({parent,a,b})=>{
     const ids=window.AgataWebSession.nodes.get(parent)?.children.map(x=>x.id)||[];
     return ids.indexOf(a)>ids.indexOf(b);
