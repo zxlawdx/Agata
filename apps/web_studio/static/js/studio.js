@@ -29,6 +29,7 @@
       saving = false,
       disposed = false,
       clipboard = "";
+    let layoutManager, zoomController;
     const logs = [];
     let languageProblems = [];
     const gradientEditor = new global.AgataWebEffects.GradientEditor(root);
@@ -93,8 +94,9 @@
     function setMode(value) {
       mode = value;
       root.dataset.mode = value;
-      for (const b of root.querySelectorAll("[data-mode]"))
+      for (const b of root.querySelectorAll("button[data-mode]"))
         b.setAttribute("aria-pressed", String(b.dataset.mode === value));
+      layoutManager?.setMode(value);
       persistLayout();
       code?.editor.layout();
       if (value === "preview") refreshPreview();
@@ -115,38 +117,33 @@
     setIdeTheme(localStorage.getItem("agata-ide-theme") || "system");
     on(q("ide-theme"), "change", () => setIdeTheme(q("ide-theme").value));
     const pref = prefs();
-    root.dataset.left = pref.left || (innerWidth < 900 ? "hidden" : "visible");
-    root.dataset.right =
-      pref.right || (innerWidth < 900 ? "hidden" : "visible");
-    if (pref.leftWidth) root.style.setProperty("--ws-left", pref.leftWidth);
-    if (pref.rightWidth) root.style.setProperty("--ws-right", pref.rightWidth);
-    if (pref.splitWidth) q("design").style.width = pref.splitWidth;
-    if (pref.bottomOpen === false)
-      root.querySelector("footer details").open = false;
-    on(root.querySelector("footer details"), "toggle", persistLayout);
-    const designObserver = new ResizeObserver(() => {
-      code?.editor.layout();
-      if (mode === "split") {
-        persistLayout();
-        canvas?.width(Number(q("width").value) || 1440);
-      }
+    layoutManager = new global.AgataWebWorkspaceLayout.WorkspaceLayoutManager(root,{
+      onResize:()=>{code?.editor.layout();zoomController?.apply();},
+      onUpdate:()=>persistLayout()
     });
+    if(pref.bottomOpen===false)root.querySelector("footer details").open=false;
+    on(root.querySelector("footer details"),"toggle",persistLayout);
+    const designObserver=new ResizeObserver(()=>{code?.editor.layout();zoomController?.apply();});
     designObserver.observe(q("design"));
-    const resizeObserver = new ResizeObserver((entries) => {
-      for (const e of entries) {
-        if (e.contentRect.width > 100)
-          root.style.setProperty(
-            e.target.classList.contains("ws-left") ? "--ws-left" : "--ws-right",
-            Math.round(
-              e.borderBoxSize?.[0]?.inlineSize || e.contentRect.width,
-            ) + "px",
-          );
-      }
-      persistLayout();
-      code?.editor.layout();
-    });
-    resizeObserver.observe(root.querySelector(".ws-left"));
-    resizeObserver.observe(root.querySelector(".ws-right"));
+    const updateZoomDisplay=()=>{
+      if(!zoomController)return;
+      q("zoom-value").value=zoomController.value();
+      q("zoom-mode").value=zoomController.mode;
+      q("zoom-value").disabled=false;
+    };
+    const setZoom=(mode,value)=>{
+      if(!zoomController)return;
+      if(mode==="custom")zoomController.setPercent(value);
+      else zoomController.fit(mode);
+      layoutManager.state.zoomMode=zoomController.mode;
+      layoutManager.state.zoomPercent=zoomController.percent;
+      layoutManager.persist();updateZoomDisplay();
+      status("Zoom do canvas: "+zoomController.value()+"% · viewport "+q("width").value+"px");
+    };
+    on(q("zoom-mode"),"change",()=>setZoom(q("zoom-mode").value,Number(q("zoom-value").value)));
+    on(q("zoom-value"),"change",()=>setZoom("custom",Number(q("zoom-value").value)));
+    on(q("zoom-minus"),"click",()=>setZoom("custom",Math.max(20,zoomController.value()-15)));
+    on(q("zoom-plus"),"click",()=>setZoom("custom",Math.min(300,zoomController.value()+15)));
     function button(text, click) {
       const b = document.createElement("button");
       b.type = "button";
@@ -503,6 +500,10 @@
         select,
         fail,
       );
+      zoomController=new global.AgataWebWorkspaceLayout.CanvasZoomController(
+        canvas,()=>Number(q("width").value)||1440,()=>q("design"));
+      zoomController.mode=layoutManager.state.zoomMode||"fit-width";
+      zoomController.percent=layoutManager.state.zoomPercent||100;
       canvas.blocks = new Map();
       canvas.onKeyDown = keyboard;
       canvas.onInsert = insertLibraryBlock;
@@ -562,6 +563,7 @@
       root.dataset.projectState = "ready";
       root.querySelector(".ws-layout").hidden = false;
       q("welcome").hidden = true;
+      requestAnimationFrame(()=>{zoomController?.apply();updateZoomDisplay();code?.editor.layout();});
       status("Projeto " + doc.project.name);
     }
     const actions = {
@@ -601,16 +603,8 @@
         status("ZIP: " + r.path);
         log("Exportado: " + r.path);
       },
-      left: () => {
-        root.dataset.left =
-          root.dataset.left === "hidden" ? "visible" : "hidden";
-        persistLayout();
-      },
-      right: () => {
-        root.dataset.right =
-          root.dataset.right === "hidden" ? "visible" : "hidden";
-        persistLayout();
-      },
+      left:()=>layoutManager.toggle("left"),
+      right:()=>layoutManager.toggle("right"),
       newfile: async () => {
         const p = await ask(
           "Criar arquivo",
@@ -759,14 +753,8 @@
         new global.AgataWebLayout.LayoutService(doc, (id) =>
           canvas.computed(id),
         ).autoLayout(selected, "grid"),
-      canvasfit: () => {
-        canvas.width(Number(q("width").value) || 1440);
-        status("Canvas ajustado à largura do painel.");
-      },
-      canvaszoom: () => {
-        canvas.editor.Canvas.setZoom(100);
-        status("Canvas em 100% (role horizontalmente para explorar).");
-      },
+      canvasfit:()=>setZoom("fit-width"),
+      canvaszoom:()=>setZoom("custom",100),
       gridguides: () => canvas.gridGuides(selected),
       rulers: () => canvas.rulers(),
       snap: () => {
@@ -906,7 +894,7 @@
               : actions[b.dataset.action]();
           })
           .catch(fail);
-      const mode = e.target.closest("[data-mode]");
+      const mode = e.target.closest("button[data-mode]");
       if (mode) setMode(mode.dataset.mode);
     });
     on(q("search-files"), "input", renderFiles);
@@ -934,7 +922,8 @@
     on(q("width"), "change", () => {
       const width = Math.min(3840, Math.max(240, Number(q("width").value)));
       q("width").value = width;
-      canvas.width(width);
+      zoomController?.setViewport(width);
+      updateZoomDisplay();
       q("preview").style.width = width + "px";
     });
     on(q("reduced"), "change", () => {
@@ -1079,7 +1068,7 @@
             console.error(e);
           }
         abort.abort();
-        resizeObserver.disconnect();
+        layoutManager?.dispose();
         designObserver.disconnect();
         code?.dispose();
         canvas?.dispose();
