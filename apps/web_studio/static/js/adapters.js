@@ -382,7 +382,12 @@
     format() {
       return this.editor.getAction("editor.action.formatDocument").run();
     }
+    gotoLine(){
+      this.editor.focus();
+      return this.editor.getAction("editor.action.gotoLine").run();
+    }
     find() {
+      this.editor.focus();
       this.editor.getAction("editor.action.startFindReplaceAction").run();
     }
     dispose() {
