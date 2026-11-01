@@ -538,3 +538,8 @@
  #web-studio .ws-left,#web-studio .ws-right{font-size:12px}
  #web-studio .ws-zoom-controls{min-width:max-content}
 }
+
+
+#web-studio .ws-layer-rename{flex:0 0 23px;border:0;padding:2px;background:transparent;font-size:13px;min-width:0}
+#web-studio .ws-selection-tools:has(.ws-canvas-popover[open]){overflow:visible;flex-wrap:wrap}
+#web-studio .ws-selection-tools .ws-canvas-popover[open]>div{z-index:9000}
