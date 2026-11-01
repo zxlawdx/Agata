@@ -13,6 +13,11 @@ const assert=require("node:assert/strict"),fs=require("node:fs"),path=require("n
   await page.locator('[data-section="templates"]').click();
   await page.waitForFunction(()=>document.querySelectorAll(".agata-template-card").length>=14);
   assert(await page.locator(".agata-template-card").count()>=14);
+  await page.waitForFunction(()=>{
+   const cards=[...document.querySelectorAll(".agata-template-card")];
+   const visible=cards.filter(card=>{const rect=card.getBoundingClientRect();return rect.top<innerHeight&&rect.bottom>0;});
+   return visible.length>0&&visible.every(card=>card.querySelector("iframe")?.srcdoc?.length>100);
+  },null,{timeout:15000});
   await page.screenshot({path:path.join(destination,"template-gallery-all.png"),fullPage:true});
   await page.locator("#agata-template-theme").selectOption("dark");
   assert(await page.locator(".agata-template-card").count()>0);
