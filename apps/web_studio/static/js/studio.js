@@ -145,7 +145,7 @@
       layoutManager.state.zoomMode=zoomController.mode;
       layoutManager.state.zoomPercent=zoomController.percent;
       layoutManager.persist();updateZoomDisplay();
-      status("Zoom do canvas: "+zoomController.value()+"% · viewport "+q("width").value+"px");
+      status((mode==="fit-width"?"Canvas ajustado · ":"Zoom do canvas: ")+zoomController.value()+"% · viewport "+q("width").value+"px");
     };
     on(q("zoom-mode"),"change",()=>setZoom(q("zoom-mode").value,Number(q("zoom-value").value)));
     on(q("zoom-value"),"change",()=>setZoom("custom",Number(q("zoom-value").value)));
