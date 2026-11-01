@@ -55,11 +55,13 @@ def _android_node(node, depth=0):
     return '<div class="node node-%s">%s%s</div>' % (escape(kind, quote=True), inner, children)
 
 
-def _android_preview(template_id):
+def _android_preview(template_id, screen_index=0):
     from apps.android_designer.domain.templates import template_document
 
     document = template_document(template_id)
-    first = document["screens"][0]
+    if type(screen_index) is not int or not 0 <= screen_index < len(document["screens"]):
+        raise ValueError("Índice de tela do template inválido.")
+    first = document["screens"][screen_index]
     scheme = tokens(template_id).get("colors", {})
     css = (
         "--background:%s;--surface:%s;--text:%s;--muted:%s;--accent:%s;"
@@ -81,7 +83,8 @@ def _android_preview(template_id):
         '<main class="device"><p class="preview-caption">' + escape(first["name"]) +
         ' · prévia esquemática editável</p>' + inner + '</main></body></html>'
     )
-    return {"html": html, "kind": "android-model", "screens": len(document["screens"])}
+    return {"html": html, "kind": "android-model", "screens": len(document["screens"]),
+            "screen_index": screen_index, "screen_name": first["name"]}
 
 
 def _web_preview(template_id):
@@ -125,10 +128,10 @@ def gallery_catalog():
     return registered
 
 
-def preview(template_id, platform):
+def preview(template_id, platform, screen_index=0):
     if not isinstance(template_id, str) or not isinstance(platform, str):
         raise ValueError("Identificação de template inválida.")
     if not any(item["id"] == template_id and item["platform"] == platform
                for item in gallery_catalog()):
         raise ValueError("Template não encontrado.")
-    return _web_preview(template_id) if platform == "web" else _android_preview(template_id)
+    return _web_preview(template_id) if platform == "web" else _android_preview(template_id, screen_index)
