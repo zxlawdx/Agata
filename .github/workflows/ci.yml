@@ -10,7 +10,7 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     env:
-      AGATA_EVIDENCE: ${{ runner.temp }}/agata-evidence
+      AGATA_EVIDENCE: /tmp/agata-evidence
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -116,6 +116,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: agata-ux-evidence-${{ github.run_id }}
-          path: ${{ runner.temp }}/agata-evidence/
+          path: /tmp/agata-evidence/
           if-no-files-found: warn
           retention-days: 30
