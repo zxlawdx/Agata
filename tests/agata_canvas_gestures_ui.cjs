@@ -61,6 +61,12 @@ const assert=require("node:assert/strict"),fs=require("node:fs"),path=require("n
    await page.locator("#ws-zoom-value").fill(String(zoom));
    await page.locator("#ws-zoom-value").dispatchEvent("change");
    assert.equal(Number(await page.locator("#ws-zoom-value").inputValue()),zoom);
+   const zoomFrameBefore=await frame();
+   await drag(center.x,center.y,"middle",16,9);
+   const zoomFrameAfter=await frame();
+   assert(Math.abs(zoomFrameAfter.x-zoomFrameBefore.x)>5||
+     Math.abs(zoomFrameAfter.y-zoomFrameBefore.y)>5,
+     "Middle pan must work at "+zoom+"% zoom");
    await shot("agata-zoom-"+zoom);
   }
   const afterNavigation=await page.evaluate(()=>({html:window.AgataWebSession.text("index.html"),css:window.AgataWebSession.files.has("css/overrides.css")?window.AgataWebSession.text("css/overrides.css"):null}));
