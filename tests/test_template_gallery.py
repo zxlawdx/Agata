@@ -14,6 +14,8 @@ class TemplateGalleryTests(unittest.TestCase):
             self.assertTrue(item.get("name"))
             self.assertTrue(item.get("license"))
             self.assertTrue(item.get("category"))
+            self.assertTrue(item.get("author"))
+            self.assertIn(item.get("theme"), {"light", "dark"})
             self.assertTrue(item.get("version"))
 
     def test_web_previews_come_from_real_html_css_but_do_not_run_scripts(self):
