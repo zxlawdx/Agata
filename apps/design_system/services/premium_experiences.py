@@ -90,7 +90,7 @@ def build(key):
         muted=colors["secondary"]
         canvas["children"]=[
             shape("roundedRect",8,8,384,height-16,base,radius=24),
-            shape("ellipse",236,-18,175,175,alt,.78),
+            shape("ellipse",236,0,175,175,alt,.78),
             shape("ellipse",288,24,100,100,colors["surface"],.42),
             shape("roundedRect",32,height*.34,215,max(38,height*.58),
                   colors["background"],.60,radius=24,rotation=-11),
