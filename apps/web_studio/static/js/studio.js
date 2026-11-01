@@ -276,23 +276,49 @@
           }
         };
         name.ondblclick=rename;
-        name.draggable=true;
-        name.ondragstart=e=>{
+        const reorder=(moved,event)=>{
+          if(!moved||moved===node.id)return false;
+          const rect=row.getBoundingClientRect();
+          const after=event.clientY>=rect.top+rect.height*.5;
+          const siblings=node.parent?.children||[];
+          const next=siblings[siblings.indexOf(node)+1]?.id||null;
+          doc.move(moved,node.parent?.id||null,after?next:node.id);
+          return true;
+        };
+        row.draggable=true;
+        row.ondragstart=e=>{
           draggedLayerId=node.id;
           e.dataTransfer.effectAllowed="move";
           e.dataTransfer.setData("application/agata-node",node.id);
           e.dataTransfer.setData("text/plain",node.id);
         };
-        name.ondragend=()=>{draggedLayerId=null;};
+        row.ondragend=e=>{
+          // WebView2 and WebKit sometimes suppress HTML5 drop on nested buttons.
+          // In that case, use the element under the release coordinates.
+          if(draggedLayerId){
+            const target=document.elementFromPoint(e.clientX,e.clientY)?.closest(".ws-layer-row");
+            if(target&&target!==row&&target.dataset.layerId){
+              const dest=doc.nodes.get(target.dataset.layerId);
+              if(dest){
+                try{
+                  const rect=target.getBoundingClientRect();
+                  const siblings=dest.parent?.children||[];
+                  const next=siblings[siblings.indexOf(dest)+1]?.id||null;
+                  doc.move(draggedLayerId,dest.parent?.id||null,
+                    e.clientY>=rect.top+rect.height*.5?next:dest.id);
+                }catch(err){fail(err);}
+              }
+            }
+          }
+          draggedLayerId=null;
+        };
         row.ondragover=e=>{e.preventDefault();e.dataTransfer.dropEffect="move";};
         row.ondrop=e=>{e.preventDefault();e.stopPropagation();try{
           const moved=e.dataTransfer.getData("application/agata-node")||draggedLayerId;
           const block=e.dataTransfer.getData("application/agata-block");
           if(moved&&moved!==node.id){
+            reorder(moved,e);
             draggedLayerId=null;
-            const rect=row.getBoundingClientRect();
-            const before=e.clientY<rect.top+rect.height*.5?node.id:node.parent?.children[node.parent.children.indexOf(node)+1]?.id||null;
-            doc.move(moved,node.parent?.id||null,before);
           }else if(block){
             const html=canvas.blocks.get(block);if(html)doc.insert(page,node.id,html);
           }
