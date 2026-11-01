@@ -152,9 +152,9 @@
 #agata-home .agata-template-card{background:var(--paper);border:2px solid var(--ink);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;min-width:0;box-shadow:3px 4px 0 #2222}
 #agata-home .agata-template-thumb{position:relative;overflow:hidden;height:176px;background:var(--cyan);border-bottom:2px solid var(--ink)}
 #agata-home .agata-template-thumb iframe{border:0;position:absolute;top:0;left:0;pointer-events:none;background:white}
-#agata-home .agata-template-browser iframe{width:1024px;height:640px;transform:scale(.34);transform-origin:0 0}
+#agata-home .agata-template-browser iframe{width:1024px;height:640px;transform:scale(.25);transform-origin:0 0}
 #agata-home .agata-template-phone{background:radial-gradient(circle at center,var(--pink),var(--cyan));}
-#agata-home .agata-template-phone iframe{width:390px;height:720px;left:50%;top:6px;transform:translateX(-50%) scale(.34);transform-origin:top left}
+#agata-home .agata-template-phone iframe{width:390px;height:720px;left:calc(50% - 70px);top:6px;transform:scale(.36);transform-origin:top left}
 #agata-home .agata-template-thumb[aria-busy=true]::after{content:"Preparando prévia…";position:absolute;inset:0;display:grid;place-items:center;background:var(--cream);color:var(--ink);font-weight:750}
 #agata-home .agata-template-meta{padding:13px 14px;flex:1}
 #agata-home .agata-template-meta small{font-weight:800;text-transform:uppercase;letter-spacing:.09em;font-size:10px}
@@ -179,7 +179,7 @@
 #agata-home .agata-gallery-dialog footer span{font-size:11px;line-height:1.45}
 #agata-home #agata-gallery-use{border:2px solid var(--ink);border-radius:10px;background:var(--yellow);padding:12px;font-weight:800;flex-shrink:0}
 @media(max-width:760px){
- #agata-home .agata-template-browser iframe{transform:scale(.30)}
+ #agata-home .agata-template-browser iframe{transform:scale(.24)}
  #agata-home .agata-gallery-dialog footer{flex-wrap:wrap}
  #agata-home #agata-gallery-use{width:100%}
 }
