@@ -7,6 +7,7 @@ for (const test of [
   "tests/web_code_sync_ui.cjs",
   "tests/ux_heuristics_ui.cjs",
   "tests/workspace_layout_ui.cjs",
+  "tests/agata_canvas_gestures_ui.cjs",
   "tests/web_studio_ui.cjs",
   "tests/web_studio_advanced_ui.cjs",
   "tests/web_monaco_ui.cjs",
