@@ -68,7 +68,8 @@ class CanvasInteraction {
   if(!pan&&!free)return;
   const p=this.point(e,inside);
   if(pan){
-   this.active={type:"pan",id:e.pointerId,point:p,origin:{...this.coords()},moves:0};
+   this.active={type:"pan",id:e.pointerId,point:p,origin:{...this.coords()},moves:0,target:e.target};
+   try{e.target.setPointerCapture?.(e.pointerId);}catch{}
    this.stop(e);this.cursor();return;
   }
   const element=e.target?.closest?.("[data-agata-id]");
@@ -90,7 +91,8 @@ class CanvasInteraction {
   const zoom=Math.max(.05,this.canvas.editor.Canvas.getZoom()/100);
   const x=style.position==="absolute"?parseFloat(style.left)||0:(elRect.x-parentRect.x)/zoom;
   const y=style.position==="absolute"?parseFloat(style.top)||0:(elRect.y-parentRect.y)/zoom;
-  this.active={type:"free",id:e.pointerId,point:p,start:{x,y},node:id,
+  try{e.target.setPointerCapture?.(e.pointerId);}catch{}
+  this.active={type:"free",id:e.pointerId,point:p,start:{x,y},node:id,target:e.target,
     element,zoom, moved:false};
   this.stop(e);this.cursor();
  }
@@ -109,7 +111,8 @@ class CanvasInteraction {
  }
  end(e){
   const a=this.active;if(!a||a.id!==e.pointerId)return;
-  this.active=null;this.cursor();this.stop(e);
+  this.active=null;try{a.target?.releasePointerCapture?.(e.pointerId);}catch{}
+  this.cursor();this.stop(e);
   if(a.type==="pan")return;
   if(!a.moved||!a.next)return;
   try{
