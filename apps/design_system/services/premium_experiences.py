@@ -126,6 +126,7 @@ def build(key):
         for label,index in spec["nav"]:
             item=node("NavigationItem")
             item["children"][0]["props"]["icon"]=icons.get(label,"menu")
+            bind(item["children"][0],"props","color","colors.textPrimary",colors["textPrimary"])
             bind(item["children"][1],"props","color","colors.textPrimary",colors["textPrimary"])
             item["children"][-1]["props"]["text"]=label
             item["props"]["selected"]=index==active
