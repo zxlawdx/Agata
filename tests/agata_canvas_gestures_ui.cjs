@@ -63,6 +63,8 @@ const assert=require("node:assert/strict"),fs=require("node:fs"),path=require("n
    assert.equal(Number(await page.locator("#ws-zoom-value").inputValue()),zoom);
    await shot("agata-zoom-"+zoom);
   }
+  const afterNavigation=await page.evaluate(()=>({html:window.AgataWebSession.text("index.html"),css:window.AgataWebSession.text("css/overrides.css")}));
+  assert.deepEqual(afterNavigation,original,"Pan, zoom and editor grid cannot alter project HTML or CSS");
   await page.locator("#ws-zoom-value").fill("100");
   await page.locator("#ws-zoom-value").dispatchEvent("change");
   await page.locator("#ws-grid-spacing").fill("12");
@@ -103,8 +105,9 @@ const assert=require("node:assert/strict"),fs=require("node:fs"),path=require("n
   await page.waitForFunction(id=>window.AgataWebSession?.project?.id===id&&
     document.querySelector("#web-studio")?.dataset.projectState==="ready",p.id);
   assert((await page.evaluate(()=>window.AgataWebSession.text("css/overrides.css"))).includes("position: absolute"));
-  assert.equal(await page.evaluate(()=>window.AgataWebSession.text("index.html")),original.html,
-    "Pan, grid and zoom must not mutate authored HTML");
+  const savedHtml=await page.evaluate(()=>window.AgataWebSession.text("index.html"));
+  assert(savedHtml.includes('data-agata-overrides'),"Free mode must persist a linked CSS override");
+  assert(savedHtml.includes("<h1"),"Original editable page structure must survive");
   await shot("agata-free-drag-reopened");
   assert.deepEqual(errors,[]);
   console.log("Agata canvas tested: five middle pan movements, space pan, 35/100/150 zoom, dot grid, synced Layers, free CSS drag, persistence and immutable HTML.");
