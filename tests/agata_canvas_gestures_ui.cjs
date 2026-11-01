@@ -21,6 +21,7 @@ const assert=require("node:assert/strict"),fs=require("node:fs"),path=require("n
   await page.waitForFunction(id=>window.AgataWebSession?.project?.id===id,p.id);
   await page.frameLocator(".gjs-frame").locator("h1").waitFor();
   await page.locator('button[data-mode="design"]').click();
+  await page.locator(".ws-canvas-popover summary").click();
   await page.locator("#ws-grid-visible").waitFor();
   const original=await page.evaluate(()=>({
    html:window.AgataWebSession.text("index.html"),
