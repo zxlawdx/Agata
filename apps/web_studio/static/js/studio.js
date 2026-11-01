@@ -289,30 +289,60 @@
         if (html) doc.insert(page, parent, html, before);
       }
     }
-    function renderBlocks(filter = "") {
+    function availableBlocks() {
       const elements = (catalog.elements || [])
-        .filter((e) => !e.deprecated && e.visual !== false)
-        .map((e) => ({
+        .filter(e => !e.deprecated && e.visual !== false)
+        .map(e => ({
           id: "html:" + e.name,
           name: "<" + e.name + ">",
+          category: "HTML · " + (e.category || "Outros"),
           html: global.AgataWebCatalog.elementHtml(e.name),
         }));
-      const blocks = [
-        ...catalog.blocks.map((b) => ({ ...b, id: "block:" + b.name })),
+      return [
+        ...catalog.blocks.map(b => ({ ...b, id: "block:" + b.name,
+          category: "Blocos · " + (b.category || "Layouts") })),
         ...elements,
       ];
-      q("blocks").replaceChildren(
-        ...blocks
-          .filter((b) => b.name.toLowerCase().includes(filter.toLowerCase()))
-          .map((b) => {
-            canvas.blocks.set(b.id, b.html);
-            const el = button(b.name, () => insertLibraryBlock(b.id, selected));
-            el.draggable = true;
-            el.ondragstart = (e) =>
-              e.dataTransfer.setData("application/agata-block", b.id);
-            return el;
-          }),
+    }
+    function renderBlocks(filter = "") {
+      const category = q("block-category").value || "all";
+      const blocks = availableBlocks().filter(b =>
+        (category === "all" || b.category === category) &&
+        b.name.toLocaleLowerCase().includes(filter.toLocaleLowerCase())
       );
+      const groups = new Map();
+      for (const block of blocks) {
+        canvas.blocks.set(block.id, block.html);
+        if (!groups.has(block.category)) groups.set(block.category, []);
+        groups.get(block.category).push(block);
+      }
+      const host = q("blocks");
+      host.replaceChildren();
+      for (const [name, entries] of groups) {
+        const region = document.createElement("section");
+        region.className = "ws-block-group";
+        region.setAttribute("aria-label", name);
+        const heading = document.createElement("h4");
+        heading.textContent = name + " (" + entries.length + ")";
+        const list = document.createElement("div");
+        list.className = "ws-block-group-grid";
+        for (const b of entries) {
+          const el = button(b.name, () => insertLibraryBlock(b.id, selected));
+          el.draggable = true;
+          el.title = "Arraste para o canvas ou clique para inserir " + b.name;
+          el.ondragstart = e =>
+            e.dataTransfer.setData("application/agata-block", b.id);
+          list.append(el);
+        }
+        region.append(heading, list);
+        host.append(region);
+      }
+      if (!host.childElementCount) {
+        const empty = document.createElement("p");
+        empty.textContent = "Nenhum componente nessa categoria. Altere a busca ou o filtro.";
+        host.append(empty);
+      }
+      host.setAttribute("aria-label", blocks.length + " elementos e blocos disponíveis");
     }
     async function refreshPreview() {
       if (!doc || disposed) return;
@@ -875,6 +905,7 @@
     on(q("search-blocks"), "input", () =>
       renderBlocks(q("search-blocks").value),
     );
+    on(q("block-category"), "change", () => renderBlocks(q("search-blocks").value));
     on(q("page"), "change", () => {
       page = q("page").value;
       selected = null;
@@ -1054,6 +1085,11 @@
     );
     const elements = await response.json();
     catalog.elements = elements.elements || elements;
+    const categories = [...new Set(availableBlocks().map(b => b.category))].sort();
+    q("block-category").replaceChildren(
+      new Option("Todas as categorias", "all"),
+      ...categories.map(name => new Option(name, name))
+    );
     q("project-template").replaceChildren(
       ...catalog.templates.map((t) => new Option(t.name, t.id)),
     );
