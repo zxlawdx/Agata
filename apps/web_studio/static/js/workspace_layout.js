@@ -144,7 +144,7 @@ class CanvasZoomController {
         value=Math.min(value,(Math.max(200,frame.height-28)/height)*100);
       }
    }
-   this.canvas.editor.Canvas.setZoom(clamp(value,20,300));
+   this.canvas.editor.Canvas.setZoom(clamp(value,this.mode==="custom"?20:5,300));
    return this.value();
  }
 }
