@@ -752,6 +752,13 @@
         else this.editor.select(component);
       }
     }
+    locate(id){
+      const frame=this.editor.Canvas.getFrameEl();
+      const el=frame?.contentDocument?.querySelector('[data-agata-id="'+id+'"]');
+      if(!el)return;
+      el.scrollIntoView({block:"center",inline:"center",behavior:"instant"});
+      this.select(id);
+    }
     rulers() {
       const document = this.editor.Canvas.getDocument();
       if (!document) return;
