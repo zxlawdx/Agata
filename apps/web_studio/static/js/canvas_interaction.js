@@ -91,8 +91,8 @@ class CanvasInteraction {
   this.onSelect(id,ids.length>1);
   const parentRect=parent.getBoundingClientRect(),elRect=element.getBoundingClientRect();
   const zoom=Math.max(.05,this.canvas.editor.Canvas.getZoom()/100);
-  const x=style.position==="absolute"?parseFloat(style.left)||0:(elRect.x-parentRect.x)/zoom;
-  const y=style.position==="absolute"?parseFloat(style.top)||0:(elRect.y-parentRect.y)/zoom;
+  const x=style.position==="absolute"?parseFloat(style.left)||0:(elRect.x-parentRect.x);
+  const y=style.position==="absolute"?parseFloat(style.top)||0:(elRect.y-parentRect.y);
   try{e.target.setPointerCapture?.(e.pointerId);}catch{}
   const items=ids.map(nodeId=>{
     const dom=element.ownerDocument.querySelector('[data-agata-id="'+nodeId+'"]');
@@ -100,8 +100,8 @@ class CanvasInteraction {
     if(!dom||node?.parent?.id!==n.parent.id)return null;
     const box=dom.getBoundingClientRect(),css=dom.ownerDocument.defaultView.getComputedStyle(dom);
     return {id:nodeId,element:dom,start:{
-      x:css.position==="absolute"?parseFloat(css.left)||0:(box.x-parentRect.x)/zoom,
-      y:css.position==="absolute"?parseFloat(css.top)||0:(box.y-parentRect.y)/zoom
+      x:css.position==="absolute"?parseFloat(css.left)||0:(box.x-parentRect.x),
+      y:css.position==="absolute"?parseFloat(css.top)||0:(box.y-parentRect.y)
     }};
   }).filter(Boolean);
   if(!items.length)return;
