@@ -36,6 +36,11 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||"playwright");
   await page.locator('[data-mode="split"]').click();
   await page.locator("#ws-monaco .monaco-editor").waitFor({state:"visible"});
   await page.frameLocator(".gjs-frame").locator("main").waitFor({state:"attached"});
+  await page.locator('[data-action="canvaszoom"]').click();
+  assert((await page.locator("#ws-status").textContent()).includes("100%"));
+  await page.locator('[data-action="canvasfit"]').click();
+  assert((await page.locator("#ws-status").textContent()).includes("ajustado"));
+
   await page.locator("#ws-block-category").selectOption({label:"HTML · Forms"});
   assert(await page.locator("#ws-blocks button").count()>0);
   await page.locator("#ws-block-category").selectOption("all");
