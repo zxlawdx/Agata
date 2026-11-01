@@ -53,6 +53,19 @@
 
   <dialog id="agata-gallery-dialog" class="agata-gallery-dialog" aria-labelledby="agata-gallery-title">
     <header><div><small>PRÉVIA DO MODELO</small><h2 id="agata-gallery-title">Template</h2><p id="agata-gallery-detail"></p></div><button type="button" id="agata-gallery-close" aria-label="Fechar prévia">×</button></header>
+    <div class="agata-gallery-preview-controls" aria-label="Navegação pela prévia">
+      <div id="agata-gallery-screens">
+        <button type="button" id="agata-gallery-prev" aria-label="Tela anterior">‹ Anterior</button>
+        <output id="agata-gallery-counter" aria-live="polite">Tela 1</output>
+        <button type="button" id="agata-gallery-next" aria-label="Próxima tela">Próxima ›</button>
+      </div>
+      <label id="agata-gallery-device-label">Visualização Web
+        <select id="agata-gallery-device" aria-label="Largura da prévia Web">
+          <option value="desktop">Desktop</option>
+          <option value="mobile">Mobile 390px</option>
+        </select>
+      </label>
+    </div>
     <div class="agata-gallery-large"><iframe id="agata-gallery-frame" title="Prévia isolada de template" sandbox="" referrerpolicy="no-referrer"></iframe></div>
     <footer><span id="agata-gallery-limit"></span><button id="agata-gallery-use" type="button">✦ Usar este modelo</button></footer>
   </dialog>
