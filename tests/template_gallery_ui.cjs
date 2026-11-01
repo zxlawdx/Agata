@@ -30,6 +30,7 @@ const assert=require("node:assert/strict"),fs=require("node:fs"),path=require("n
   assert.equal(await page.locator(".agata-template-card").count(),1);
   await card.getByRole("button",{name:/Prévia/}).click();
   await page.locator("#agata-gallery-dialog").waitFor({state:"visible"});
+  await page.waitForFunction(()=>document.querySelector("#agata-gallery-frame")?.srcdoc?.includes("Premium"));
   assert((await page.locator("#agata-gallery-frame").getAttribute("srcdoc")).includes("Premium"));
   await page.screenshot({path:path.join(destination,"template-gallery-preview-web.png"),fullPage:true});
   await page.locator("#agata-gallery-use").click();
@@ -52,6 +53,7 @@ const assert=require("node:assert/strict"),fs=require("node:fs"),path=require("n
   const android=page.locator('.agata-template-card[data-template-id="music-dark"]');
   await android.scrollIntoViewIfNeeded();
   await android.getByRole("button",{name:/Prévia/}).click();
+  await page.waitForFunction(()=>document.querySelector("#agata-gallery-frame")?.srcdoc?.includes("node-"));
   const androidMarkup=await page.locator("#agata-gallery-frame").getAttribute("srcdoc");
   assert(androidMarkup.includes("node-"));
   await page.screenshot({path:path.join(destination,"template-gallery-preview-android.png"),fullPage:true});
