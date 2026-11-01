@@ -554,3 +554,12 @@
 #web-studio .ws-layer-shared{margin-top:8px;border-top:1px solid var(--ws-border);padding:5px 0}
 #web-studio .ws-layer-shared>summary{cursor:pointer;font-size:11px;font-weight:800;padding:8px 4px}
 #web-studio .ws-layer-shared:not([open]) .ws-layer-row{display:none}
+
+
+/* Canvas menu uses a viewport-anchored floating panel; do not unwrap the entire toolbar. */
+#web-studio .ws-selection-tools:has(.ws-canvas-popover[open]){overflow-x:auto;overflow-y:hidden;flex-wrap:nowrap}
+#web-studio .ws-canvas-popover>div{
+ position:fixed;top:var(--ws-canvas-menu-top,125px);left:var(--ws-canvas-menu-left,260px);
+ max-height:min(370px,calc(100vh - var(--ws-canvas-menu-top,125px) - 10px));
+ z-index:9000;
+}
