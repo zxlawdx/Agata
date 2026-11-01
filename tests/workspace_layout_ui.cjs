@@ -83,6 +83,11 @@ try{
  assert.equal(await page.locator("#ws-zoom-mode").inputValue(),"fit-width");
  await page.setViewportSize({width:1366,height:768});
  await screenshot("web-split-1366.png");
+ await page.setViewportSize({width:1093,height:614}); // Approx. 1366x768 physical at Windows 125%
+ await page.waitForFunction(()=>document.querySelector("#web-studio")?.dataset.right==="hidden");
+ assert.equal(await page.locator(".ws-right").isVisible(),false,"Inspector must collapse at effective Windows 125% CSS width");
+ assert(await page.locator("#ws-monaco .monaco-editor").isVisible(),"Monaco remains usable");
+ await screenshot("web-split-windows-125-percent.png");
  await page.setViewportSize({width:1920,height:1080});
  await screenshot("web-split-1920.png");
  assert.deepEqual(errors,[]);
