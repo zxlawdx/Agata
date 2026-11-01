@@ -25,7 +25,7 @@ const assert=require("node:assert/strict"),fs=require("node:fs"),path=require("n
   await page.locator("#ws-grid-visible").waitFor();
   const original=await page.evaluate(()=>({
    html:window.AgataWebSession.text("index.html"),
-   css:window.AgataWebSession.text("css/overrides.css"),
+   css:window.AgataWebSession.files.has("css/overrides.css")?window.AgataWebSession.text("css/overrides.css"):null,
   }));
   assert(await page.locator("#ws-design .gjs-cv-canvas").count()>0);
   assert.equal(await page.locator("#web-studio").getAttribute("data-canvas-grid"),"true");
@@ -63,7 +63,7 @@ const assert=require("node:assert/strict"),fs=require("node:fs"),path=require("n
    assert.equal(Number(await page.locator("#ws-zoom-value").inputValue()),zoom);
    await shot("agata-zoom-"+zoom);
   }
-  const afterNavigation=await page.evaluate(()=>({html:window.AgataWebSession.text("index.html"),css:window.AgataWebSession.text("css/overrides.css")}));
+  const afterNavigation=await page.evaluate(()=>({html:window.AgataWebSession.text("index.html"),css:window.AgataWebSession.files.has("css/overrides.css")?window.AgataWebSession.text("css/overrides.css"):null}));
   assert.deepEqual(afterNavigation,original,"Pan, zoom and editor grid cannot alter project HTML or CSS");
   await page.locator("#ws-zoom-value").fill("100");
   await page.locator("#ws-zoom-value").dispatchEvent("change");
