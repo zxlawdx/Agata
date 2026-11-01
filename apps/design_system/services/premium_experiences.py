@@ -119,8 +119,14 @@ def build(key):
         n["name"]="Navegação responsiva"
         n["layout"].update(width=220 if rail else "fill",height="fill" if rail else "wrap",gap=4,padding=6)
         n["children"]=[]
+        bind(n,"props","background","colors.surface",colors["surface"])
+        icons={"Início":"home","Buscar":"search","Biblioteca":"menu","Tocando":"settings",
+               "Feed":"home","Explorar":"search","Perfil":"settings","Mensagens":"menu",
+               "Extrato":"menu","Cartões":"menu","Análises":"search"}
         for label,index in spec["nav"]:
             item=node("NavigationItem")
+            item["children"][0]["props"]["icon"]=icons.get(label,"menu")
+            bind(item["children"][1],"props","color","colors.textPrimary",colors["textPrimary"])
             item["children"][-1]["props"]["text"]=label
             item["props"]["selected"]=index==active
             item["events"]={"onClick":{"action":"navigate","target":d["screens"][index]["id"]}}
