@@ -9,7 +9,7 @@ class WorkspaceLayoutManager {
   constructor(root,{onResize,onUpdate}={}){
     this.root=root;this.onResize=onResize||(()=>{});this.onUpdate=onUpdate||(()=>{});
     this.abort=new AbortController();
-    this.key="agata-web-layout-v2";
+    this.key="agata-web-layout-v2:"+(root.dataset.projectId||"unbound");
     this.drag=null;this.mode="split";this.focus=false;
     this.state={left:"visible",right:"visible",leftWidth:245,rightWidth:290,splitRatio:.60,
       zoomMode:"fit-width",zoomPercent:100};
