@@ -29,6 +29,11 @@ const assert=require("node:assert/strict"),fs=require("node:fs"),path=require("n
   }));
   assert(await page.locator("#ws-design .gjs-cv-canvas").count()>0);
   assert.equal(await page.locator("#web-studio").getAttribute("data-canvas-grid"),"true");
+  const initialAppearance=await page.frameLocator(".gjs-frame").locator("h1").evaluate(el=>{
+    const style=getComputedStyle(el);
+    return {family:style.fontFamily,size:parseFloat(style.fontSize)};
+  });
+  assert(initialAppearance.size>28,"Initial template CSS not loaded");
   await shot("agata-canvas-turquoise-before");
   await page.locator("#ws-grid-visible").uncheck();
   assert.equal(await page.locator("#web-studio").getAttribute("data-canvas-grid"),"false");
@@ -127,6 +132,17 @@ const assert=require("node:assert/strict"),fs=require("node:fs"),path=require("n
   const savedHtml=await page.evaluate(()=>window.AgataWebSession.text("index.html"));
   assert(savedHtml.includes('data-agata-overrides'),"Free mode must persist a linked CSS override");
   assert(savedHtml.includes("<h1"),"Original editable page structure must survive");
+  await page.frameLocator(".gjs-frame").locator("h1").waitFor();
+  await page.waitForFunction(size=>{
+    const frame=document.querySelector(".gjs-frame");
+    const heading=frame?.contentDocument?.querySelector("h1");
+    return heading&&parseFloat(frame.contentWindow.getComputedStyle(heading).fontSize)>28;
+  },initialAppearance.size);
+  const reopenedAppearance=await page.frameLocator(".gjs-frame").locator("h1").evaluate(el=>({
+    family:getComputedStyle(el).fontFamily,size:parseFloat(getComputedStyle(el).fontSize)
+  }));
+  assert(reopenedAppearance.size>28&&reopenedAppearance.family===initialAppearance.family,
+   "Canvas must retain authored typography after CSS overrides and reopen");
   await shot("agata-free-drag-reopened");
   assert.deepEqual(errors,[]);
   console.log("Agata canvas tested: five middle pan movements, space pan, 35/100/150 zoom, dot grid, synced Layers, free CSS drag, persistence and immutable HTML.");
