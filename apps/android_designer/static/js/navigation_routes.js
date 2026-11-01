@@ -46,6 +46,24 @@ window.AgataNavigationRoutes=(()=>{
   const defs=element('defs');defs.append(marker);svg.append(defs);
   const targets=new Map(screens.map(screen=>[screen.id,screen]));
   const parallels=new Map();
+  const labelBoxes=[];
+  const collides=(box,other,pad=8)=>box.x<other.x+other.width+pad&&
+    box.x+box.width+pad>other.x&&box.y<other.y+other.height+pad&&
+    box.y+box.height+pad>other.y;
+  const safeLabel=(x,y,caption)=>{
+    const width=Math.max(55,caption.length*7.2+8),height=16;
+    for(let attempt=0;attempt<36;attempt++){
+      const row=Math.ceil(attempt/2),sign=attempt%2?1:-1;
+      const cy=y+(attempt?sign*row*20:0);
+      const cx=x+(attempt>20?((attempt-20)*12):0);
+      const box={x:cx,y:cy-height,width,height};
+      const frames=screens.map(s=>({x:s.position.x-8,y:s.position.y-8,width:s.width+16,height:s.height+16}));
+      if(![...frames,...labelBoxes].some(previous=>collides(box,previous))){
+        labelBoxes.push(box);return {x:cx,y:cy};
+      }
+    }
+    const box={x,y:y-height,width,height};labelBoxes.push(box);return{x,y};
+  };
   for(const screen of screens)window.AgataUIModel.walk(screen.root,node=>{
    const event=node.events?.onClick;
    if(event?.action!=='navigate')return;
@@ -63,8 +81,11 @@ window.AgataNavigationRoutes=(()=>{
     if(e.key==='Delete'){e.preventDefault();onRemove?.(node.id);}
    });
    svg.append(line);
-   const label=element('text',{x:labelX,y:labelY,'class':'ad-nav-label'});
-   label.textContent='onClick';svg.append(label);
+   const caption='onClick · '+target.name;
+   const position=safeLabel(labelX,labelY,caption);
+   const label=element('text',{x:position.x,y:position.y,'class':'ad-nav-label',
+     role:'note','aria-label':'Navegação '+node.name+' para '+target.name});
+   label.textContent=caption;label.dataset.sourceNode=node.id;svg.append(label);
   });
  }
  return {draw,route};
