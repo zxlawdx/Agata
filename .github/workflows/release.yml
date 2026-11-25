@@ -1,6 +1,10 @@
 name: Agata desktop release
 on:
   workflow_dispatch:
+  workflow_run:
+    workflows: ['Agata checks']
+    types: [completed]
+    branches: [main]
   push:
     tags: ['v*']
 permissions:
@@ -10,13 +14,16 @@ concurrency:
   cancel-in-progress: false
 jobs:
   build:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-22.04, windows-latest]
+        os: [ubuntu-22.04, windows-2022]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -74,9 +81,11 @@ jobs:
           if-no-files-found: error
   publish:
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       - uses: actions/download-artifact@v4
         with:
           path: release
@@ -96,4 +105,9 @@ jobs:
           test -n "$(find assets -name '*.AppImage' -print -quit)"
           test -n "$(find assets -name '*-Setup.exe' -print -quit)"
           (cd assets; sha256sum *.zip *.deb *.rpm *.AppImage *-Setup.exe *-Setup.run > SHA256SUMS.txt)
-          gh release create "$tag" assets/* --target "$GITHUB_SHA" --title "Agata $tag" --generate-notes
+          target=$(git rev-parse HEAD)
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo "Release $tag already exists; refusing to overwrite."
+            exit 0
+          fi
+          gh release create "$tag" assets/* --target "$target" --title "Agata $tag" --generate-notes
