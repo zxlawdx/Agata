@@ -7,6 +7,9 @@ on:
     branches: [main]
   push:
     tags: ['v*']
+env:
+  PYTHONUTF8: '1'
+  PYTHONIOENCODING: utf-8
 permissions:
   contents: write
 concurrency:
@@ -31,7 +34,7 @@ jobs:
         with:
           node-version: '22'
       - if: runner.os == 'Linux'
-        run: sudo apt-get update && sudo apt-get install -y libgl1 libegl1 libnss3 libgbm1 libxcb-cursor0 libxkbcommon-x11-0 libasound2 libxcomposite1 libxdamage1 libxrandr2 libxtst6 rpm ruby ruby-dev build-essential
+        run: sudo apt-get update && sudo apt-get install -y libgl1 libegl1 libnss3 libgbm1 libxcb-cursor0 libxkbcommon-x11-0 libasound2 libxcomposite1 libxdamage1 libxrandr2 libxtst6 rpm ruby ruby-dev build-essential desktop-file-utils libva2 libva-drm2 libpulse0 libpcsclite1
       - if: runner.os == 'Windows'
         shell: pwsh
         run: choco install innosetup -y
@@ -66,6 +69,7 @@ jobs:
           printf '<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128"><rect width="128" height="128" rx="24" fill="#53AFF2"/><text x="64" y="90" font-size="80" text-anchor="middle" fill="#222">A</text></svg>' > Agata.AppDir/agata.svg
           curl -fL https://github.com/AppImage/appimagetool/releases/download/1.9.0/appimagetool-x86_64.AppImage -o appimagetool
           chmod +x appimagetool
+          desktop-file-validate Agata.AppDir/agata.desktop
           ARCH=x86_64 APPIMAGE_EXTRACT_AND_RUN=1 ./appimagetool Agata.AppDir "dist/Agata-${version}-x86_64.AppImage"
       - uses: actions/upload-artifact@v4
         with:
