@@ -1,0 +1,99 @@
+name: Agata desktop release
+on:
+  workflow_dispatch:
+  push:
+    tags: ['v*']
+permissions:
+  contents: write
+concurrency:
+  group: agata-release
+  cancel-in-progress: false
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libgl1 libegl1 libnss3 libgbm1 libxcb-cursor0 libxkbcommon-x11-0 libasound2 libxcomposite1 libxdamage1 libxrandr2 libxtst6 rpm ruby ruby-dev build-essential
+      - if: runner.os == 'Windows'
+        shell: pwsh
+        run: choco install innosetup -y
+      - run: python -m pip install "vela-framework[qt6,build] @ git+https://github.com/zxlawdx/Vela-framework.git@b02be516871e507a2f678146cb5b8a822221883d" tree-sitter==0.26.0 tree-sitter-kotlin==1.1.0
+      - run: python -m unittest discover -s tests -v
+      - run: npm run check:js
+      - run: python manage.py buildapp --gui qt6 --installer
+      - if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          set -euxo pipefail
+          sudo gem install fpm --no-document
+          version=$(python -c 'from config.settings import APP_VERSION; print(APP_VERSION)')
+          bundle=$(find dist -mindepth 1 -maxdepth 1 -type d -iname agata -print -quit)
+          test -n "$bundle"
+          exe=$(find "$bundle" -maxdepth 1 -type f -iname agata -print -quit)
+          test -x "$exe"
+          mkdir -p pkgroot/opt/agata pkgroot/usr/bin pkgroot/usr/share/applications
+          cp -a "$bundle"/. pkgroot/opt/agata/
+          printf '#!/bin/sh\nexec /opt/agata/%s "$@"\n' "$(basename "$exe")" > pkgroot/usr/bin/agata
+          chmod +x pkgroot/usr/bin/agata
+          printf '[Desktop Entry]\nType=Application\nName=Agata\nExec=agata\nTerminal=false\nCategories=Graphics;\n' > pkgroot/usr/share/applications/agata.desktop
+          fpm -s dir -t deb -n agata -v "$version" -a amd64 -C pkgroot -p "dist/Agata-${version}-amd64.deb" -d libgl1 -d libegl1 -d libnss3 -d libgbm1 -d libxcb-cursor0 -d libxkbcommon-x11-0 .
+          fpm -s dir -t rpm -n agata -v "$version" -a x86_64 -C pkgroot -p "dist/Agata-${version}-x86_64.rpm" -d mesa-libGL -d mesa-libEGL -d nss -d mesa-libgbm -d xcb-util-cursor -d libxkbcommon-x11 .
+          mkdir -p Agata.AppDir/usr
+          cp -a pkgroot/opt/agata/. Agata.AppDir/usr/
+          printf '#!/bin/sh\nHERE=$(dirname "$(readlink -f "$0")")\nexec "$HERE/usr/%s" "$@"\n' "$(basename "$exe")" > Agata.AppDir/AppRun
+          chmod +x Agata.AppDir/AppRun
+          cp pkgroot/usr/share/applications/agata.desktop Agata.AppDir/agata.desktop
+          sed -i '/^Exec=/c\Exec=Agata' Agata.AppDir/agata.desktop
+          sed -i '/^Name=/a\Icon=agata' Agata.AppDir/agata.desktop
+          printf '<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128"><rect width="128" height="128" rx="24" fill="#53AFF2"/><text x="64" y="90" font-size="80" text-anchor="middle" fill="#222">A</text></svg>' > Agata.AppDir/agata.svg
+          curl -fL https://github.com/AppImage/appimagetool/releases/download/1.9.0/appimagetool-x86_64.AppImage -o appimagetool
+          chmod +x appimagetool
+          ARCH=x86_64 APPIMAGE_EXTRACT_AND_RUN=1 ./appimagetool Agata.AppDir "dist/Agata-${version}-x86_64.AppImage"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: agata-${{ runner.os }}
+          path: |
+            dist/*.zip
+            dist/*.sha256
+            dist/*-Setup.exe
+            dist/*-Setup.run
+            dist/*.deb
+            dist/*.rpm
+            dist/*.AppImage
+          if-no-files-found: error
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: release
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euxo pipefail
+          version=$(python3 -c 'from config.settings import APP_VERSION; print(APP_VERSION)')
+          tag="v$version"
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then test "$GITHUB_REF_NAME" = "$tag"; fi
+          mkdir -p assets
+          find release -type f -exec cp -t assets {} +
+          test -n "$(find assets -name '*.deb' -print -quit)"
+          test -n "$(find assets -name '*.rpm' -print -quit)"
+          test -n "$(find assets -name '*.AppImage' -print -quit)"
+          test -n "$(find assets -name '*-Setup.exe' -print -quit)"
+          (cd assets; sha256sum *.zip *.deb *.rpm *.AppImage *-Setup.exe *-Setup.run > SHA256SUMS.txt)
+          gh release create "$tag" assets/* --target "$GITHUB_SHA" --title "Agata $tag" --generate-notes
