@@ -287,12 +287,45 @@ window.AgataAndroidDesigner={async mount(root){
  dragController=window.AgataDragDrop.mount(root,{model,selection:()=>selected,registry,commit:render,notify:message,isDesign:()=>['design','split'].includes(mode)});
  on($('ad-group'),'click',()=>{try{const group=model.groupNodes([...selected]);selectNode(group.id);}catch(e){message(e.message,true);}});
  on($('ad-ungroup'),'click',()=>{const c=chosen()[0];if(!c?.parent||!['Column','Row','Box','Grid'].includes(c.node.type)){message('Selecione um grupo de layout.',true);return;}try{model.ungroupNode(c.node.id);selected.clear();render();}catch(e){message(e.message,true);}});
- on($('ad-preview-preset'),'change',()=>{const value=$('ad-preview-preset').value;if(value==='custom')return;[previewWidth,previewHeight]=value.split(',').map(Number);$('ad-preview-width').value=previewWidth;$('ad-preview-height').value=previewHeight;renderPreview();});
- on($('ad-preview-rotate'),'click',()=>{[previewWidth,previewHeight]=[previewHeight,previewWidth];$('ad-preview-width').value=previewWidth;$('ad-preview-height').value=previewHeight;renderPreview();});
- for(const axis of ['width','height'])on($('ad-preview-'+axis),'change',()=>{const value=Number($('ad-preview-'+axis).value);if(value<240||value>4096){message('Use dimensão entre 240 e 4096.',true);return;}if(axis==='width')previewWidth=value;else previewHeight=value;renderPreview();});
+ function syncPreviewSize() {
+  $('ad-preview-width').value = previewWidth;
+  $('ad-preview-height').value = previewHeight;
+  const preset = $('ad-preview-preset');
+  const size = [previewWidth, previewHeight].join(',');
+  preset.value = [...preset.options].some(option => option.value === size) ? size : 'custom';
+ }
+ function setPreviewSize(width, height) {
+  previewWidth = width;
+  previewHeight = height;
+  syncPreviewSize();
+  renderPreview();
+ }
+ on($('ad-preview-preset'), 'change', () => {
+  const value = $('ad-preview-preset').value;
+  if (value !== 'custom') setPreviewSize(...value.split(',').map(Number));
+ });
+ on($('ad-preview-rotate'), 'click', () => setPreviewSize(previewHeight, previewWidth));
+ for (const axis of ['width', 'height']) {
+  const input = $('ad-preview-' + axis);
+  on(input, 'change', () => {
+   const value = input.valueAsNumber;
+   if (!Number.isInteger(value) || value < 240 || value > 4096) {
+    syncPreviewSize();
+    message('Use uma dimensão inteira entre 240 e 4096.', true);
+    return;
+   }
+   setPreviewSize(axis === 'width' ? value : previewWidth, axis === 'height' ? value : previewHeight);
+  });
+ }
  on($('ad-font-scale'),'change',()=>{fontScale=Number($('ad-font-scale').value);renderPreview();});
- let resizing=false;
- previewObserver=new ResizeObserver(entries=>{if(mode!=='preview'||resizing)return;const r=entries[0].contentRect;if(Math.abs(r.width-previewWidth)>1||Math.abs(r.height-previewHeight)>1){resizing=true;previewWidth=Math.round(r.width);previewHeight=Math.round(r.height);$('ad-preview-width').value=previewWidth;$('ad-preview-height').value=previewHeight;renderPreview();resizing=false;}});previewObserver.observe($('ad-preview-viewport'));
+ previewObserver = new ResizeObserver(([entry]) => {
+  if (mode !== 'preview') return;
+  const { width, height } = entry.contentRect;
+  if (Math.abs(width - previewWidth) > 1 || Math.abs(height - previewHeight) > 1) {
+   setPreviewSize(Math.round(width), Math.round(height));
+  }
+ });
+ previewObserver.observe($('ad-preview-viewport'));
  const preferences=()=>{try{return JSON.parse(localStorage.getItem('agata-editor-panels')||'{}');}catch{return {};}};
  const panelPrefs={...preferences(),...model.value.editor_preferences};
  for(const [id,cls] of [['ad-toggle-library','ad-library'],['ad-toggle-inspector','ad-inspector']]){

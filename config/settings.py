@@ -1,6 +1,6 @@
 """Configuração do aplicativo desktop Agata."""
 APP_TITLE = "Agata"
-APP_VERSION = "0.2.0"
+APP_VERSION = "0.2.1"
 APP_ICON = ""
 APP_AUTHOR = ""
 APP_DESCRIPTION = "Ambiente desktop de criação visual, esboços e componentes."

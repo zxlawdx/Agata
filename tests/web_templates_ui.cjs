@@ -12,6 +12,7 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE || "playwright"),
     viewport: { width: 1600, height: 1000 },
   });
   page.setDefaultTimeout(40000);
+  const capture = await browser.newPage();
   const errors = [],
     metrics = [];
   const evidence=process.env.AGATA_EVIDENCE||"/tmp";fs.mkdirSync(evidence,{recursive:true});
@@ -58,8 +59,40 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE || "playwright"),
         .locator("main")
         .waitFor({ state: "attached" });
       const frame = page.frames().find((f) => f.url().includes("/s/"));
+      const widthInput = page.locator("#ws-width");
+      const viewportPreset = page.locator("#ws-viewport");
+      if (template === "saas-dashboard") {
+        await widthInput.fill("412");
+        await widthInput.press("Tab");
+        assert.equal(await viewportPreset.inputValue(), "custom");
+        await page.waitForFunction(() => document.querySelector("#ws-preview").style.width === "412px");
+
+        await widthInput.fill("");
+        await widthInput.press("Tab");
+        assert.equal(await widthInput.inputValue(), "412");
+
+        await viewportPreset.selectOption("390");
+        await viewportPreset.selectOption("custom");
+        await page.locator("#ws-dialog").press("Escape");
+        await page.waitForFunction(() => document.querySelector("#ws-viewport").value === "390");
+        assert.equal(await viewportPreset.inputValue(), "390");
+        assert.equal(await widthInput.inputValue(), "390");
+      }
+
       await frame.waitForSelector("main");
-      for (const width of [375, 1440]) {
+      if (template === "ecommerce") {
+        const search = frame.locator("[data-search-form] input");
+        await search.fill("Caneta");
+        await search.press("Enter");
+        const visibleProducts = frame.locator("article.card:visible");
+        assert.deepEqual(await visibleProducts.locator("h3").allTextContents(), ["Caneta Traço"]);
+        await visibleProducts.getByRole("button", { name: "Adicionar Caneta Traço ao carrinho" }).click();
+        assert.equal(await frame.locator("[data-cart-count]").textContent(), "1");
+        await search.fill("");
+        await search.press("Enter");
+        assert.equal(await visibleProducts.count(), 6);
+      }
+      for (const width of [320, 375, 1440]) {
         await page.selectOption("#ws-viewport", String(width));
         await page.waitForTimeout(200);
         const dimensions = await frame.evaluate(() => ({
@@ -76,8 +109,14 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE || "playwright"),
           template + " " + width + " overflow " + dimensions.scroll,
         );
         metrics.push({ template, width, openMs, ...dimensions });
-        await frame.locator("body").screenshot({
-          path: path.join(evidence,"web-template-" + template + "-" + width + ".png"),
+        // Capture the runtime directly so the editor's iframe does not clip long pages.
+        await capture.setViewportSize({ width, height: 900 });
+        await capture.goto(frame.url());
+        await capture.locator("main").waitFor();
+        await capture.screenshot({
+          path: path.join(evidence, "web-template-" + template + "-" + width + ".png"),
+          fullPage: true,
+          animations: "disabled",
         });
       }
       console.log("Template responsive:", template);

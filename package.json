@@ -1,7 +1,7 @@
 {
   "name": "agata-desktop",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Assets de desenho offline para o Agata",
   "scripts": {
     "vendor": "node scripts/vendor-fabric.cjs",

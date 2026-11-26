@@ -16,6 +16,7 @@ for (const test of [
   "tests/web_security_ui.cjs",
   "tests/web_templates_ui.cjs",
   "tests/premium_android_ui.cjs",
+  "tests/delivery_ui.cjs",
 ]) {
   const result = spawnSync(process.execPath, ["tests/run_ui.cjs", test], {
     stdio: "inherit",

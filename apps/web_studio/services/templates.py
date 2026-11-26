@@ -24,6 +24,17 @@ def card(
     return f'<article class="card"><span class="eyebrow">Em destaque</span><h3>{escape(title)}</h3><p class="muted">{escape(body)}</p><a href="/pages/about.html">Saiba mais →</a></article>'
 
 
+def product_card(title, description, price):
+    return (
+        '<article class="card"><div class="hero-art">'
+        + artwork()
+        + f'</div><h3>{escape(title)}</h3><p class="muted">{escape(description)}</p>'
+        + f'<div class="row between"><strong>R$ {price}</strong>'
+        + f'<button data-action="cart" aria-label="Adicionar {escape(title, quote=True)} ao carrinho">'
+        + 'Adicionar</button></div></article>'
+    )
+
+
 def block(name):
     if name == "navbar":
         return '<header class="navbar"><a class="brand" href="/index.html">◈ Aurora Studio</a><nav aria-label="Principal"><a href="/index.html">Início</a><a href="/pages/about.html">Sobre</a><a href="/pages/contact.html">Contato</a></nav><button data-action="toast" data-message="Vamos criar algo novo">Começar</button></header>'
@@ -227,11 +238,7 @@ def block(name):
             + "</section>"
         )
     if name == "product-card":
-        return (
-            '<article class="card"><div class="hero-art">'
-            + artwork()
-            + '</div><span class="eyebrow">Coleção original</span><h3>Caderno Horizonte</h3><p class="muted">Papel, espaço e novas possibilidades.</p><div class="row between"><strong>R$ 48</strong><button data-action="cart">Adicionar</button></div></article>'
-        )
+        return product_card("Caderno Horizonte", "Papel, espaço e novas possibilidades.", 48)
     if name == "testimonial":
         return '<figure class="card"><blockquote>“Um sistema que deixa minhas ideias respirarem.”</blockquote><figcaption class="muted">Lia · personagem e depoimento demonstrativos</figcaption></figure>'
     if name == "breadcrumbs":
@@ -524,15 +531,25 @@ def template_files(template_id):
             + "</main></div>"
         )
     elif template_id == "ecommerce":
+        products = [
+            ("Caderno Horizonte", "Capa rígida e páginas pontilhadas.", 48),
+            ("Estojo Linha", "Lona lavável com fechamento em zíper.", 32),
+            ("Planner Aurora", "Visão semanal sem datas impressas.", 64),
+            ("Caneta Traço", "Tinta preta com ponta fina de 0,5 mm.", 12),
+            ("Pasta Dobras", "Divisórias para documentos A4.", 28),
+            ("Bloco Rascunho", "Folhas destacáveis para anotações.", 19),
+        ]
         body = (
             navbar
             + '<main class="shell stack">'
-            + block("hero")
-            + '<div class="row between"><h2>Objetos para novas ideias.</h2><p>Carrinho <span class="cart-count" data-cart-count>0</span></p></div>'
+            + '<header class="section stack"><h1>Loja Aurora</h1>'
+            + '<p class="muted">Papelaria para organizar, anotar e criar.</p></header>'
+            + '<div class="row between"><h2>Catálogo</h2>'
+            + '<p>Carrinho <span class="cart-count" data-cart-count aria-live="polite">0</span></p></div>'
             + block("search-bar")
             + '<section class="grid">'
-            + block("product-card") * 6
-            + "</section><small>Loja demonstrativa; conecte catálogo, estoque e checkout reais.</small></main>"
+            + "".join(product_card(*product) for product in products)
+            + "</section><small>Loja demonstrativa</small></main>"
             + footer
         )
     elif template_id == "blog-editorial":
