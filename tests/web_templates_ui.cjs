@@ -16,7 +16,19 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE || "playwright"),
   const errors = [],
     metrics = [];
   const evidence=process.env.AGATA_EVIDENCE||"/tmp";fs.mkdirSync(evidence,{recursive:true});
-  page.on("pageerror", (e) => errors.push(e.message));
+  for (const contextPage of [page, capture]) {
+    contextPage.on("pageerror", error => errors.push(error.stack || error.message));
+    contextPage.on("requestfailed", request => {
+      const failure = request.failure().errorText;
+      if (failure !== "net::ERR_ABORTED") console.error(failure, request.url());
+    });
+  }
+  async function waitForTemplate(runtime) {
+    await runtime.locator("main").waitFor();
+    await runtime.waitForFunction(() =>
+      [...document.querySelectorAll("agata-include")].every(node => node.childElementCount > 0)
+    );
+  }
   try {
     await page.goto(process.env.AGATA_TEST_URL);
     await page.waitForSelector("[data-web-studio]");
@@ -79,7 +91,9 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE || "playwright"),
         assert.equal(await widthInput.inputValue(), "390");
       }
 
-      await frame.waitForSelector("main");
+      await waitForTemplate(frame);
+      await capture.goto(frame.url());
+      await waitForTemplate(capture);
       if (template === "ecommerce") {
         const search = frame.locator("[data-search-form] input");
         await search.fill("Caneta");
@@ -111,8 +125,6 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE || "playwright"),
         metrics.push({ template, width, openMs, ...dimensions });
         // Capture the runtime directly so the editor's iframe does not clip long pages.
         await capture.setViewportSize({ width, height: 900 });
-        await capture.goto(frame.url());
-        await capture.locator("main").waitFor();
         await capture.screenshot({
           path: path.join(evidence, "web-template-" + template + "-" + width + ".png"),
           fullPage: true,
