@@ -64,6 +64,7 @@
         q("dialog-label").textContent = label;
         q("dialog-input").value = value;
         const dialog = q("dialog");
+        dialog.returnValue = "";
         const done = () => {
           resolve(dialog.returnValue === "ok" ? q("dialog-input").value : null);
         };
@@ -1096,22 +1097,33 @@
       open(page);
       if (mode === "preview") refreshPreview();
     });
-    on(q("viewport"), "change", async () => {
-      let width = q("viewport").value;
-      if (width === "custom")
-        width = await ask("Viewport", "Largura em pixels", q("width").value);
-      if (width && Number(width) >= 240 && Number(width) <= 3840) {
-        q("width").value = width;
-        q("width").dispatchEvent(new Event("change"));
+    let viewportWidth = q("width").valueAsNumber;
+    function syncViewportControls() {
+      q("width").value = viewportWidth;
+      const preset = [...q("viewport").options].some(
+        (option) => option.value === String(viewportWidth),
+      );
+      q("viewport").value = preset ? String(viewportWidth) : "custom";
+    }
+    function setViewportWidth(width) {
+      if (Number.isFinite(width)) {
+        viewportWidth = Math.min(3840, Math.max(240, Math.round(width)));
       }
-    });
-    on(q("width"), "change", () => {
-      const width = Math.min(3840, Math.max(240, Number(q("width").value)));
-      q("width").value = width;
-      zoomController?.setViewport(width);
+      syncViewportControls();
+      zoomController?.setViewport(viewportWidth);
       updateZoomDisplay();
-      q("preview").style.width = width + "px";
+      q("preview").style.width = viewportWidth + "px";
+    }
+    on(q("viewport"), "change", async () => {
+      const selectedWidth = q("viewport").value;
+      if (selectedWidth !== "custom") {
+        setViewportWidth(Number(selectedWidth));
+        return;
+      }
+      const entered = await ask("Viewport", "Largura em pixels", String(viewportWidth));
+      setViewportWidth(entered?.trim() ? Number(entered) : NaN);
     });
+    on(q("width"), "change", () => setViewportWidth(q("width").valueAsNumber));
     on(q("reduced"), "change", () => {
       if (doc)
         doc.editMetadata("Movimento reduzido", (m) => {

@@ -48,7 +48,17 @@ def template_document(key):
         elif key=='settings':first['root']['children'] += [label('Notificações'),new_node('Switch'),label('Privacidade'),new_node('Checkbox')]
         elif key=='form':first['root']['children'] += [new_node('TextField',{'label':'Nome'}),new_node('TextField',{'label':'E-mail','keyboard':'email'}),new_node('Button')]
         elif key=='tasks':first['root']['children'] += [new_node('Checkbox'),label('Minha primeira tarefa'),new_node('TextField',{'label':'Nova tarefa'})]
-        elif key=='list-detail':
-            detail=new_screen('Detalhes',550,80);detail['root']['children']=[label('Detalhes',26),new_node('Card')];back=new_node('Button');back['events']={'onClick':{'action':'back'}};detail['root']['children'].append(back);d['screens'].append(detail);first['root']['children'] += [button('Abrir detalhes',detail['id'])]
+        elif key == 'list-detail':
+            detail = new_screen('Detalhes', 550, 80)
+            back = new_node('Button')
+            back['children'][0]['props'].update(icon='back', description='')
+            back['children'][-1]['props']['text'] = 'Voltar'
+            back['events'] = {'onClick': {'action': 'back'}}
+            detail['root']['children'] = [label('Detalhes', 26), new_node('Card'), back]
+            d['screens'].append(detail)
+            open_detail = button('Abrir detalhes', detail['id'])
+            open_detail['children'][0]['props'].update(icon='none', description='')
+            first['root']['children'].append(open_detail)
+            return validate(d)
         extra=new_screen('Próxima tela',80+len(d['screens'])*470,80);extra['root']['children']=[label('Continue seu projeto',26)];back=new_node('Button');back['events']={'onClick':{'action':'back'}};extra['root']['children'].append(back);d['screens'].append(extra);first['root']['children'].append(button('Continuar',extra['id']))
     return validate(d)

@@ -36,7 +36,11 @@ class PreviewRuntime:
                     self.send_header("Access-Control-Allow-Methods", "GET, OPTIONS")
                     self.end_headers()
 
-            self.server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+            class Server(ThreadingHTTPServer):
+                # A preview loads several stylesheets, modules and includes in parallel.
+                request_queue_size = 64
+
+            self.server = Server(("127.0.0.1", 0), Handler)
             Thread(
                 target=self.server.serve_forever, daemon=True, name="agata-preview"
             ).start()
